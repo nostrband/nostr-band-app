@@ -37,7 +37,7 @@
   color: var(--bg-secondary-color);
 }
 .postState {
-  margin-right: 0.8rem;
+  margin-right: 0.6rem;
   display: flex;
   align-items: center;
 }

@@ -19,16 +19,18 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 4px solid rgba(200, 200, 200, 0.4);
+  border: .3rem solid rgba(200, 200, 200, 0.4);
   border-radius: 50%;
-  width: 5.6rem;
-  height: 5.6rem;
+  width: 5.3rem;
+  height: 5.3rem;
 }
 
 .profile-info__image img {
   width: 100%;
   height: 100%;
   border-radius: 50%;
+  font-size: .8rem;
+  text-align: center;
 }
 
 .profile-info__hero-header {
