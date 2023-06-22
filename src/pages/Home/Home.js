@@ -3,32 +3,23 @@ import Search from "../../components/Search/Search";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import ProfileItem from "../../components/ProfileItem/ProfileItem";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Button } from "react-bootstrap";
+import People from "./People/People";
+import { useSearchParams } from "react-router-dom";
+import Posts from "./Posts/Posts";
 
 const Home = () => {
-  const [profiles, setProfiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [trendingQuery, setTrendingQuery] = useState(
+    searchParams.get("trending") ? searchParams.get("trending") : "people"
+  );
 
-  const fetchProfiles = async () => {
-    try {
-      setIsLoading(true);
-      const { data } = await axios.get(
-        "https://api.nostr.band/v0/trending/profiles"
-      );
-      setProfiles(data.profiles);
-    } catch (e) {
-      console.error(e?.response?.data?.error);
-    } finally {
-      setIsLoading(false);
-    }
+  const linkHandle = (trending) => {
+    setSearchParams(`trending=${trending}`);
+    setTrendingQuery(`${trending}`);
   };
-
-  useEffect(() => {
-    fetchProfiles();
-  }, []);
 
   return (
     <Container>
@@ -44,47 +35,69 @@ const Home = () => {
                 Learn what is trending <span>today</span>
               </p>
               <div className="home-hero__links">
-                <Button>People</Button>
-                <Button variant="link">Posts</Button>
-                <Button variant="link">Zapped</Button>
-                <Button variant="link">Links</Button>
-                <Button variant="link">Hashtags</Button>
-                <Button variant="link">Images</Button>
-                <Button variant="link">Video</Button>
-                <Button variant="link">Audio</Button>
+                <Button
+                  variant={`${trendingQuery === "people" ? "primary" : "link"}`}
+                  onClick={() => linkHandle("people")}
+                >
+                  People
+                </Button>
+                <Button
+                  variant={`${trendingQuery === "posts" ? "primary" : "link"}`}
+                  onClick={() => linkHandle("posts")}
+                >
+                  Posts
+                </Button>
+                <Button
+                  variant={`${trendingQuery === "zapped" ? "primary" : "link"}`}
+                  onClick={() => linkHandle("zapped")}
+                >
+                  Zapped
+                </Button>
+                <Button
+                  variant={`${trendingQuery === "links" ? "primary" : "link"}`}
+                  onClick={() => linkHandle("links")}
+                >
+                  Links
+                </Button>
+                <Button
+                  variant={`${
+                    trendingQuery === "hashtags" ? "primary" : "link"
+                  }`}
+                  onClick={() => linkHandle("hashtags")}
+                >
+                  Hashtags
+                </Button>
+                <Button
+                  variant={`${trendingQuery === "images" ? "primary" : "link"}`}
+                  onClick={() => linkHandle("images")}
+                >
+                  Images
+                </Button>
+                <Button
+                  variant={`${trendingQuery === "video" ? "primary" : "link"}`}
+                  onClick={() => linkHandle("video")}
+                >
+                  Video
+                </Button>
+                <Button
+                  variant={`${trendingQuery === "audio" ? "primary" : "link"}`}
+                  onClick={() => linkHandle("audio")}
+                >
+                  Audio
+                </Button>
               </div>
             </div>
             <div className="home-profiles">
-              {profiles && profiles.length
-                ? profiles.map((profile) => {
-                    const profileContent = profile.profile
-                      ? JSON.parse(profile.profile.content)
-                      : "";
-                    return (
-                      <ProfileItem
-                        key={profile.pubkey}
-                        pubKey={profile.pubkey}
-                        img={profileContent.picture}
-                        name={
-                          profileContent.display_name
-                            ? profileContent.display_name
-                            : profileContent.name
-                        }
-                        bio={profileContent.about}
-                        twitter={profileContent.username}
-                        mail={profileContent.nip05}
-                        newFollowersCount={profile.new_followers_count}
-                      />
-                    );
-                  })
-                : "Loading..."}
-              {profiles && profiles.length ? (
-                <a className="yesterday-trending">
-                  See who was trending yesterday →
-                </a>
+              {trendingQuery === "people" ? (
+                <People setIsLoading={setIsLoading} />
+              ) : trendingQuery === "posts" ? (
+                <Posts setIsLoading={setIsLoading} />
               ) : (
                 ""
               )}
+              <a className="yesterday-trending">
+                See who was trending yesterday →
+              </a>
             </div>
           </div>
         </Col>

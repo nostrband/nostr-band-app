@@ -7,6 +7,9 @@ a {
   flex-direction: column;
   max-width: 100%;
   margin-bottom: 2rem;
+  padding: 1rem;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  border-radius: 16px;
 }
 .profile a {
   margin-bottom: 0.3rem;
@@ -16,13 +19,14 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 90px;
-  height: 90px;
+  width: 5.6rem;
+  height: 5.6rem;
 }
 
 .profile-info__image img {
   width: 100%;
   height: 100%;
+  border-radius: 50%;
 }
 
 .profile-info__hero-header {
