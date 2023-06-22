@@ -1,0 +1,35 @@
+.home-hero-title {
+  font-size: 2.4rem;
+  color: black;
+  font-weight: 500;
+}
+.home-hero {
+  text-align: center;
+  margin: 4rem 0 2rem 0;
+}
+.home-hero span {
+  color: var(--accent-color);
+}
+.home-hero-subtitle {
+  font-size: 1.2rem;
+  color: black;
+  font-weight: 500;
+}
+.home-hero__links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.home-hero__links button {
+  text-decoration: none;
+}
+
+.yesterday-trending {
+  color: rgba(0, 0, 255, 0.754);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.yesterday-trending:hover {
+  color: blue;
+}

@@ -1,0 +1,140 @@
+a {
+  text-decoration: none;
+}
+
+.profile {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  margin-bottom: 2rem;
+}
+.profile a {
+  margin-bottom: 0.3rem;
+  padding: 0;
+}
+.profile-info__image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  height: 90px;
+}
+
+.profile-info__image img {
+  width: 100%;
+  height: 100%;
+}
+
+.profile-info__hero-header {
+  display: flex;
+}
+.profile-info__hero {
+  min-height: 90px;
+  margin-left: 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-info__hero-name {
+  text-decoration: none;
+  font-size: 1.2rem;
+  color: var(--bg-secondary-color);
+  margin-right: 0.45rem;
+  transition: all 0.3s;
+}
+.profile-info__hero-name:hover {
+  text-decoration: underline;
+}
+#profile-dropdown button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 26px;
+  border: none;
+  border: 1px solid transparent;
+}
+#profile-dropdown button:hover {
+  color: black;
+  background-color: white;
+}
+#profile-dropdown button:focus {
+  color: black;
+  background-color: white;
+  border-color: black;
+}
+.profile-info {
+  display: flex;
+  align-items: center;
+}
+.profile-info__hero-keys a {
+  text-decoration: none;
+  margin-right: 0.5rem;
+  color: var(--bg-secondary-color);
+  cursor: pointer;
+}
+.profile-info__hero-keys {
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  color: var(--bg-secondary-color);
+}
+.profile-info__hero-keys-mail {
+  display: flex;
+  align-items: center;
+  margin-right: 0.5rem;
+  word-break: break-all;
+}
+.profile-info__hero-sats {
+  font-size: 1.05rem;
+}
+.profile-info__hero-sats span {
+  font-weight: 700;
+}
+.profile-info__hero-keys .profile-info__hero-keys-twitter {
+  display: flex;
+  align-items: center;
+  margin-right: 0.5rem;
+  color: rgb(13, 110, 253);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.profile-info__hero-keys-twitter:hover {
+  color: rgb(8, 76, 178);
+}
+
+.profile-content p {
+  margin: 0;
+}
+.profile-content span {
+  font-weight: 700;
+}
+
+.profile-content__stats p {
+  position: relative;
+}
+.new-followers {
+  font-size: 0.75rem;
+  position: absolute;
+  bottom: 9px;
+}
+.profile-content__control {
+  margin-top: 0.65rem;
+}
+#profile-buttons button {
+  font-size: 0.85rem;
+  padding: 4px 8px;
+  background-color: transparent;
+  color: var(--bg-secondary-color);
+  margin-right: 0.3rem;
+}
+#profile-buttons button:hover {
+  background-color: var(--bg-secondary-color);
+  color: white;
+}
+
+.profile-content__bio {
+  max-width: 100%;
+  word-break: break-all;
+}

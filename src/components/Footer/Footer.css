@@ -1,0 +1,20 @@
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer__links button {
+  font-size: 1rem;
+  text-decoration: none;
+  color: rgba(0, 0, 0, 0.812);
+}
+.footer__links button:hover {
+  color: black;
+}
+
+.footer p {
+  color: var(--bg-secondary-color);
+  font-size: 0.9rem;
+}

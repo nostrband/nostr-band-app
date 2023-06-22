@@ -1,0 +1,37 @@
+#search-input {
+  border-radius: 5px;
+  position: relative;
+}
+
+#dropdown-basic {
+  background-color: transparent;
+  color: var(--bg-secondary-color);
+  border: 1px solid #6c757d;
+}
+#dropdown-basic:hover {
+  background-color: var(--bg-secondary-color);
+  color: white;
+}
+#dropdown-basic:focus {
+  background-color: var(--bg-secondary-color);
+  color: white;
+}
+#search-btn {
+  background-color: transparent;
+  color: var(--nav-link-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#search-btn:hover {
+  background-color: var(--bg-secondary-color);
+  color: white;
+}
+
+.loader {
+  width: 35px;
+  background-color: #6c757d17;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
