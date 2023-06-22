@@ -9,7 +9,7 @@ const People = ({ setIsLoading }) => {
     try {
       setIsLoading(true);
       const { data } = await axios.get(
-        "https://api.nostr.band/v0/trending/profiles"
+        `${process.env.REACT_APP_API_URL}/trending/profiles`
       );
       setProfiles(data.profiles);
     } catch (e) {

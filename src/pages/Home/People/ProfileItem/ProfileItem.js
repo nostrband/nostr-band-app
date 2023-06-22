@@ -32,7 +32,7 @@ const ProfileItem = ({
 
   const fetchStats = async () => {
     const { data } = await axios.get(
-      `https://api.nostr.band/v0/stats/profile/${pubKey}`
+      `${process.env.REACT_APP_API_URL}/stats/profile/${pubKey}`
     );
     setStats(data.stats[pubKey]);
   };
