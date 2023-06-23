@@ -27,22 +27,24 @@ const Posts = ({ setIsLoading }) => {
 
   return (
     <>
-      {posts && posts.length
-        ? posts.map((post) => {
-            const postContent = JSON.parse(post.author.content);
-            // console.log(postContent);
-            return (
-              <PostItem
-                key={post.id}
-                name={postContent.display_name}
-                about={postContent.about}
-                picture={postContent.picture}
-                pubkey={post.pubkey}
-                createdDate={post.author.created_at}
-              />
-            );
-          })
-        : <CardSkeleton cards={8} mode="posts" />}
+      {posts && posts.length ? (
+        posts.map((post) => {
+          const postContent = JSON.parse(post.author.content);
+          // console.log(postContent);
+          return (
+            <PostItem
+              key={post.id}
+              name={postContent.display_name}
+              about={postContent.about}
+              picture={postContent.picture}
+              pubkey={post.pubkey}
+              createdDate={post.author.created_at}
+            />
+          );
+        })
+      ) : (
+        <CardSkeleton cards={8} mode="posts" />
+      )}
     </>
   );
 };

@@ -61,7 +61,9 @@ const PostItem = ({ name, picture, about, pubkey, createdDate }) => {
         <div className={cl.postState}>
           <Lightning />
           <span>
-            {stats?.zaps_received?.msats > 1000000 ? `${Math.round(stats?.zaps_received?.msats/1000000)}M` : `${Math.round(stats?.zaps_received?.msats/1000)}K`}
+            {stats?.zaps_received?.msats > 1000000
+              ? `${Math.round(stats?.zaps_received?.msats / 1000000)}M`
+              : `${Math.round(stats?.zaps_received?.msats / 1000)}K`}
           </span>
         </div>
         <div className={cl.postState}>
@@ -70,11 +72,19 @@ const PostItem = ({ name, picture, about, pubkey, createdDate }) => {
         </div>
         <div className={cl.postState}>
           <ArrowRepeat />
-          <span>{stats.repost_count > 1000 ? `${Math.round(stats.repost_count/1000)}K` : stats.repost_count}</span>
+          <span>
+            {stats.repost_count > 1000
+              ? `${Math.round(stats.repost_count / 1000)}K`
+              : stats.repost_count}
+          </span>
         </div>
         <div className={cl.postState}>
           <HandThumbsUp />
-          <span>{stats.reaction_count > 1000 ? `${Math.round(stats.reaction_count/1000)}K` : stats.reaction_count}</span>
+          <span>
+            {stats.reaction_count > 1000
+              ? `${Math.round(stats.reaction_count / 1000)}K`
+              : stats.reaction_count}
+          </span>
         </div>
         <div className={cl.postState}>
           <span>

@@ -26,29 +26,31 @@ const People = ({ setIsLoading }) => {
 
   return (
     <>
-      {profiles && profiles.length
-        ? profiles.map((profile) => {
-            const profileContent = profile.profile
-              ? JSON.parse(profile.profile.content)
-              : "";
-            return (
-              <ProfileItem
-                key={profile.pubkey}
-                pubKey={profile.pubkey}
-                img={profileContent.picture}
-                name={
-                  profileContent.display_name
-                    ? profileContent.display_name
-                    : profileContent.name
-                }
-                bio={profileContent.about}
-                twitter={profileContent.username}
-                mail={profileContent.nip05}
-                newFollowersCount={profile.new_followers_count}
-              />
-            );
-          })
-        : <CardSkeleton cards={8} />}
+      {profiles && profiles.length ? (
+        profiles.map((profile) => {
+          const profileContent = profile.profile
+            ? JSON.parse(profile.profile.content)
+            : "";
+          return (
+            <ProfileItem
+              key={profile.pubkey}
+              pubKey={profile.pubkey}
+              img={profileContent.picture}
+              name={
+                profileContent.display_name
+                  ? profileContent.display_name
+                  : profileContent.name
+              }
+              bio={profileContent.about}
+              twitter={profileContent.username}
+              mail={profileContent.nip05}
+              newFollowersCount={profile.new_followers_count}
+            />
+          );
+        })
+      ) : (
+        <CardSkeleton cards={8} />
+      )}
     </>
   );
 };
