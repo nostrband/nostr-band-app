@@ -2,6 +2,7 @@ import "./People.css";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ProfileItem from "./ProfileItem/ProfileItem";
+import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 
 const People = ({ setIsLoading }) => {
   const [profiles, setProfiles] = useState([]);
@@ -47,7 +48,7 @@ const People = ({ setIsLoading }) => {
               />
             );
           })
-        : "Loading..."}
+        : <CardSkeleton cards={8} />}
     </>
   );
 };

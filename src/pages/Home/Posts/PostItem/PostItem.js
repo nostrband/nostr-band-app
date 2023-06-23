@@ -19,7 +19,6 @@ const PostItem = ({ name, picture, about, pubkey, createdDate }) => {
         `${process.env.REACT_APP_API_URL}/stats/profile/${pubkey}`
       );
       setStats(data.stats[pubkey]);
-      // console.log(data.stats[pubkey])
     } catch (e) {
       console.log(e);
     }
@@ -62,21 +61,20 @@ const PostItem = ({ name, picture, about, pubkey, createdDate }) => {
         <div className={cl.postState}>
           <Lightning />
           <span>
-            {String(stats?.zaps_received?.msats).slice(0, 2)}.
-            {String(stats?.zaps_received?.msats).slice(2, 3)}K
+            {stats?.zaps_received?.msats > 1000000 ? `${Math.round(stats?.zaps_received?.msats/1000000)}M` : `${Math.round(stats?.zaps_received?.msats/1000)}K`}
           </span>
         </div>
         <div className={cl.postState}>
           <Chat />
-          <span>{stats.pub_report_count}</span>
+          <span>{stats.report_count}</span>
         </div>
         <div className={cl.postState}>
           <ArrowRepeat />
-          <span>{stats.pub_report_count}</span>
+          <span>{stats.repost_count > 1000 ? `${Math.round(stats.repost_count/1000)}K` : stats.repost_count}</span>
         </div>
         <div className={cl.postState}>
           <HandThumbsUp />
-          <span>{stats.pub_reaction_ref_pubkey_count}</span>
+          <span>{stats.reaction_count > 1000 ? `${Math.round(stats.reaction_count/1000)}K` : stats.reaction_count}</span>
         </div>
         <div className={cl.postState}>
           <span>

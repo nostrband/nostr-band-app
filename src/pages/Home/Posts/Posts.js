@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import PostItem from "./PostItem/PostItem";
+import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 
 const Posts = ({ setIsLoading }) => {
   const [posts, setPosts] = useState([]);
@@ -41,7 +42,7 @@ const Posts = ({ setIsLoading }) => {
               />
             );
           })
-        : ""}
+        : <CardSkeleton cards={8} mode="posts" />}
     </>
   );
 };
