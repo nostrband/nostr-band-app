@@ -13,7 +13,6 @@ const Posts = ({ setIsLoading }) => {
         `${process.env.REACT_APP_API_URL}/trending/notes`
       );
       setPosts(data.notes);
-      console.log(data);
     } catch (e) {
       console.log(e?.response?.data?.error);
     } finally {
@@ -27,22 +26,24 @@ const Posts = ({ setIsLoading }) => {
 
   return (
     <>
-      {posts && posts.length
-        ? posts.map((post) => {
-            const postContent = JSON.parse(post.author.content);
-            // console.log(postContent);
-            return (
-              <PostItem
-                key={post.id}
-                name={postContent.display_name}
-                about={postContent.about}
-                picture={postContent.picture}
-                pubkey={post.pubkey}
-                createdDate={post.author.created_at}
-              />
-            );
-          })
-        : <CardSkeleton cards={8} mode="posts" />}
+      {posts && posts.length ? (
+        posts.map((post) => {
+          const postContent = JSON.parse(post.author.content);
+          // console.log(postContent);
+          return (
+            <PostItem
+              key={post.id}
+              name={postContent.display_name}
+              about={postContent.about}
+              picture={postContent.picture}
+              pubkey={post.pubkey}
+              createdDate={post.author.created_at}
+            />
+          );
+        })
+      ) : (
+        <CardSkeleton cards={8} mode="posts" />
+      )}
     </>
   );
 };

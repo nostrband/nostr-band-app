@@ -90,7 +90,11 @@ const ProfileItem = ({
             {stats?.zaps_received?.msats && (
               <p>
                 <span>
-                  {stats?.zaps_received?.msats > 1000000 ? `${Math.round(stats?.zaps_received?.msats/1000000)}M` : `${Math.round(stats?.zaps_received?.msats/1000)}K`}
+                  {stats?.zaps_received?.msats > 1000000
+                    ? `${Math.round(stats?.zaps_received?.msats / 1000000)}M`
+                    : stats?.zaps_received?.msats >= 1000
+                    ? `${Math.round(stats?.zaps_received?.msats / 1000)}K`
+                    : stats?.zaps_received?.msats}
                 </span>{" "}
                 sats received
               </p>

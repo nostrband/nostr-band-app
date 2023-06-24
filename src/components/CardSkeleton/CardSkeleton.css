@@ -1,18 +1,18 @@
 .card-skeleton {
-    width: 100%;
-    height: 13.75rem;
-    margin-bottom: 2rem;
-    padding: 1rem;
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-    border-radius: 16px;
+  width: 100%;
+  height: 13.75rem;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  border-radius: 16px;
 }
 .left-col {
-    margin-right: 10px;
+  margin-right: 10px;
 }
 .right-col {
-    width: 80%;
+  width: 80%;
 }
 .card-skeleton-header {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }

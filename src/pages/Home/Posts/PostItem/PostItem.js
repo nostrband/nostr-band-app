@@ -8,6 +8,7 @@ import {
   HandThumbsUp,
   Lightning,
 } from "react-bootstrap-icons";
+import { strWithLinks } from "../../../../utils/formatLink";
 
 const PostItem = ({ name, picture, about, pubkey, createdDate }) => {
   const [stats, setStats] = useState([]);
@@ -56,12 +57,16 @@ const PostItem = ({ name, picture, about, pubkey, createdDate }) => {
           </Dropdown.Menu>
         </Dropdown>
       </div>
-      <p className={cl.postAbout}>{about}</p>
+      <p className={cl.postAbout}>{strWithLinks(about)}</p>
       <div className={cl.postStats}>
         <div className={cl.postState}>
           <Lightning />
           <span>
-            {stats?.zaps_received?.msats > 1000000 ? `${Math.round(stats?.zaps_received?.msats/1000000)}M` : `${Math.round(stats?.zaps_received?.msats/1000)}K`}
+            {stats?.zaps_received?.msats > 1000000
+              ? `${Math.round(stats?.zaps_received?.msats / 1000000)}M`
+              : stats?.zaps_received?.msats >= 1000
+              ? `${Math.round(stats?.zaps_received?.msats / 1000)}K`
+              : stats?.zaps_received?.msats}
           </span>
         </div>
         <div className={cl.postState}>
@@ -70,11 +75,19 @@ const PostItem = ({ name, picture, about, pubkey, createdDate }) => {
         </div>
         <div className={cl.postState}>
           <ArrowRepeat />
-          <span>{stats.repost_count > 1000 ? `${Math.round(stats.repost_count/1000)}K` : stats.repost_count}</span>
+          <span>
+            {stats.repost_count > 1000
+              ? `${Math.round(stats.repost_count / 1000)}K`
+              : stats.repost_count}
+          </span>
         </div>
         <div className={cl.postState}>
           <HandThumbsUp />
-          <span>{stats.reaction_count > 1000 ? `${Math.round(stats.reaction_count/1000)}K` : stats.reaction_count}</span>
+          <span>
+            {stats.reaction_count > 1000
+              ? `${Math.round(stats.reaction_count / 1000)}K`
+              : stats.reaction_count}
+          </span>
         </div>
         <div className={cl.postState}>
           <span>
