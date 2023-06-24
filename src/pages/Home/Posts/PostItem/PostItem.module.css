@@ -47,3 +47,8 @@
 .postState span {
   margin-left: 0.3rem;
 }
+.btnLink button {
+  margin: 10px 0;
+  color: var(--bg-secondary-color);
+  border: 1px solid var(--bg-secondary-color);
+}

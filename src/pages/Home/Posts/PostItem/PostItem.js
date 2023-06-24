@@ -8,10 +8,12 @@ import {
   HandThumbsUp,
   Lightning,
 } from "react-bootstrap-icons";
-import { strWithLinks } from "../../../../utils/formatLink";
+import { defineTypeLink, strWithLinks } from "../../../../utils/formatLink";
+import { Button } from "react-bootstrap";
 
-const PostItem = ({ name, picture, about, pubkey, createdDate }) => {
+const PostItem = ({ name, picture, about, pubkey, createdDate, banner }) => {
   const [stats, setStats] = useState([]);
+  const [isBannerVisible, setIsBannerVisible] = useState(false);
   const createdDateAt = new Date(createdDate);
 
   const fetchStats = async () => {
@@ -35,6 +37,7 @@ const PostItem = ({ name, picture, about, pubkey, createdDate }) => {
     var strTime = hours + ":" + minutes + " " + ampm;
     return strTime;
   }
+  const content = defineTypeLink(banner);
 
   useEffect(() => {
     fetchStats();
@@ -59,36 +62,45 @@ const PostItem = ({ name, picture, about, pubkey, createdDate }) => {
       </div>
       <p className={cl.postAbout}>{strWithLinks(about)}</p>
       <div className={cl.postStats}>
-        <div className={cl.postState}>
-          <Lightning />
-          <span>
-            {stats?.zaps_received?.msats > 1000000
-              ? `${Math.round(stats?.zaps_received?.msats / 1000000)}M`
-              : stats?.zaps_received?.msats >= 1000
-              ? `${Math.round(stats?.zaps_received?.msats / 1000)}K`
-              : stats?.zaps_received?.msats}
-          </span>
-        </div>
-        <div className={cl.postState}>
-          <Chat />
-          <span>{stats.report_count}</span>
-        </div>
-        <div className={cl.postState}>
-          <ArrowRepeat />
-          <span>
-            {stats.repost_count > 1000
-              ? `${Math.round(stats.repost_count / 1000)}K`
-              : stats.repost_count}
-          </span>
-        </div>
-        <div className={cl.postState}>
-          <HandThumbsUp />
-          <span>
-            {stats.reaction_count > 1000
-              ? `${Math.round(stats.reaction_count / 1000)}K`
-              : stats.reaction_count}
-          </span>
-        </div>
+        {stats?.zaps_received?.msats && (
+          <div className={cl.postState}>
+            <Lightning />
+            <span>
+              {stats?.zaps_received?.msats > 1000000
+                ? `${Math.round(stats?.zaps_received?.msats / 1000000)}M`
+                : stats?.zaps_received?.msats >= 1000
+                ? `${Math.round(stats?.zaps_received?.msats / 1000)}K`
+                : stats?.zaps_received?.msats}
+            </span>
+          </div>
+        )}
+        {stats.report_count && (
+          <div className={cl.postState}>
+            <Chat />
+            <span>{stats.report_count}</span>
+          </div>
+        )}
+        {stats.repost_count && (
+          <div className={cl.postState}>
+            <ArrowRepeat />
+            <span>
+              {stats.repost_count > 1000
+                ? `${Math.round(stats.repost_count / 1000)}K`
+                : stats.repost_count}
+            </span>
+          </div>
+        )}
+        {stats.reaction_count && (
+          <div className={cl.postState}>
+            <HandThumbsUp />
+            <span>
+              {stats.reaction_count > 1000
+                ? `${Math.round(stats.reaction_count / 1000)}K`
+                : stats.reaction_count}
+            </span>
+          </div>
+        )}
+
         <div className={cl.postState}>
           <span>
             {createdDateAt.getDay()}/{createdDateAt.getMonth()}/
@@ -96,6 +108,19 @@ const PostItem = ({ name, picture, about, pubkey, createdDate }) => {
           </span>
         </div>
       </div>
+      <div className={cl.btnLink}>
+        {content &&
+          (isBannerVisible ? (
+            <Button onClick={() => setIsBannerVisible(false)} variant="light">
+              Hide
+            </Button>
+          ) : (
+            <Button onClick={() => setIsBannerVisible(true)} variant="light">
+              {content.type === "PictureType" ? "Gallery" : "Play"}
+            </Button>
+          ))}
+      </div>
+      {isBannerVisible && content.content}
     </div>
   );
 };

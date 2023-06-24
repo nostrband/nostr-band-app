@@ -15,6 +15,14 @@ html {
   box-sizing: border-box;
 }
 
+.youtube-fram {
+  border-radius: 16px;
+}
+.content-image {
+  border-radius: 16px;
+  width: 100%;
+}
+
 @media screen and (max-width: 600px) {
   html {
     font-size: 14px;
