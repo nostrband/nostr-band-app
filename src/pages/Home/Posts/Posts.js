@@ -13,7 +13,6 @@ const Posts = ({ setIsLoading }) => {
         `${process.env.REACT_APP_API_URL}/trending/notes`
       );
       setPosts(data.notes);
-      console.log(data);
     } catch (e) {
       console.log(e?.response?.data?.error);
     } finally {
