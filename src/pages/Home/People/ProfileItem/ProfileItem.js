@@ -67,7 +67,10 @@ const ProfileItem = ({
           </div>
           <div className="profile-info__hero-keys">
             {mail && (
-              <a className="profile-info__hero-keys-mail">
+              <a
+                href={`mailto:${mail}`}
+                className="profile-info__hero-keys-mail"
+              >
                 {mailName === "_" ? mailName.replace("_", "") : mailName}
                 <CheckCircle />
                 {mailAdress}
