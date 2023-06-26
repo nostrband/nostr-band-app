@@ -39,6 +39,7 @@ const ProfileItem = ({
   useEffect(() => {
     fetchStats();
     setNpubKey(nip19.npubEncode(pubKey));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -52,7 +53,10 @@ const ProfileItem = ({
 
         <div className="profile-info__hero">
           <div className="profile-info__hero-header">
-            <a href="#" className="profile-info__hero-name">
+            <a
+              href="http://localhost:3000/"
+              className="profile-info__hero-name"
+            >
               {name}
             </a>
             <Dropdown id="profile-dropdown" className="profile-dropdown">
@@ -85,7 +89,10 @@ const ProfileItem = ({
                 {twitter}
               </a>
             )}
-            <a className="profile-info__hero-keys-key">
+            <a
+              href="http://localhost:3000/"
+              className="profile-info__hero-keys-key"
+            >
               <Key /> {npubKey.slice(0, 8)}...{npubKey.slice(-4)}
             </a>
           </div>

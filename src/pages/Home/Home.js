@@ -3,7 +3,7 @@ import Search from "../../components/Search/Search";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "react-bootstrap";
 import People from "./People/People";
 import { useSearchParams } from "react-router-dom";
@@ -95,7 +95,7 @@ const Home = () => {
               ) : (
                 ""
               )}
-              <a className="yesterday-trending">
+              <a className="yesterday-trending" href="http://localhost:3000/">
                 See who was trending yesterday →
               </a>
             </div>
