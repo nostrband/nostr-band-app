@@ -37,10 +37,14 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, banner }) => {
     var strTime = hours + ":" + minutes + " " + ampm;
     return strTime;
   }
-  const content = defineTypeLink(banner);
+  let content = "";
+  if (banner) {
+    content = defineTypeLink(banner);
+  }
 
   useEffect(() => {
     fetchStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -31,6 +31,7 @@ export const defineTypeLink = (link) => {
       type: "MovieType",
       content: (
         <iframe
+          title="youtube"
           id="ytplayer"
           class="youtube-fram"
           type="text/html"
@@ -58,12 +59,7 @@ export const defineTypeLink = (link) => {
     return {
       type: "PictureType",
       content: (
-        <img
-          alt="contant image"
-          width="100%"
-          className="content-image"
-          src={u}
-        />
+        <img alt="content" width="100%" className="content-image" src={u} />
       ),
     };
   }

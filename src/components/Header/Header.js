@@ -14,6 +14,7 @@ const Header = () => {
           <Navbar expand="lg">
             <Navbar.Brand href="#home" className="header-logo">
               <img
+                alt="logo"
                 src="https://nostr.band/android-chrome-192x192.png"
                 className="logo-img"
               />

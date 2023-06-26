@@ -22,6 +22,7 @@ const People = ({ setIsLoading }) => {
 
   useEffect(() => {
     fetchProfiles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
