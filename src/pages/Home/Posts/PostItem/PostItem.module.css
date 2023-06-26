@@ -52,3 +52,6 @@
   color: var(--bg-secondary-color);
   border: 1px solid var(--bg-secondary-color);
 }
+.banner {
+    max-width: 50%;
+}
