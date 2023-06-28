@@ -73,6 +73,8 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, banner }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const sats = stats?.zaps_received?.msats / 1000;
+
   return (
     <div className={cl.post}>
       <div className={cl.postName}>
@@ -96,11 +98,11 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, banner }) => {
           <div className={cl.postState}>
             <Lightning />
             <span>
-              {Number(stats?.zaps_received?.msats) > 1000000
-                ? `${Math.round(stats?.zaps_received?.msats / 1000000)}M`
-                : Number(stats?.zaps_received?.msats) >= 1000
-                ? `${Math.round(stats?.zaps_received?.msats / 1000)}K`
-                : stats?.zaps_received?.msats}
+              {Number(sats) > 1000000
+                ? `${Math.round(sats / 1000000)}M`
+                : Number(sats) >= 1000
+                ? `${Math.round(sats / 1000)}K`
+                : sats}
             </span>
           </div>
         )}
