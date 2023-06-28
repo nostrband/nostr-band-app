@@ -124,7 +124,7 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, banner }) => {
             </Button>
           ))}
       </div>
-      {isBannerVisible && <div className={cl.banner}>{content.content}</div>}
+      {isBannerVisible && content.content}
     </div>
   );
 };
