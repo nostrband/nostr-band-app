@@ -10,6 +10,7 @@ import {
 } from "react-bootstrap-icons";
 import { defineTypeLink, strWithLinks } from "../../../../utils/formatLink";
 import { Button } from "react-bootstrap";
+import { formatAMPM } from "../../../../utils/formatDate";
 
 const PostItem = ({ name, picture, about, pubkey, createdDate, banner }) => {
   const [stats, setStats] = useState([]);
@@ -28,41 +29,6 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, banner }) => {
     }
   };
 
-  function formatAMPM(date) {
-    let dateObj = new Date(date);
-
-    let month = dateObj.getMonth() + 1;
-    let day = dateObj.getDate();
-    let year = dateObj.getFullYear();
-    let hours = dateObj.getHours();
-    let minutes = dateObj.getMinutes();
-    let seconds = dateObj.getSeconds();
-    let ampm = hours >= 12 ? "PM" : "AM";
-
-    month = month < 10 ? "0" + month : month;
-    day = day < 10 ? "0" + day : day;
-    hours = hours % 12;
-    hours = hours ? hours : 12;
-    hours = hours < 10 ? "0" + hours : hours;
-    minutes = minutes < 10 ? "0" + minutes : minutes;
-    seconds = seconds < 10 ? "0" + seconds : seconds;
-    let formattedTime =
-      month +
-      "/" +
-      day +
-      "/" +
-      year +
-      ", " +
-      hours +
-      ":" +
-      minutes +
-      ":" +
-      seconds +
-      " " +
-      ampm;
-
-    return formattedTime;
-  }
   let content = "";
   if (banner) {
     content = defineTypeLink(banner);
@@ -73,11 +39,22 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, banner }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const sats = stats?.zaps_received?.msats / 1000;
+
   return (
     <div className={cl.post}>
       <div className={cl.postName}>
         <div className={cl.postImage}>
-          <img src={picture} alt="user avatar" />
+          <img
+            src={picture}
+            alt="user avatar"
+            onError={({ currentTarget }) => {
+              currentTarget.onerror = null;
+              currentTarget.src = `https://media.nostr.band/thumbs/${pubkey.slice(
+                -4
+              )}/${pubkey}-picture-64`;
+            }}
+          />
         </div>
         <p>{name}</p>
         <Dropdown id="profile-dropdown" className="profile-dropdown">
@@ -96,11 +73,11 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, banner }) => {
           <div className={cl.postState}>
             <Lightning />
             <span>
-              {Number(stats?.zaps_received?.msats) > 1000000
-                ? `${Math.round(stats?.zaps_received?.msats / 1000000)}M`
-                : Number(stats?.zaps_received?.msats) >= 1000
-                ? `${Math.round(stats?.zaps_received?.msats / 1000)}K`
-                : stats?.zaps_received?.msats}
+              {Number(sats) > 1000000
+                ? `${Math.round(sats / 1000000)}M`
+                : Number(sats) >= 1000
+                ? `${Math.round(sats / 1000)}K`
+                : sats}
             </span>
           </div>
         )}

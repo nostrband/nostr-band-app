@@ -41,12 +41,23 @@ const ProfileItem = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const sats = stats?.zaps_received?.msats / 1000;
+
   return (
     <div className="profile">
       <div className="profile-info">
         {img && (
           <div className="profile-info__image">
-            <img src={img} alt="Profile icon" />
+            <img
+              src={img}
+              alt="Profile icon"
+              onError={({ currentTarget }) => {
+                currentTarget.onerror = null;
+                currentTarget.src = `https://media.nostr.band/thumbs/${pubKey.slice(
+                  -4
+                )}/${pubKey}-picture-64`;
+              }}
+            />
           </div>
         )}
 
@@ -99,11 +110,11 @@ const ProfileItem = ({
             {stats?.zaps_received?.msats && (
               <p>
                 <span>
-                  {Number(stats?.zaps_received?.msats) > 1000000
-                    ? `${Math.round(stats?.zaps_received?.msats / 1000000)}M`
-                    : Number(stats?.zaps_received?.msats) >= 1000
-                    ? `${Math.round(stats?.zaps_received?.msats / 1000)}K`
-                    : stats?.zaps_received?.msats}
+                  {Number(sats) > 1000000
+                    ? `${Math.round(sats / 1000000)}M`
+                    : Number(sats) >= 1000
+                    ? `${Math.round(sats / 1000)}K`
+                    : sats}
                 </span>{" "}
                 sats received
               </p>
