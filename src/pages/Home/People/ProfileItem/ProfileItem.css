@@ -1,6 +1,6 @@
 a {
   text-decoration: none;
-  word-break: break-all;
+  word-wrap: break-word;
 }
 
 .profile {
