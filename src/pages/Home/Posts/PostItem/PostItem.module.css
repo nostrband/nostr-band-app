@@ -16,6 +16,7 @@
   margin-right: 10px;
   border: 2px solid rgba(200, 200, 200, 0.4);
   border-radius: 50%;
+  cursor: pointer;
 }
 .postImage img {
   border-radius: 50%;
