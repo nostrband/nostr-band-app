@@ -1,5 +1,6 @@
 a {
   text-decoration: none;
+  word-break: break-all;
 }
 
 .profile {
@@ -30,6 +31,7 @@ a {
   border-radius: 50%;
   font-size: 0.8rem;
   text-align: center;
+  cursor: pointer;
 }
 
 .profile-info__hero-header {

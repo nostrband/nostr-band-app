@@ -3,7 +3,6 @@ import Dropdown from "react-bootstrap/Dropdown";
 import {
   CheckCircle,
   Key,
-  Twitter,
   ZoomIn,
   BoxArrowUpRight,
   PersonPlus,
@@ -72,7 +71,7 @@ const ProfileItem = ({
           <div className="profile-info__hero-keys">
             {mail && (
               <a
-                href={`mailto:${mail}`}
+                href={`http://localhost:3000/?trending=people`}
                 className="profile-info__hero-keys-mail"
               >
                 {mailName === "_" ? mailName.replace("_", "") : mailName}
@@ -80,7 +79,7 @@ const ProfileItem = ({
                 {mailAdress}
               </a>
             )}
-            {twitter && (
+            {/* {twitter && (
               <a
                 className="profile-info__hero-keys-twitter"
                 href={`https://twitter.com/${twitter}`}
@@ -88,7 +87,7 @@ const ProfileItem = ({
                 <Twitter />
                 {twitter}
               </a>
-            )}
+            )} */}
             <a
               href="http://localhost:3000/"
               className="profile-info__hero-keys-key"
@@ -100,9 +99,9 @@ const ProfileItem = ({
             {stats?.zaps_received?.msats && (
               <p>
                 <span>
-                  {stats?.zaps_received?.msats > 1000000
+                  {Number(stats?.zaps_received?.msats) > 1000000
                     ? `${Math.round(stats?.zaps_received?.msats / 1000000)}M`
-                    : stats?.zaps_received?.msats >= 1000
+                    : Number(stats?.zaps_received?.msats) >= 1000
                     ? `${Math.round(stats?.zaps_received?.msats / 1000)}K`
                     : stats?.zaps_received?.msats}
                 </span>{" "}

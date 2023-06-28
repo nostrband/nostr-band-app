@@ -22,20 +22,46 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, banner }) => {
         `${process.env.REACT_APP_API_URL}/stats/profile/${pubkey}`
       );
       setStats(data.stats[pubkey]);
+      // console.log(data.stats[pubkey]);
     } catch (e) {
       console.log(e);
     }
   };
 
   function formatAMPM(date) {
-    var hours = date.getHours();
-    var minutes = date.getMinutes();
-    var ampm = hours >= 12 ? "pm" : "am";
+    let dateObj = new Date(date);
+
+    let month = dateObj.getMonth() + 1;
+    let day = dateObj.getDate();
+    let year = dateObj.getFullYear();
+    let hours = dateObj.getHours();
+    let minutes = dateObj.getMinutes();
+    let seconds = dateObj.getSeconds();
+    let ampm = hours >= 12 ? "PM" : "AM";
+
+    month = month < 10 ? "0" + month : month;
+    day = day < 10 ? "0" + day : day;
     hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
+    hours = hours ? hours : 12;
+    hours = hours < 10 ? "0" + hours : hours;
     minutes = minutes < 10 ? "0" + minutes : minutes;
-    var strTime = hours + ":" + minutes + " " + ampm;
-    return strTime;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+    let formattedTime =
+      month +
+      "/" +
+      day +
+      "/" +
+      year +
+      ", " +
+      hours +
+      ":" +
+      minutes +
+      ":" +
+      seconds +
+      " " +
+      ampm;
+
+    return formattedTime;
   }
   let content = "";
   if (banner) {
@@ -70,9 +96,9 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, banner }) => {
           <div className={cl.postState}>
             <Lightning />
             <span>
-              {stats?.zaps_received?.msats > 1000000
+              {Number(stats?.zaps_received?.msats) > 1000000
                 ? `${Math.round(stats?.zaps_received?.msats / 1000000)}M`
-                : stats?.zaps_received?.msats >= 1000
+                : Number(stats?.zaps_received?.msats) >= 1000
                 ? `${Math.round(stats?.zaps_received?.msats / 1000)}K`
                 : stats?.zaps_received?.msats}
             </span>
@@ -106,10 +132,7 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, banner }) => {
         )}
 
         <div className={cl.postState}>
-          <span>
-            {createdDateAt.getDay()}/{createdDateAt.getMonth()}/
-            {createdDateAt.getFullYear()}, {formatAMPM(createdDateAt)}
-          </span>
+          <span>{formatAMPM(createdDateAt)}</span>
         </div>
       </div>
       <div className={cl.btnLink}>

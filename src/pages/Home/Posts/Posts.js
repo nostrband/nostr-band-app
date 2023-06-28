@@ -13,6 +13,7 @@ const Posts = ({ setIsLoading }) => {
         `${process.env.REACT_APP_API_URL}/trending/notes`
       );
       setPosts(data.notes);
+      // console.log(data);
     } catch (e) {
       console.log(e?.response?.data?.error);
     } finally {
@@ -29,17 +30,21 @@ const Posts = ({ setIsLoading }) => {
     <>
       {posts && posts.length ? (
         posts.map((post) => {
-          const postContent = JSON.parse(post.author.content);
-          //   console.log(postContent);
+          const authorContent = JSON.parse(post.author.content);
+          console.log(authorContent);
           return (
             <PostItem
               key={post.id}
-              name={postContent.display_name}
-              about={postContent.about}
-              picture={postContent.picture}
-              pubkey={post.pubkey}
-              createdDate={post.author.created_at}
-              banner={postContent.banner}
+              name={
+                authorContent.display_name
+                  ? authorContent.display_name
+                  : authorContent.name
+              }
+              about={post.event.content}
+              picture={authorContent.picture}
+              pubkey={post.event.pubkey}
+              createdDate={post.event.created_at}
+              // banner={postContent.banner}
             />
           );
         })
