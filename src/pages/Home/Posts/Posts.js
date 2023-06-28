@@ -31,7 +31,7 @@ const Posts = ({ setIsLoading }) => {
       {posts && posts.length ? (
         posts.map((post) => {
           const authorContent = JSON.parse(post.author.content);
-          console.log(authorContent);
+          // console.log(authorContent);
           return (
             <PostItem
               key={post.id}
@@ -42,7 +42,7 @@ const Posts = ({ setIsLoading }) => {
               }
               about={post.event.content}
               picture={authorContent.picture}
-              pubkey={post.event.pubkey}
+              pubkey={post.pubkey}
               createdDate={post.event.created_at}
               // banner={postContent.banner}
             />

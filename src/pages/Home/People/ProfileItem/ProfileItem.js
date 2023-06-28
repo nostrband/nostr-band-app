@@ -48,7 +48,16 @@ const ProfileItem = ({
       <div className="profile-info">
         {img && (
           <div className="profile-info__image">
-            <img src={img} alt="Profile icon" />
+            <img
+              src={img}
+              alt="Profile icon"
+              onError={({ currentTarget }) => {
+                currentTarget.onerror = null;
+                currentTarget.src = `https://media.nostr.band/thumbs/${pubKey.slice(
+                  -4
+                )}/${pubKey}-picture-64`;
+              }}
+            />
           </div>
         )}
 
