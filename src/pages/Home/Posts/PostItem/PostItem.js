@@ -8,11 +8,15 @@ import {
   HandThumbsUp,
   Lightning,
 } from "react-bootstrap-icons";
-import { defineTypeLink, strWithLinks } from "../../../../utils/formatLink";
+import {
+  collectLinksFromStr,
+  defineTypeLink,
+  strWithLinks,
+} from "../../../../utils/formatLink";
 import { Button } from "react-bootstrap";
 import { formatAMPM } from "../../../../utils/formatDate";
 
-const PostItem = ({ name, picture, about, pubkey, createdDate, banner }) => {
+const PostItem = ({ name, picture, about, pubkey, createdDate }) => {
   const [stats, setStats] = useState([]);
   const [isBannerVisible, setIsBannerVisible] = useState(false);
   const createdDateAt = new Date(createdDate);
@@ -29,9 +33,17 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, banner }) => {
     }
   };
 
-  let content = "";
-  if (banner) {
-    content = defineTypeLink(banner);
+  let contents = "";
+  if (about) {
+    const links = collectLinksFromStr(about);
+    contents = links.map((link) => {
+      const links = [];
+      const obj = defineTypeLink(link);
+      if(obj.type !== "NotMedia" && obj.type) {
+        links.push(obj);
+      }
+      return links ? links : [];
+    }).flat();
   }
 
   useEffect(() => {
@@ -113,18 +125,64 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, banner }) => {
         </div>
       </div>
       <div className={cl.btnLink}>
-        {content &&
-          (isBannerVisible ? (
+        {contents && contents.length ? (
+          isBannerVisible ? (
             <Button onClick={() => setIsBannerVisible(false)} variant="light">
               Hide
             </Button>
           ) : (
             <Button onClick={() => setIsBannerVisible(true)} variant="light">
-              {content.type === "PictureType" ? "Gallery" : "Play"}
+              {contents[0].type === "PictureType"  ? "Gallery" : "Play"}
             </Button>
-          ))}
+          )
+        ) : (
+          ""
+        )}
       </div>
-      {isBannerVisible && <div className={cl.banner}>{content.content}</div>}
+      <div className={cl.bannerWrapper}>
+        {isBannerVisible && contents.length
+          ? contents.map((content, index) => {
+              return (
+                <div key={index} className={cl.banner}>
+                  {content.type === "AudioType" ? (
+                    <audio
+                    className="audio-content"
+                      src={content.url}
+                      controls
+                      preload="metadata"
+                    />
+                  ) : content.type === "YouTubeType" ? (
+                    <iframe
+                      title="youtube"
+                      id="ytplayer"
+                      className="youtube-fram"
+                      type="text/html"
+                      width="640"
+                      height="360"
+                      src={content.url}
+                    />
+                  ) : content.type === "MovieType" ? (
+                    <video
+                      className="play"
+                      src={content.url}
+                      controls
+                      preload="metadata"
+                    />
+                  ) : content.type === "PictureType" ? (
+                    <img
+                      alt="content"
+                      width="100%"
+                      className="content-image"
+                      src={content.url}
+                    />
+                  ) : (
+                    ""
+                  )}
+                </div>
+              );
+            })
+          : ""}
+      </div>
     </div>
   );
 };
