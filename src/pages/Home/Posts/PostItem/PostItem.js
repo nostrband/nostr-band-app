@@ -15,6 +15,8 @@ import {
 } from "../../../../utils/formatLink";
 import { Button } from "react-bootstrap";
 import { formatAMPM } from "../../../../utils/formatDate";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
   const [stats, setStats] = useState([]);
@@ -81,7 +83,11 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
           </Dropdown.Menu>
         </Dropdown>
       </div>
-      <p className={cl.postAbout}>{strWithLinks(about)}</p>
+      <div>
+        <ReactMarkdown className={cl.postAbout} remarkPlugins={[remarkGfm]}>
+          {about}
+        </ReactMarkdown>
+      </div>
       <div className={cl.postStats}>
         {stats?.zaps?.msats && (
           <div className={cl.postState}>
