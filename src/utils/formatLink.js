@@ -35,7 +35,7 @@ export const collectLinksFromStr = (str) => {
 
 export const defineTypeLink = (link) => {
   if (typeof link === "string") {
-    const u = link.split("?")[0].toLowerCase();
+    const u = link.split("?")[0];
     if (u.endsWith(".mov") || u.endsWith(".mp4")) {
       return {
         type: "MovieType",
