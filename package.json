@@ -15,8 +15,10 @@
     "react-bootstrap-icons": "^1.10.3",
     "react-dom": "^18.2.0",
     "react-loading-skeleton": "^3.3.1",
+    "react-markdown": "^8.0.7",
     "react-router-dom": "^6.13.0",
     "react-scripts": "5.0.1",
+    "remark-gfm": "^3.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
