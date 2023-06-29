@@ -21,7 +21,8 @@ export const strWithLinks = (str) => {
 export const collectLinksFromStr = (str) => {
   if (typeof str === "string") {
     const links = [];
-    const urlRegex = /((?:http|ftp|https):\/\/[\w/\-?=%.]+\.(?:youtube\.com\/watch\?v=|youtu\.be\/)[a-zA-Z0-9_-]{11}|(?:https?|ftp):\/\/[\w/\-?=%.]+\.(?:mp3|mp4|jpeg|jpg|png|webp|mov|ogg|gif))/g;
+    const urlRegex =
+      /((?:http|ftp|https):\/\/[\w/\-?=%.]+\.(?:youtube\.com\/watch\?v=|youtu\.be\/)[a-zA-Z0-9_-]{11}|(?:https?|ftp):\/\/[\w/\-?=%.]+\.(?:mp3|mp4|jpeg|jpg|png|webp|mov|ogg|gif))/g;
     str.split(urlRegex).map((a, index) => {
       if (a.match(/^https?:\/\//)) {
         links.push(a);
