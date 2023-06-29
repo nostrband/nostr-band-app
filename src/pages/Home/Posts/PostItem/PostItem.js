@@ -36,14 +36,16 @@ const PostItem = ({ name, picture, about, pubkey, createdDate }) => {
   let contents = "";
   if (about) {
     const links = collectLinksFromStr(about);
-    contents = links.map((link) => {
-      const links = [];
-      const obj = defineTypeLink(link);
-      if(obj.type !== "NotMedia" && obj.type) {
-        links.push(obj);
-      }
-      return links ? links : [];
-    }).flat();
+    contents = links
+      .map((link) => {
+        const links = [];
+        const obj = defineTypeLink(link);
+        if (obj.type !== "NotMedia" && obj.type) {
+          links.push(obj);
+        }
+        return links ? links : [];
+      })
+      .flat();
   }
 
   useEffect(() => {
@@ -132,7 +134,7 @@ const PostItem = ({ name, picture, about, pubkey, createdDate }) => {
             </Button>
           ) : (
             <Button onClick={() => setIsBannerVisible(true)} variant="light">
-              {contents[0].type === "PictureType"  ? "Gallery" : "Play"}
+              {contents[0].type === "PictureType" ? "Gallery" : "Play"}
             </Button>
           )
         ) : (
@@ -142,43 +144,47 @@ const PostItem = ({ name, picture, about, pubkey, createdDate }) => {
       <div className={cl.bannerWrapper}>
         {isBannerVisible && contents.length
           ? contents.map((content, index) => {
-              return (
+              return content.type === "AudioType" ? (
                 <div key={index} className={cl.banner}>
-                  {content.type === "AudioType" ? (
-                    <audio
+                  <audio
                     className="audio-content"
-                      src={content.url}
-                      controls
-                      preload="metadata"
-                    />
-                  ) : content.type === "YouTubeType" ? (
-                    <iframe
-                      title="youtube"
-                      id="ytplayer"
-                      className="youtube-fram"
-                      type="text/html"
-                      width="640"
-                      height="360"
-                      src={content.url}
-                    />
-                  ) : content.type === "MovieType" ? (
-                    <video
-                      className="play"
-                      src={content.url}
-                      controls
-                      preload="metadata"
-                    />
-                  ) : content.type === "PictureType" ? (
-                    <img
-                      alt="content"
-                      width="100%"
-                      className="content-image"
-                      src={content.url}
-                    />
-                  ) : (
-                    ""
-                  )}
+                    src={content.url}
+                    controls
+                    preload="metadata"
+                  />
                 </div>
+              ) : content.type === "YouTubeType" ? (
+                <div key={index} className={cl.bannerMovie}>
+                  <iframe
+                    title="youtube"
+                    id="ytplayer"
+                    className="youtube-fram"
+                    type="text/html"
+                    width="640"
+                    height="360"
+                    src={content.url}
+                  />
+                </div>
+              ) : content.type === "MovieType" ? (
+                <div key={index} className={cl.bannerMovie}>
+                  <video
+                    className="play"
+                    src={content.url}
+                    controls
+                    preload="metadata"
+                  />
+                </div>
+              ) : content.type === "PictureType" ? (
+                <div key={index} className={cl.banner}>
+                  <img
+                    alt="content"
+                    width="100%"
+                    className="content-image"
+                    src={content.url}
+                  />
+                </div>
+              ) : (
+                ""
               );
             })
           : ""}
