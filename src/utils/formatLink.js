@@ -42,10 +42,16 @@ export const defineTypeLink = (link) => {
         url: u,
       };
     } else if (u.includes("youtube.com/") || u.includes("youtu.be/")) {
-      const ur = u.replace("watch", "embed/");
+      let id = "";
+      if (u.includes("youtu.be/"))
+        id = link.split("youtu.be/")[1].split("?")[0].split("/")[0];
+      else if (u.includes("youtube.com/"))
+        console.log(link.split("?")[1].split("=")[1]);
+      id = link.split("?")[1].split("=")[1];
+
       return {
         type: "YouTubeType",
-        url: ur,
+        url: `https://www.youtube.com/embed/${id}?origin=https://nostr.band`,
       };
     } else if (u.endsWith(".mp3") || u.endsWith(".ogg")) {
       return {
