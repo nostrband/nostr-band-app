@@ -16,18 +16,18 @@ import {
 import { Button } from "react-bootstrap";
 import { formatAMPM } from "../../../../utils/formatDate";
 
-const PostItem = ({ name, picture, about, pubkey, createdDate }) => {
+const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
   const [stats, setStats] = useState([]);
   const [isBannerVisible, setIsBannerVisible] = useState(false);
-  const createdDateAt = new Date(createdDate);
+  const createdDateAt = new Date(createdDate * 1000);
 
   const fetchStats = async () => {
     try {
       const { data } = await axios.get(
-        `${process.env.REACT_APP_API_URL}/stats/profile/${pubkey}`
+        `${process.env.REACT_APP_API_URL}/stats/event/${eventId}`
       );
-      setStats(data.stats[pubkey]);
-      // console.log(data.stats[pubkey]);
+      setStats(data.stats[eventId]);
+      // console.log(data.stats[eventId]);
     } catch (e) {
       console.log(e);
     }
@@ -53,7 +53,7 @@ const PostItem = ({ name, picture, about, pubkey, createdDate }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const sats = stats?.zaps_received?.msats / 1000;
+  const sats = stats?.zaps?.msats / 1000;
 
   return (
     <div className={cl.post}>
@@ -83,7 +83,7 @@ const PostItem = ({ name, picture, about, pubkey, createdDate }) => {
       </div>
       <p className={cl.postAbout}>{strWithLinks(about)}</p>
       <div className={cl.postStats}>
-        {stats?.zaps_received?.msats && (
+        {stats?.zaps?.msats && (
           <div className={cl.postState}>
             <Lightning />
             <span>
@@ -95,10 +95,10 @@ const PostItem = ({ name, picture, about, pubkey, createdDate }) => {
             </span>
           </div>
         )}
-        {stats.report_count && (
+        {stats.reply_count && (
           <div className={cl.postState}>
             <Chat />
-            <span>{stats.report_count}</span>
+            <span>{stats.reply_count}</span>
           </div>
         )}
         {stats.repost_count && (
