@@ -27,6 +27,7 @@ export const collectLinksFromStr = (str) => {
       if (a.match(/^https?:\/\//)) {
         links.push(a);
       }
+      return a;
     });
     return links;
   }
