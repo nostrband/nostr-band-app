@@ -7,12 +7,13 @@ import {
   Chat,
   HandThumbsUp,
   Lightning,
+  X,
 } from "react-bootstrap-icons";
 import {
   collectLinksFromStr,
   defineTypeLink,
 } from "../../../../utils/formatLink";
-import { Button } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import { formatAMPM } from "../../../../utils/formatDate";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -21,6 +22,10 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
   const [stats, setStats] = useState([]);
   const [isBannerVisible, setIsBannerVisible] = useState(false);
   const createdDateAt = new Date(createdDate * 1000);
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const fetchStats = async () => {
     try {
@@ -186,7 +191,19 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
                     width="100%"
                     className="content-image"
                     src={content.url}
+                    onClick={handleShow}
                   />
+                  <Modal
+                    className={cl.modal}
+                    centered
+                    show={show}
+                    onHide={handleClose}
+                  >
+                    <div className={`${cl.modalContainer}`}>
+                      <X onClick={handleClose} className={cl.modalClose} />
+                      <img src={content.url} alt="content" />
+                    </div>
+                  </Modal>
                 </div>
               ) : (
                 ""
