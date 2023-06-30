@@ -72,7 +72,7 @@
 }
 .modalContainer {
   position: absolute;
-  padding: 3rem;
+  padding: 1rem;
   background-color: black;
   border-radius: 16px;
   top: 50%;
@@ -85,7 +85,7 @@
   justify-content: center;
 }
 .modalContainer img {
-  width: 100%;
+  max-width: 75vw;
   width: auto;
   height: auto;
   max-height: 75vh;
