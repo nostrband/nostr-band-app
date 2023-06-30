@@ -178,7 +178,7 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
               ) : content.type === "MovieType" ? (
                 <div key={index} className={cl.bannerMovie}>
                   <video
-                    className="play"
+                    className="video-wrapper"
                     src={content.url}
                     controls
                     preload="metadata"
