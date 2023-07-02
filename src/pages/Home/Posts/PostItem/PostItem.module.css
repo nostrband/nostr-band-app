@@ -84,13 +84,6 @@
   align-items: center;
   justify-content: center;
 }
-.modalContainer img {
-  max-width: 75vw;
-  width: auto;
-  height: auto;
-  max-height: 75vh;
-  border-radius: 16px;
-}
 .modalClose {
   position: absolute;
   top: 10px;
@@ -99,12 +92,44 @@
   height: 45px;
   color: var(--bg-secondary-color);
   cursor: pointer;
+  z-index: 11;
   transition: all 0.3s;
 }
 .modalClose:hover {
   color: rgba(255, 255, 255, 0.837);
 }
 
+.carouselItem {
+  padding: 0.6rem;
+  background-color: black;
+}
+.carouselItemWrapper {
+  width: 100%;
+  height: 100%;
+  background-color: black;
+}
+
+.modalContainer {
+  position: absolute;
+  padding: 1rem;
+  background-color: black;
+  border-radius: 16px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modalContainer img {
+  max-width: 75vw;
+  width: auto;
+  height: auto;
+  max-height: 75vh;
+  border-radius: 16px;
+}
 @media screen and (max-width: 400px) {
   .bannerMovie {
     width: 100%;

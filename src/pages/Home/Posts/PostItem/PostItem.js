@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import cl from "./PostItem.module.css";
 import Dropdown from "react-bootstrap/Dropdown";
 import axios from "axios";
@@ -13,7 +13,7 @@ import {
   collectLinksFromStr,
   defineTypeLink,
 } from "../../../../utils/formatLink";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Carousel, Modal } from "react-bootstrap";
 import { formatAMPM } from "../../../../utils/formatDate";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -24,6 +24,9 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
   const [isBannerVisible, setIsBannerVisible] = useState(false);
   const createdDateAt = new Date(createdDate * 1000);
   const [show, setShow] = useState(false);
+  const [carouselIndex, setCarouselIndex] = useState(0);
+
+  const windowSize = useRef(window.innerWidth);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -37,6 +40,10 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
     } catch (e) {
       console.log(e);
     }
+  };
+
+  const handleSelect = (selectedIndex) => {
+    setCarouselIndex(selectedIndex);
   };
 
   const renderLink = ({ children, href }) => {
@@ -213,10 +220,46 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
                     show={show}
                     onHide={handleClose}
                   >
-                    <div className={`${cl.modalContainer}`}>
-                      <X onClick={handleClose} className={cl.modalClose} />
-                      <img src={content.url} alt="content" />
-                    </div>
+                    {contents.length <= 1 ? (
+                      <div className={`${cl.modalContainer}`}>
+                        <X onClick={handleClose} className={cl.modalClose} />
+                        <img src={content.url} alt="content" />
+                      </div>
+                    ) : (
+                      <Carousel
+                        fade
+                        interval={null}
+                        activeIndex={carouselIndex}
+                        onSelect={handleSelect}
+                        controls={windowSize.current <= 500 ? false : true}
+                        className={cl.carousel}
+                      >
+                        {contents.map((img, index) => {
+                          return (
+                            <Carousel.Item
+                              key={index}
+                              className={cl.carouselItem}
+                            >
+                              <div className={cl.carouselItemWrapper}>
+                                <X
+                                  onClick={(e) => handleClose(e)}
+                                  className={cl.modalClose}
+                                />
+                                <img
+                                  src={img.url}
+                                  alt="content"
+                                  style={{
+                                    width: "100%",
+                                    display: "block",
+                                    height: "auto",
+                                  }}
+                                />
+                              </div>
+                            </Carousel.Item>
+                          );
+                        })}
+                      </Carousel>
+                    )}
                   </Modal>
                 </div>
               ) : (
