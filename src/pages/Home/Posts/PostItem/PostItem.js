@@ -17,6 +17,7 @@ import { Button, Modal } from "react-bootstrap";
 import { formatAMPM } from "../../../../utils/formatDate";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { Link } from "react-router-dom";
 
 const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
   const [stats, setStats] = useState([]);
@@ -33,10 +34,19 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
         `${process.env.REACT_APP_API_URL}/stats/event/${eventId}`
       );
       setStats(data.stats[eventId]);
-      // console.log(data.stats[eventId]);
     } catch (e) {
       console.log(e);
     }
+  };
+
+  const renderLink = ({ children, href }) => {
+    return (
+      <Link to={href} target="_blanc">
+        {children[0]
+          .replace(/^(https|http)?:\/\//, "")
+          .replace(/(.{7}).*(.{10})$/, "$1...$2")}
+      </Link>
+    );
   };
 
   let contents = "";
@@ -88,7 +98,11 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
         </Dropdown>
       </div>
       <div>
-        <ReactMarkdown className={cl.postAbout} remarkPlugins={[remarkGfm]}>
+        <ReactMarkdown
+          className={cl.postAbout}
+          remarkPlugins={[remarkGfm]}
+          components={{ a: renderLink }}
+        >
           {about}
         </ReactMarkdown>
       </div>
