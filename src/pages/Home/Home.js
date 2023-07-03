@@ -8,6 +8,7 @@ import { Button } from "react-bootstrap";
 import People from "./People/People";
 import { useSearchParams } from "react-router-dom";
 import Posts from "./Posts/Posts";
+import Images from "./Images/Images";
 
 const Home = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -92,6 +93,8 @@ const Home = () => {
                 <People setIsLoading={setIsLoading} />
               ) : trendingQuery === "posts" ? (
                 <Posts setIsLoading={setIsLoading} />
+              ) : trendingQuery === "images" ? (
+                <Images setIsLoading={setIsLoading} />
               ) : (
                 ""
               )}
