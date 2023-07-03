@@ -9,7 +9,7 @@ const MarkdownComponent = ({ content }) => {
       <Link to={href} target="_blanc">
         {children[0]
           .replace(/^(https|http)?:\/\//, "")
-          .replace(/(.{11}).*(.{10})$/, "$1...$2")}
+          .replace(/(.{16}).*(.{10})$/, "$1...$2")}
       </Link>
     );
   };

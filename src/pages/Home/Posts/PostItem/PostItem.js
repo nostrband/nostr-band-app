@@ -6,7 +6,9 @@ import {
   ArrowRepeat,
   Chat,
   HandThumbsUp,
+  ImageFill,
   Lightning,
+  PlayBtnFill,
   X,
 } from "react-bootstrap-icons";
 import {
@@ -51,8 +53,10 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
       .map((link) => {
         const links = [];
         const obj = defineTypeLink(link);
-        if (obj.type !== "NotMedia" && obj.type) {
-          links.push(obj);
+        if (obj) {
+          if (obj.type !== "NotMedia" && obj.type) {
+            links.push(obj);
+          }
         }
         return links ? links : [];
       })
@@ -147,7 +151,15 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
             </Button>
           ) : (
             <Button onClick={() => setIsBannerVisible(true)} variant="light">
-              {contents[0].type === "PictureType" ? "Gallery" : "Play"}
+              {contents[0].type === "PictureType" ? (
+                <>
+                  Show <ImageFill />
+                </>
+              ) : (
+                <>
+                  Show <PlayBtnFill />
+                </>
+              )}
             </Button>
           )
         ) : (
