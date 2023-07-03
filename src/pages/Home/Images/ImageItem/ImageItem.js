@@ -8,7 +8,7 @@ import cl from "./ImageItem.module.css";
 import Dropdown from "react-bootstrap/Dropdown";
 import { Button, Carousel, Modal } from "react-bootstrap";
 import { useState } from "react";
-import { X } from "react-bootstrap-icons";
+import { ImageFill, X } from "react-bootstrap-icons";
 import { formatAMPM } from "../../../../utils/formatDate";
 
 const ImageItem = ({ name, picture, pubkey, about, createdDate }) => {
@@ -80,7 +80,9 @@ const ImageItem = ({ name, picture, pubkey, about, createdDate }) => {
             </Button>
           ) : (
             <Button onClick={() => setIsBannerVisible(true)} variant="light">
-              Gallery
+              <>
+                Show <ImageFill />
+              </>
             </Button>
           )
         ) : (
