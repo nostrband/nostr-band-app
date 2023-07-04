@@ -47,6 +47,9 @@ const AudioItem = ({ name, picture, pubkey, about, createdDate }) => {
       .flat();
   }
 
+  const isSameType = () =>
+    contents.every((obj) => obj.type === contents[0].type);
+
   return (
     <div className={cl.audio}>
       <div className={cl.audioAuthor}>
@@ -84,13 +87,19 @@ const AudioItem = ({ name, picture, pubkey, about, createdDate }) => {
             </Button>
           ) : (
             <Button onClick={() => setIsBannerVisible(true)} variant="light">
-              {contents[0].type === "PictureType" ? (
-                <>
-                  Show <ImageFill />
-                </>
+              {isSameType() ? (
+                contents[0].type === "PictureType" ? (
+                  <>
+                    Show <ImageFill />
+                  </>
+                ) : (
+                  <>
+                    Show <PlayBtnFill />
+                  </>
+                )
               ) : (
                 <>
-                  Show <PlayBtnFill />
+                  Show <ImageFill /> <PlayBtnFill />
                 </>
               )}
             </Button>
