@@ -8,7 +8,7 @@ import cl from "./ImageItem.module.css";
 import Dropdown from "react-bootstrap/Dropdown";
 import { Button, Carousel, Modal } from "react-bootstrap";
 import { useState } from "react";
-import { ImageFill, X } from "react-bootstrap-icons";
+import { ImageFill, PlayBtnFill, X } from "react-bootstrap-icons";
 import { formatAMPM } from "../../../../utils/formatDate";
 
 const ImageItem = ({ name, picture, pubkey, about, createdDate }) => {
@@ -42,6 +42,9 @@ const ImageItem = ({ name, picture, pubkey, about, createdDate }) => {
       })
       .flat();
   }
+
+  const isSameType = () =>
+    contents.every((obj) => obj.type === contents[0].type);
 
   return (
     <div className={cl.image}>
@@ -80,9 +83,21 @@ const ImageItem = ({ name, picture, pubkey, about, createdDate }) => {
             </Button>
           ) : (
             <Button onClick={() => setIsBannerVisible(true)} variant="light">
-              <>
-                Show <ImageFill />
-              </>
+              {isSameType() ? (
+                contents[0].type === "PictureType" ? (
+                  <>
+                    Show <ImageFill />
+                  </>
+                ) : (
+                  <>
+                    Show <PlayBtnFill />
+                  </>
+                )
+              ) : (
+                <>
+                  Show <ImageFill /> <PlayBtnFill />
+                </>
+              )}
             </Button>
           )
         ) : (

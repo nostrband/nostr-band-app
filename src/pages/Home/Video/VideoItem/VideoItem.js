@@ -8,7 +8,7 @@ import cl from "./VideoItem.module.css";
 import Dropdown from "react-bootstrap/Dropdown";
 import { Button, Carousel, Modal } from "react-bootstrap";
 import { useState } from "react";
-import { PlayBtnFill, X } from "react-bootstrap-icons";
+import { PlayBtnFill, ImageFill, X } from "react-bootstrap-icons";
 import { formatAMPM } from "../../../../utils/formatDate";
 
 const VideoItem = ({ name, picture, pubkey, about, createdDate }) => {
@@ -42,6 +42,9 @@ const VideoItem = ({ name, picture, pubkey, about, createdDate }) => {
       })
       .flat();
   }
+
+  const isSameType = () =>
+    contents.every((obj) => obj.type === contents[0].type);
 
   return (
     <div className={cl.video}>
@@ -80,9 +83,21 @@ const VideoItem = ({ name, picture, pubkey, about, createdDate }) => {
             </Button>
           ) : (
             <Button onClick={() => setIsBannerVisible(true)} variant="light">
-              <>
-                Show <PlayBtnFill />
-              </>
+              {isSameType() ? (
+                contents[0].type === "PictureType" ? (
+                  <>
+                    Show <ImageFill />
+                  </>
+                ) : (
+                  <>
+                    Show <PlayBtnFill />
+                  </>
+                )
+              ) : (
+                <>
+                  Show <ImageFill /> <PlayBtnFill />
+                </>
+              )}
             </Button>
           )
         ) : (

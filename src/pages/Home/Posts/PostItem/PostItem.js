@@ -42,6 +42,9 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
     }
   };
 
+  const isSameType = () =>
+    contents.every((obj) => obj.type === contents[0].type);
+
   const handleSelect = (selectedIndex) => {
     setCarouselIndex(selectedIndex);
   };
@@ -151,13 +154,19 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
             </Button>
           ) : (
             <Button onClick={() => setIsBannerVisible(true)} variant="light">
-              {contents[0].type === "PictureType" ? (
-                <>
-                  Show <ImageFill />
-                </>
+              {isSameType() ? (
+                contents[0].type === "PictureType" ? (
+                  <>
+                    Show <ImageFill />
+                  </>
+                ) : (
+                  <>
+                    Show <PlayBtnFill />
+                  </>
+                )
               ) : (
                 <>
-                  Show <PlayBtnFill />
+                  Show <ImageFill /> <PlayBtnFill />
                 </>
               )}
             </Button>
