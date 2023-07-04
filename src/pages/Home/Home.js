@@ -9,6 +9,7 @@ import People from "./People/People";
 import { useSearchParams } from "react-router-dom";
 import Posts from "./Posts/Posts";
 import Images from "./Images/Images";
+import Video from "./Video/Video";
 
 const Home = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -95,6 +96,8 @@ const Home = () => {
                 <Posts setIsLoading={setIsLoading} />
               ) : trendingQuery === "images" ? (
                 <Images setIsLoading={setIsLoading} />
+              ) : trendingQuery === "video" ? (
+                <Video setIsLoading={setIsLoading} />
               ) : (
                 ""
               )}
