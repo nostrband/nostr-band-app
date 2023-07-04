@@ -2,6 +2,7 @@ import axios from "axios";
 import "./Images.module.css";
 import { useEffect, useState } from "react";
 import ImageItem from "./ImageItem/ImageItem";
+import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 
 const Images = ({ setIsLoading }) => {
   const [images, setImages] = useState([]);
@@ -26,25 +27,27 @@ const Images = ({ setIsLoading }) => {
 
   return (
     <>
-      {images && images.length
-        ? images.map((image) => {
-            const authorContent = JSON.parse(image.author.content);
-            return (
-              <ImageItem
-                key={image.id}
-                name={
-                  authorContent.display_name
-                    ? authorContent.display_name
-                    : authorContent.name
-                }
-                picture={authorContent.picture}
-                pubkey={image.pubkey}
-                about={image.event.content}
-                createdDate={image.event.created_at}
-              />
-            );
-          })
-        : ""}
+      {images && images.length ? (
+        images.map((image) => {
+          const authorContent = JSON.parse(image.author.content);
+          return (
+            <ImageItem
+              key={image.id}
+              name={
+                authorContent.display_name
+                  ? authorContent.display_name
+                  : authorContent.name
+              }
+              picture={authorContent.picture}
+              pubkey={image.pubkey}
+              about={image.event.content}
+              createdDate={image.event.created_at}
+            />
+          );
+        })
+      ) : (
+        <CardSkeleton cards={8} mode="posts" />
+      )}
     </>
   );
 };

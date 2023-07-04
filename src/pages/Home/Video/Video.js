@@ -2,6 +2,7 @@ import axios from "axios";
 import "./Video.module.css";
 import { useEffect, useState } from "react";
 import VideoItem from "./VideoItem/VideoItem";
+import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 
 const Video = ({ setIsLoading }) => {
   const [videos, setVideos] = useState([]);
@@ -26,25 +27,27 @@ const Video = ({ setIsLoading }) => {
 
   return (
     <>
-      {videos && videos.length
-        ? videos.map((video) => {
-            const authorContent = JSON.parse(video.author.content);
-            return (
-              <VideoItem
-                key={video.id}
-                name={
-                  authorContent.display_name
-                    ? authorContent.display_name
-                    : authorContent.name
-                }
-                picture={authorContent.picture}
-                pubkey={video.pubkey}
-                about={video.event.content}
-                createdDate={video.event.created_at}
-              />
-            );
-          })
-        : ""}
+      {videos && videos.length ? (
+        videos.map((video) => {
+          const authorContent = JSON.parse(video.author.content);
+          return (
+            <VideoItem
+              key={video.id}
+              name={
+                authorContent.display_name
+                  ? authorContent.display_name
+                  : authorContent.name
+              }
+              picture={authorContent.picture}
+              pubkey={video.pubkey}
+              about={video.event.content}
+              createdDate={video.event.created_at}
+            />
+          );
+        })
+      ) : (
+        <CardSkeleton cards={8} mode="posts" />
+      )}
     </>
   );
 };
