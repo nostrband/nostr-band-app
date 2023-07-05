@@ -12,16 +12,11 @@ import { Button } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { nip19 } from "nostr-tools";
+import { Link } from "react-router-dom";
+import UserIcon from "../../../../assets/user.png";
 
-const ProfileItem = ({
-  img,
-  name,
-  bio,
-  pubKey,
-  twitter,
-  mail,
-  newFollowersCount,
-}) => {
+const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
+  const [imgError, setImgError] = useState(false);
   const [stats, setStats] = useState({});
   const [npubKey, setNpubKey] = useState("");
   const splitedMail = mail && mail.split("");
@@ -48,27 +43,35 @@ const ProfileItem = ({
       <div className="profile-info">
         {img && (
           <div className="profile-info__image">
-            <img
-              src={img}
-              alt="Profile icon"
-              onError={({ currentTarget }) => {
-                currentTarget.onerror = null;
-                currentTarget.src = `https://media.nostr.band/thumbs/${pubKey.slice(
+            {!imgError ? (
+              <img
+                src={img}
+                alt="Profile icon"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              <img
+                src={`https://media.nostr.band/thumbs/${pubKey.slice(
                   -4
-                )}/${pubKey}-picture-64`;
-              }}
-            />
+                )}/${pubKey}-picture-64`}
+                alt="Profile icon"
+                onError={({ currentTarget }) => {
+                  currentTarget.srcset = UserIcon;
+                }}
+              />
+            )}
           </div>
         )}
 
         <div className="profile-info__hero">
           <div className="profile-info__hero-header">
-            <a
+            <Link
+              to={`profile/${npubKey}`}
               href="http://localhost:3000/"
               className="profile-info__hero-name"
             >
               {name}
-            </a>
+            </Link>
             <Dropdown id="profile-dropdown" className="profile-dropdown">
               <Dropdown.Toggle size="sm" id="dropdown-basic"></Dropdown.Toggle>
               <Dropdown.Menu>

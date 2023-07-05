@@ -1,0 +1,117 @@
+.profile {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  border-radius: 16px;
+}
+.profile p {
+  margin-bottom: 0;
+}
+.profileTitle {
+  display: flex;
+  align-items: center;
+}
+.profileInfo {
+  margin-left: 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+.profileTitleAvatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.3rem solid rgba(200, 200, 200, 0.4);
+  border-radius: 50%;
+  width: 7rem;
+  height: 7rem;
+}
+
+.profileTitleAvatar img {
+  width: 6.7rem;
+  height: 6.7rem;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  text-align: center;
+  cursor: pointer;
+}
+.profileInfo {
+  color: var(--bg-secondary-color);
+  font-size: 1.2rem;
+}
+.profileInfoName {
+  font-size: 1.5rem;
+  text-decoration: none;
+  font-weight: 500;
+  margin-right: 0.45rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.profileInfoName:hover {
+  text-decoration: underline;
+}
+.profileInfo p {
+  margin-bottom: 0.5rem;
+}
+.profileStats span {
+  font-weight: 700;
+}
+.profileStats p {
+  position: relative;
+}
+.profileZaps {
+  font-size: 1rem;
+}
+.profileZaps {
+  margin-bottom: 0;
+}
+.profileZaps span {
+  font-weight: 700;
+}
+.lastActive {
+  font-size: 1rem;
+  color: var(--bg-secondary-color);
+}
+.profileContentControl {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 0.8rem;
+}
+.profileButtons button {
+  margin-top: 0.3rem;
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  background-color: transparent;
+  color: var(--bg-secondary-color);
+  margin-right: 0.3rem;
+  align-items: baseline;
+}
+.profileButtons button:hover {
+  background-color: var(--bg-secondary-color);
+  color: white;
+}
+#menu-id a {
+  display: flex;
+  align-items: center;
+}
+#menu-id svg {
+  margin-right: 5px;
+}
+
+.profileAbout {
+  margin: 0.25rem 0;
+}
+.showMore {
+  margin: 0.7rem 0;
+}
+.showMoreLink {
+  color: var(--bg-secondary-color);
+  cursor: pointer;
+  transition: 0.3s;
+}
+.showMoreLink:hover {
+  text-decoration: underline;
+  color: black;
+}

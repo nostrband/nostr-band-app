@@ -10,8 +10,10 @@ import { Button, Carousel, Modal } from "react-bootstrap";
 import { useState } from "react";
 import { PlayBtnFill, ImageFill, X } from "react-bootstrap-icons";
 import { formatAMPM } from "../../../../utils/formatDate";
+import UserIcon from "../../../../assets/user.png";
 
 const VideoItem = ({ name, picture, pubkey, about, createdDate }) => {
+  const [imgError, setImgError] = useState(false);
   const [isBannerVisible, setIsBannerVisible] = useState(false);
   const createdDateAt = new Date(createdDate * 1000);
   const [show, setShow] = useState(false);
@@ -50,16 +52,23 @@ const VideoItem = ({ name, picture, pubkey, about, createdDate }) => {
     <div className={cl.video}>
       <div className={cl.videoAuthor}>
         <div className={cl.videoAuthorImage}>
-          <img
-            src={picture}
-            alt="user avatar"
-            onError={({ currentTarget }) => {
-              currentTarget.onerror = null;
-              currentTarget.src = `https://media.nostr.band/thumbs/${pubkey.slice(
+          {!imgError ? (
+            <img
+              src={picture}
+              alt="Profile icon"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <img
+              src={`https://media.nostr.band/thumbs/${pubkey.slice(
                 -4
-              )}/${pubkey}-picture-64`;
-            }}
-          />
+              )}/${pubkey}-picture-64`}
+              alt="Profile icon"
+              onError={({ currentTarget }) => {
+                currentTarget.srcset = UserIcon;
+              }}
+            />
+          )}
         </div>
         <p>{name}</p>
         <Dropdown id="profile-dropdown" className="profile-dropdown">
