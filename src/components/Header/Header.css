@@ -1,7 +1,10 @@
 .header-logo {
+  text-decoration: none;
+  color: black;
   display: flex;
   align-items: center;
   font-size: 1.25rem;
+  margin-right: 0.6rem;
 }
 
 .logo-img {

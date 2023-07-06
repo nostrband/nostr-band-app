@@ -1,0 +1,25 @@
+.profileSkeleton {
+  width: 100%;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  border-radius: 16px;
+}
+.cardSkeletonHeader {
+  display: flex;
+  align-items: center;
+}
+.leftCol {
+  margin-right: 10px;
+}
+.rightCol {
+  width: 80%;
+}
+.btns {
+  display: flex;
+}
+.btn {
+  margin-right: 0.5rem;
+  width: 5rem;
+  height: 2rem;
+}

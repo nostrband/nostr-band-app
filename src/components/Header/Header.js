@@ -3,18 +3,19 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Form from "react-bootstrap/Form";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
     <Navbar expand="lg">
-      <Navbar.Brand href="#home" className="header-logo">
+      <Link className="header-logo" to="/">
         <img
           alt="logo"
           src="https://nostr.band/android-chrome-192x192.png"
           className="logo-img"
         />
         Nostr.Band
-      </Navbar.Brand>
+      </Link>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto">

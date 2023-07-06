@@ -1,4 +1,4 @@
-.video {
+.post {
   display: flex;
   flex-direction: column;
   max-width: 100%;
@@ -7,11 +7,10 @@
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   border-radius: 16px;
 }
-.videoAuthor {
+.postName {
   display: flex;
 }
-
-.videoAuthorImage {
+.postImage {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -22,21 +21,44 @@
   border-radius: 50%;
   cursor: pointer;
 }
-.videoAuthorImage img {
+.postImage img {
   border-radius: 50%;
   width: 2rem;
   height: 2rem;
 }
-.videoAuthor p {
+.postNameLink {
+  text-decoration: none;
   font-size: 1.2rem;
   color: var(--bg-secondary-color);
+  cursor: pointer;
+  transition: all 0.4s;
+}
+.postNameLink:hover {
+  text-decoration: underline;
+}
+.postAbout {
+  font-size: 1rem;
+  word-wrap: break-word;
+}
+.postStats {
+  display: flex;
+  align-items: center;
+  color: var(--bg-secondary-color);
+}
+.postState {
+  margin-right: 0.6rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+}
+.postState span {
+  margin-left: 0.25rem;
 }
 .btnLink button {
-  margin: 5px 0;
+  margin: 10px 0;
   color: var(--bg-secondary-color);
   border: 1px solid var(--bg-secondary-color);
 }
-
 .bannerWrapper {
   display: flex;
   align-items: center;
@@ -111,16 +133,6 @@
   height: auto;
   max-height: 75vh;
   border-radius: 16px;
-}
-.imageTime {
-  margin-right: 0.6rem;
-  display: flex;
-  align-items: center;
-  font-size: 0.85rem;
-  color: var(--bg-secondary-color);
-}
-.imageTime span {
-  margin-right: 0.5rem;
 }
 @media screen and (max-width: 400px) {
   .bannerMovie {
