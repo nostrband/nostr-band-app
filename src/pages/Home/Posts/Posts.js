@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import PostItem from "./PostItem/PostItem";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
+import PostCard from "../../../components/PostCard/PostCard";
 
 const Posts = ({ setIsLoading }) => {
   const [posts, setPosts] = useState([]);
@@ -32,7 +32,7 @@ const Posts = ({ setIsLoading }) => {
         posts.map((post) => {
           const authorContent = JSON.parse(post.author.content);
           return (
-            <PostItem
+            <PostCard
               key={post.id}
               name={
                 authorContent.display_name

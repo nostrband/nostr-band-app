@@ -1,19 +1,25 @@
-import { useRef } from "react";
-import MarkdownComponent from "../../../../components/MarkdownComponent/MarkdownComponent";
-import {
-  collectLinksFromStr,
-  defineTypeLink,
-} from "../../../../utils/formatLink";
-import cl from "./ImageItem.module.css";
+import { useEffect, useState, useRef } from "react";
+import cl from "./PostCard.module.css";
 import Dropdown from "react-bootstrap/Dropdown";
+import axios from "axios";
+import {
+  ArrowRepeat,
+  Chat,
+  HandThumbsUp,
+  ImageFill,
+  Lightning,
+  PlayBtnFill,
+  X,
+} from "react-bootstrap-icons";
+import { collectLinksFromStr, defineTypeLink } from "../../utils/formatLink";
 import { Button, Carousel, Modal } from "react-bootstrap";
-import { useState } from "react";
-import { ImageFill, PlayBtnFill, X } from "react-bootstrap-icons";
-import { formatAMPM } from "../../../../utils/formatDate";
-import UserIcon from "../../../../assets/user.png";
+import { formatAMPM } from "../../utils/formatDate";
+import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
+import UserIcon from "../../assets/user.png";
 
-const ImageItem = ({ name, picture, pubkey, about, createdDate }) => {
+const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
   const [imgError, setImgError] = useState(false);
+  const [stats, setStats] = useState([]);
   const [isBannerVisible, setIsBannerVisible] = useState(false);
   const createdDateAt = new Date(createdDate * 1000);
   const [show, setShow] = useState(false);
@@ -23,6 +29,20 @@ const ImageItem = ({ name, picture, pubkey, about, createdDate }) => {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  const fetchStats = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API_URL}/stats/event/${eventId}`
+      );
+      setStats(data.stats[eventId]);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const isSameType = () =>
+    contents.every((obj) => obj.type === contents[0].type);
 
   const handleSelect = (selectedIndex) => {
     setCarouselIndex(selectedIndex);
@@ -45,13 +65,19 @@ const ImageItem = ({ name, picture, pubkey, about, createdDate }) => {
       .flat();
   }
 
-  const isSameType = () =>
-    contents.every((obj) => obj.type === contents[0].type);
+  useEffect(() => {
+    if (eventId) {
+      fetchStats();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const sats = stats?.zaps?.msats / 1000;
 
   return (
-    <div className={cl.image}>
-      <div className={cl.imageAuthor}>
-        <div className={cl.imageAuthorImage}>
+    <div className={cl.post}>
+      <div className={cl.postName}>
+        <div className={cl.postImage}>
           {!imgError ? (
             <img
               src={picture}
@@ -83,6 +109,50 @@ const ImageItem = ({ name, picture, pubkey, about, createdDate }) => {
       </div>
       <div>
         <MarkdownComponent content={about} />
+      </div>
+      <div className={cl.postStats}>
+        {stats?.zaps?.msats && (
+          <div className={cl.postState}>
+            <Lightning />
+            <span>
+              {Number(sats) > 1000000
+                ? `${Math.round(sats / 1000000)}M`
+                : Number(sats) >= 1000
+                ? `${Math.round(sats / 1000)}K`
+                : sats}
+            </span>
+          </div>
+        )}
+        {stats.reply_count && (
+          <div className={cl.postState}>
+            <Chat />
+            <span>{stats.reply_count}</span>
+          </div>
+        )}
+        {stats.repost_count && (
+          <div className={cl.postState}>
+            <ArrowRepeat />
+            <span>
+              {stats.repost_count > 1000
+                ? `${Math.round(stats.repost_count / 1000)}K`
+                : stats.repost_count}
+            </span>
+          </div>
+        )}
+        {stats.reaction_count && (
+          <div className={cl.postState}>
+            <HandThumbsUp />
+            <span>
+              {stats.reaction_count > 1000
+                ? `${Math.round(stats.reaction_count / 1000)}K`
+                : stats.reaction_count}
+            </span>
+          </div>
+        )}
+
+        <div className={cl.postState}>
+          <span>{formatAMPM(createdDateAt)}</span>
+        </div>
       </div>
       <div className={cl.btnLink}>
         {contents && contents.length ? (
@@ -209,20 +279,8 @@ const ImageItem = ({ name, picture, pubkey, about, createdDate }) => {
             })
           : ""}
       </div>
-      <div className={cl.imageTime}>
-        <span>{formatAMPM(createdDateAt)}</span>
-        <Dropdown id="profile-dropdown" className="profile-dropdown">
-          <Dropdown.Toggle size="sm" id="dropdown-basic"></Dropdown.Toggle>
-          <Dropdown.Menu>
-            <Dropdown.Item href="#/action-1">Open</Dropdown.Item>
-            <Dropdown.Item href="#/action-2">Copy nevent</Dropdown.Item>
-            <Dropdown.Item href="#/action-3">Copy note ID</Dropdown.Item>
-            <Dropdown.Item href="#/action-3">Copy HEX</Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-      </div>
     </div>
   );
 };
 
-export default ImageItem;
+export default PostItem;

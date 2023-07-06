@@ -21,11 +21,13 @@ import { formatAMPM } from "../../utils/formatDate";
 import { Button } from "react-bootstrap";
 import Dropdown from "react-bootstrap/Dropdown";
 import MarkdownComponent from "../../components/MarkdownComponent/MarkdownComponent";
+import EventItem from "./EventItem/EventItem";
 
 const Profile = () => {
   const [pubkey, setPubkey] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [lastEvent, setLastEvent] = useState("");
+  const [events, setEvents] = useState([]);
   const [profile, setProfile] = useState("");
   const { npub } = useParams();
   const [stats, setStats] = useState([]);
@@ -39,15 +41,22 @@ const Profile = () => {
       await user.fetchProfile();
       const pk = user.hexpubkey();
       setPubkey(pk);
-      console.log(pk);
+      // console.log(pk);
       fetchStats(pk);
       const lastEv = await ndk.fetchEvent({
         kinds: [1],
         authors: [pk],
         limit: 1,
       });
+      const events = await ndk.fetchEvents({
+        kinds: [1],
+        authors: [pk],
+        limit: 10,
+      });
+      console.log(Array.from(events));
+      setEvents(Array.from(events));
       setLastEvent(lastEv);
-      console.log(user.profile);
+      // console.log(user.profile);
       setProfile(user.profile);
     } catch (e) {
       console.log(e);
@@ -63,7 +72,7 @@ const Profile = () => {
         `${process.env.REACT_APP_API_URL}/stats/profile/${pk}`
       );
       setStats(data.stats[pk]);
-      console.log(data.stats[pk]);
+      // console.log(data.stats[pk]);
     } catch (e) {
       console.log(e);
     } finally {
@@ -194,6 +203,22 @@ const Profile = () => {
             <strong>({stats.pub_post_count + stats.pub_reply_count})</strong>
           </a>
         </div>
+      </div>
+      <div className={cl.userEvents}>
+        {events && events.length
+          ? events.map((event) => {
+              return (
+                <EventItem
+                  createdDate={event.created_at}
+                  about={event.content}
+                  pubkey={event.pubkey}
+                  eventId={event.id}
+                  picture={profile.image}
+                  name={profile.displayName}
+                />
+              );
+            })
+          : ""}
       </div>
     </div>
   );

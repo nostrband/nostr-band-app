@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import AudioItem from "./AudioItem.js/AudioItem";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
+import PostCard from "../../../components/PostCard/PostCard";
 
 const Audio = ({ setIsLoading }) => {
   const [audios, setAudios] = useState([]);
@@ -30,7 +30,7 @@ const Audio = ({ setIsLoading }) => {
         audios.map((image) => {
           const authorContent = JSON.parse(image.author.content);
           return (
-            <AudioItem
+            <PostCard
               key={image.id}
               name={
                 authorContent.display_name

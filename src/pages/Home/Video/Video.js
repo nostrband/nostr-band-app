@@ -1,8 +1,8 @@
 import axios from "axios";
 import "./Video.module.css";
 import { useEffect, useState } from "react";
-import VideoItem from "./VideoItem/VideoItem";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
+import PostCard from "../../../components/PostCard/PostCard";
 
 const Video = ({ setIsLoading }) => {
   const [videos, setVideos] = useState([]);
@@ -31,7 +31,7 @@ const Video = ({ setIsLoading }) => {
         videos.map((video) => {
           const authorContent = JSON.parse(video.author.content);
           return (
-            <VideoItem
+            <PostCard
               key={video.id}
               name={
                 authorContent.display_name
