@@ -53,10 +53,9 @@ const Profile = () => {
         authors: [pk],
         limit: 10,
       });
-      console.log(Array.from(events));
       setEvents(Array.from(events));
       setLastEvent(lastEv);
-      // console.log(user.profile);
+      console.log(user.profile);
       setProfile(user.profile);
       setNdk(ndk);
     } catch (e) {
@@ -124,7 +123,9 @@ const Profile = () => {
                 </a>
               </div>
               <div className={cl.profileInfo}>
-                <p className={cl.profileInfoName}>{profile.displayName}</p>
+                <p className={cl.profileInfoName}>
+                  {profile.displayName ? profile.displayName : profile.name}
+                </p>
                 <p>
                   <Key /> {npub.slice(0, 8)}...{npub.slice(-4)}
                 </p>
@@ -160,9 +161,12 @@ const Profile = () => {
               )}
             </div>
             <div className={cl.lastActive}>
-              <p>
-                Last active: {formatAMPM(new Date(lastEvent.created_at * 1000))}
-              </p>
+              {lastEvent && (
+                <p>
+                  Last active:{" "}
+                  {formatAMPM(new Date(lastEvent.created_at * 1000))}
+                </p>
+              )}
             </div>
             <div className={`${cl.profileContentControl} ${cl.profileButtons}`}>
               <Button variant="secondary">
@@ -249,7 +253,11 @@ const Profile = () => {
                           pubkey={event.pubkey}
                           eventId={event.id}
                           picture={profile.image}
-                          name={profile.displayName}
+                          name={
+                            profile.displayName
+                              ? profile.displayName
+                              : profile.name
+                          }
                         />
                       );
                     })
