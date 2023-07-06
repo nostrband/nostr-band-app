@@ -16,6 +16,8 @@ import { Button, Carousel, Modal } from "react-bootstrap";
 import { formatAMPM } from "../../utils/formatDate";
 import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
 import UserIcon from "../../assets/user.png";
+import { Link } from "react-router-dom";
+import { nip19 } from "nostr-tools";
 
 const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
   const [imgError, setImgError] = useState(false);
@@ -24,6 +26,7 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
   const createdDateAt = new Date(createdDate * 1000);
   const [show, setShow] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const [npubKey, setNpubKey] = useState("");
 
   const windowSize = useRef(window.innerWidth);
 
@@ -69,6 +72,7 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
     if (eventId) {
       fetchStats();
     }
+    setNpubKey(nip19.npubEncode(pubkey));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -96,7 +100,9 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
             />
           )}
         </div>
-        <p>{name}</p>
+        <Link className={cl.postNameLink} to={`profile/${npubKey}`}>
+          {name}
+        </Link>
         <Dropdown id="profile-dropdown" className="profile-dropdown">
           <Dropdown.Toggle size="sm" id="dropdown-basic"></Dropdown.Toggle>
           <Dropdown.Menu>

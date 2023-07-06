@@ -26,9 +26,15 @@
   width: 2rem;
   height: 2rem;
 }
-.postName p {
+.postNameLink {
+  text-decoration: none;
   font-size: 1.2rem;
   color: var(--bg-secondary-color);
+  cursor: pointer;
+  transition: all 0.4s;
+}
+.postNameLink:hover {
+  text-decoration: underline;
 }
 .postAbout {
   font-size: 1rem;
