@@ -190,9 +190,11 @@ const Profile = () => {
               )}
             </div>
             <div className={`${cl.profileContentControl} ${cl.profileButtons}`}>
-              <Button variant="secondary">
-                <BoxArrowUpRight /> Open
-              </Button>
+              <a target="_blanc" href={`https://nostrapp.link/#${npub}`}>
+                <Button variant="secondary">
+                  <BoxArrowUpRight /> Open
+                </Button>
+              </a>
               <Button variant="secondary">
                 <Lightning /> Zap
               </Button>
@@ -212,7 +214,10 @@ const Profile = () => {
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu id={cl["menu-id"]}>
-                  <Dropdown.Item href="#/action-1">
+                  <Dropdown.Item
+                    target="_blanc"
+                    href={`https://nostrapp.link/#${npub}`}
+                  >
                     <BoxArrowUpRight /> Open with
                   </Dropdown.Item>
                   <Dropdown.Item href="#/action-2">

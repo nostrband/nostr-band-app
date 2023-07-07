@@ -18,6 +18,11 @@ import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
 import UserIcon from "../../assets/user.png";
 import { Link } from "react-router-dom";
 import { nip19 } from "nostr-tools";
+import {
+  copyNprofile,
+  copyNpub,
+  copyPubkey,
+} from "../../utils/copy-funtions/copyFuntions";
 
 const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
   const [imgError, setImgError] = useState(false);
@@ -27,6 +32,7 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
   const [show, setShow] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [npubKey, setNpubKey] = useState("");
+  const [nprofile, setNprofile] = useState("");
 
   const windowSize = useRef(window.innerWidth);
 
@@ -73,6 +79,7 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
       fetchStats();
     }
     setNpubKey(nip19.npubEncode(pubkey));
+    setNprofile(nip19.nprofileEncode({ pubkey: pubkey }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -106,10 +113,21 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
         <Dropdown id="profile-dropdown" className="profile-dropdown">
           <Dropdown.Toggle size="sm" id="dropdown-basic"></Dropdown.Toggle>
           <Dropdown.Menu>
-            <Dropdown.Item href="#/action-1">Open</Dropdown.Item>
-            <Dropdown.Item href="#/action-2">Copy npub</Dropdown.Item>
-            <Dropdown.Item href="#/action-3">Copy nprofile</Dropdown.Item>
-            <Dropdown.Item href="#/action-3">Copy pubkey</Dropdown.Item>
+            <Dropdown.Item
+              target="_blanc"
+              href={`https://nostrapp.link/#${npubKey}`}
+            >
+              Open
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => copyNpub(npubKey)}>
+              Copy npub
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => copyNprofile(nprofile)}>
+              Copy nprofile
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => copyPubkey(pubkey)}>
+              Copy pubkey
+            </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
       </div>
