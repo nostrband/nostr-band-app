@@ -14,11 +14,17 @@ import axios from "axios";
 import { nip19 } from "nostr-tools";
 import { Link } from "react-router-dom";
 import UserIcon from "../../../../assets/user.png";
+import {
+  copyNprofile,
+  copyNpub,
+  copyPubkey,
+} from "../../../../utils/copy-funtions/copyFuntions";
 
 const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
   const [imgError, setImgError] = useState(false);
   const [stats, setStats] = useState({});
   const [npubKey, setNpubKey] = useState("");
+  const [nprofile, setNprofile] = useState("");
   const splitedMail = mail && mail.split("");
   const findMailIndex = mail && splitedMail.findIndex((m) => m === "@");
   const mailName = mail && splitedMail.slice(0, findMailIndex).join("");
@@ -33,6 +39,7 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
   useEffect(() => {
     fetchStats();
     setNpubKey(nip19.npubEncode(pubKey));
+    setNprofile(nip19.nprofileEncode({ pubkey: pubKey }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -75,10 +82,21 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
             <Dropdown id="profile-dropdown" className="profile-dropdown">
               <Dropdown.Toggle size="sm" id="dropdown-basic"></Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item href="#/action-1">Go to app...</Dropdown.Item>
-                <Dropdown.Item href="#/action-2">Copy npub</Dropdown.Item>
-                <Dropdown.Item href="#/action-3">Copy nprofile</Dropdown.Item>
-                <Dropdown.Item href="#/action-3">Copy pubkey</Dropdown.Item>
+                <Dropdown.Item
+                  target="_blanc"
+                  href={`https://nostrapp.link/#${npubKey}`}
+                >
+                  Open
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => copyNpub(npubKey)}>
+                  Copy npub
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => copyNprofile(nprofile)}>
+                  Copy nprofile
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => copyPubkey(pubKey)}>
+                  Copy pubkey
+                </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </div>
@@ -143,9 +161,11 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
         <Button variant="secondary">
           <ZoomIn /> View
         </Button>
-        <Button variant="secondary">
-          <BoxArrowUpRight /> Open
-        </Button>
+        <a target="_blanc" href={`https://nostrapp.link/#${npubKey}`}>
+          <Button variant="secondary">
+            <BoxArrowUpRight /> Open
+          </Button>
+        </a>
         <Button variant="secondary">
           <PersonPlus /> Follow
         </Button>
