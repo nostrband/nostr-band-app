@@ -62,7 +62,11 @@
   position: relative;
 }
 .profileZaps {
+  display: flex;
   font-size: 1rem;
+}
+.profileZaps p {
+  margin-right: 0.5rem;
 }
 .profileZaps {
   margin-bottom: 0;
@@ -113,5 +117,18 @@
 }
 .showMoreLink:hover {
   text-decoration: underline;
+  color: black;
+}
+
+.tab li {
+  flex-grow: unset !important;
+  margin-right: 5px;
+}
+.tab li button {
+  border-radius: 50px !important;
+  background-color: white;
+  color: black;
+}
+.tab li button:hover {
   color: black;
 }

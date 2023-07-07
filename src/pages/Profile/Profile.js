@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import cl from "./Profile.module.css";
 import NDK from "@nostr-dev-kit/ndk";
 import { useEffect, useState } from "react";
@@ -22,6 +22,12 @@ import EventItem from "./EventItem/EventItem";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import ProfileSkeleton from "./ProfileSkeleton/ProfileSkeleton";
+import {
+  copyNprofile,
+  copyNpub,
+  copyPubkey,
+} from "../../utils/copy-funtions/copyFuntions";
+import { nip19 } from "nostr-tools";
 
 const Profile = () => {
   const [pubkey, setPubkey] = useState("");
@@ -32,6 +38,7 @@ const Profile = () => {
   const [stats, setStats] = useState([]);
   const [ndk, setNdk] = useState({});
   const [tabKey, setTabKey] = useState("posts");
+  const [nprofile, setNprofile] = useState("");
 
   const fetchUser = async () => {
     try {
@@ -55,8 +62,9 @@ const Profile = () => {
       });
       setEvents(Array.from(events));
       setLastEvent(lastEv);
-      console.log(user.profile);
+      // console.log(user.profile);
       setProfile(user.profile);
+      setNprofile(nip19.nprofileEncode({ pubkey: pk }));
       setNdk(ndk);
     } catch (e) {
       console.log(e);
@@ -69,7 +77,7 @@ const Profile = () => {
         `${process.env.REACT_APP_API_URL}/stats/profile/${pk}`
       );
       setStats(data.stats[pk]);
-      // console.log(data.stats[pk]);
+      console.log(data.stats[pk]);
     } catch (e) {
       console.log(e);
     }
@@ -97,6 +105,7 @@ const Profile = () => {
   };
 
   const sats = stats?.zaps_received?.msats / 1000;
+  const sentSats = stats.zaps_sent?.msats / 1000;
 
   //   console.log(npub);
 
@@ -159,6 +168,18 @@ const Profile = () => {
                   sats received
                 </p>
               )}
+              {stats?.zaps_sent?.msats && (
+                <p>
+                  <span>
+                    {Number(sentSats) > 1000000
+                      ? `${Math.round(sentSats / 1000000)}M`
+                      : Number(sentSats) >= 1000
+                      ? `${Math.round(sentSats / 1000)}K`
+                      : sentSats}
+                  </span>{" "}
+                  sats sent
+                </p>
+              )}
             </div>
             <div className={cl.lastActive}>
               {lastEvent && (
@@ -201,12 +222,16 @@ const Profile = () => {
                     <FileEarmarkPlus /> Embed
                   </Dropdown.Item>
                   <hr />
-                  <Dropdown.Item href="#/action-1">Copy npub</Dropdown.Item>
-                  <Dropdown.Item href="#/action-1">Copy nprofile</Dropdown.Item>
-                  <Dropdown.Item href="#/action-1">Copy pubkey</Dropdown.Item>
-                  <Dropdown.Item href="#/action-1">
-                    Copy contact list naddr
+                  <Dropdown.Item onClick={() => copyNpub(npub)}>
+                    Copy npub
                   </Dropdown.Item>
+                  <Dropdown.Item onClick={() => copyNprofile(nprofile)}>
+                    Copy nprofile
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={() => copyPubkey(pubkey)}>
+                    Copy pubkey
+                  </Dropdown.Item>
+                  <Dropdown.Item>Copy contact list naddr</Dropdown.Item>
                   <hr />
                   <Dropdown.Item href="#/action-1">
                     View home feed
@@ -224,14 +249,6 @@ const Profile = () => {
                 </Dropdown.Menu>
               </Dropdown>
             </div>
-            <div className={cl.showMore}>
-              <Link className={cl.showMoreLink}>
-                Discussions{" "}
-                <strong>
-                  ({stats.pub_post_count + stats.pub_reply_count})
-                </strong>
-              </Link>
-            </div>
           </div>
           <div className={cl.userEvents}>
             <Tabs
@@ -239,7 +256,8 @@ const Profile = () => {
               onSelect={(k) => setTabKey(k)}
               defaultActiveKey="profile"
               id="justify-tab-example"
-              className="mb-3"
+              className={`mb-3 ${cl.tab}`}
+              variant="pills"
               justify
             >
               <Tab eventKey="posts" title="Posts">
@@ -268,10 +286,7 @@ const Profile = () => {
                 title="Zaps"
                 onClick={() => fetchZaps(pubkey)}
               >
-                Tab content for Profile
-              </Tab>
-              <Tab eventKey="longer-tab" title="Loooonger Tab">
-                Tab content for Loooonger Tab
+                Tab content for Zaps
               </Tab>
             </Tabs>
           </div>
