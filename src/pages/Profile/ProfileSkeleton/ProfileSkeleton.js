@@ -46,9 +46,6 @@ const ProfileSkeleton = () => {
           <Skeleton width="100%" height="100%" />
         </div>
       </div>
-      <div style={{ marginTop: "10px" }}>
-        <Skeleton width={windowSize.current <= 1000 ? "45%" : "35%"} />
-      </div>
     </div>
   );
 };
