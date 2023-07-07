@@ -77,7 +77,7 @@ const Profile = () => {
         `${process.env.REACT_APP_API_URL}/stats/profile/${pk}`
       );
       setStats(data.stats[pk]);
-      // console.log(data.stats[pk]);
+      console.log(data.stats[pk]);
     } catch (e) {
       console.log(e);
     }
@@ -105,6 +105,7 @@ const Profile = () => {
   };
 
   const sats = stats?.zaps_received?.msats / 1000;
+  const sentSats = stats.zaps_sent?.msats / 1000;
 
   //   console.log(npub);
 
@@ -165,6 +166,18 @@ const Profile = () => {
                       : sats}
                   </span>{" "}
                   sats received
+                </p>
+              )}
+              {stats?.zaps_sent?.msats && (
+                <p>
+                  <span>
+                    {Number(sentSats) > 1000000
+                      ? `${Math.round(sentSats / 1000000)}M`
+                      : Number(sentSats) >= 1000
+                      ? `${Math.round(sentSats / 1000)}K`
+                      : sentSats}
+                  </span>{" "}
+                  sats sent
                 </p>
               )}
             </div>
