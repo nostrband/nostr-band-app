@@ -12,6 +12,8 @@ import {
   Share,
   FileEarmarkPlus,
   Lightning,
+  ArrowDown,
+  ArrowUp,
 } from "react-bootstrap-icons";
 import axios from "axios";
 import { formatAMPM } from "../../utils/formatDate";
@@ -28,6 +30,8 @@ import {
   copyPubkey,
 } from "../../utils/copy-funtions/copyFuntions";
 import { nip19 } from "nostr-tools";
+import { getZapAmount } from "../../utils/zapFunctions";
+import ZapTransfer from "./ZapTransfer/ZapTransfer";
 
 const Profile = () => {
   const [pubkey, setPubkey] = useState("");
@@ -39,6 +43,10 @@ const Profile = () => {
   const [ndk, setNdk] = useState({});
   const [tabKey, setTabKey] = useState("posts");
   const [nprofile, setNprofile] = useState("");
+  const [receivedZaps, setReceivedZaps] = useState([]);
+  const [amountReceivedZaps, setAmountReceivedZaps] = useState([]);
+  const [sentAuthors, setSentAuthors] = useState([]);
+  const [createdTimes, setCreatedTimes] = useState([]);
 
   const fetchUser = async () => {
     try {
@@ -77,7 +85,7 @@ const Profile = () => {
         `${process.env.REACT_APP_API_URL}/stats/profile/${pk}`
       );
       setStats(data.stats[pk]);
-      console.log(data.stats[pk]);
+      // console.log(data.stats[pk]);
     } catch (e) {
       console.log(e);
     }
@@ -90,18 +98,90 @@ const Profile = () => {
 
   useEffect(() => {
     if (tabKey === "zaps") {
-      fetchZaps();
+      fetchZaps(pubkey);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tabKey]);
 
+  function findDuplicates(arr) {
+    const duplicates = [];
+    const countMap = {};
+
+    for (let i = 0; i < arr.length; i++) {
+      const element = arr[i];
+      countMap[element] = (countMap[element] || 0) + 1;
+
+      if (countMap[element] === 2) {
+        duplicates.push(element);
+      }
+    }
+
+    return duplicates;
+  }
+
   const fetchZaps = async (pk) => {
-    const zaps = await ndk.fetchEvents({
-      kinds: [9735],
-      authors: [pk],
-      limit: 10,
-    });
-    console.log(zaps);
+    try {
+      const zaps = Array.from(
+        await ndk.fetchEvents({
+          kinds: [9735],
+          "#p": [pk],
+          limit: 10,
+        })
+      );
+      // console.log(zaps);
+      setReceivedZaps(zaps);
+
+      const zapsAmount = zaps.map((zap) => {
+        return getZapAmount(zap);
+      });
+      // console.log(zapsAmount);
+      setAmountReceivedZaps(zapsAmount);
+
+      const sendersPubkeys = zaps.map((zap) => {
+        const cleanJSON = zap.tags
+          .find((item) => item[0] === "description")[1]
+          .replace(/[^\x20-\x7E]/g, "");
+        return JSON.parse(cleanJSON).pubkey;
+      });
+      // console.log(sendersPubkeys);
+
+      const createdTimes = zaps.map((zap) => {
+        return zap.created_at;
+      });
+      setCreatedTimes(createdTimes);
+
+      const sendersArr = Array.from(
+        await ndk.fetchEvents({
+          kinds: [0],
+          authors: sendersPubkeys,
+          limit: 10,
+        })
+      );
+      const senders = sendersArr.map((sender) => {
+        return JSON.parse(sender.content);
+      });
+      const repeatedPubkeys = findDuplicates(sendersPubkeys);
+      // console.log(repeatedPubkeys);
+      // console.log(senders);
+      const repeatedSendersArr = Array.from(
+        await ndk.fetchEvents({
+          kinds: [0],
+          authors: repeatedPubkeys,
+          limit: 10,
+        })
+      );
+      const repeatedSenders = repeatedSendersArr.map((sender) => {
+        return JSON.parse(sender.content);
+      });
+      if (repeatedSenders.length) {
+        senders.push(...repeatedSenders);
+        setSentAuthors(senders);
+      } else {
+        setSentAuthors(senders);
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const sats = stats?.zaps_received?.msats / 1000;
@@ -288,7 +368,33 @@ const Profile = () => {
               </Tab>
               <Tab
                 eventKey="zaps"
-                title="Zaps"
+                title={
+                  <span className="d-flex align-items-center">
+                    Zaps <ArrowDown />
+                  </span>
+                }
+                onClick={() => fetchZaps(pubkey)}
+              >
+                {receivedZaps.length && createdTimes.length
+                  ? receivedZaps.map((author, index) => {
+                      return (
+                        <ZapTransfer
+                          created={createdTimes[index]}
+                          sender={sentAuthors[index]}
+                          amount={amountReceivedZaps[index]}
+                          receiver={profile}
+                        />
+                      );
+                    })
+                  : ""}
+              </Tab>
+              <Tab
+                eventKey="zaps-sent"
+                title={
+                  <span className="d-flex align-items-center">
+                    Zaps <ArrowUp />
+                  </span>
+                }
                 onClick={() => fetchZaps(pubkey)}
               >
                 Tab content for Zaps
