@@ -1,0 +1,48 @@
+.zap {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  margin-bottom: 2rem;
+  padding: 0.9rem;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  border-radius: 16px;
+}
+.zapSenderImage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  margin-right: 10px;
+  border: 2px solid rgba(200, 200, 200, 0.4);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.zapSender {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+}
+.zapSenderImage img {
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+}
+.zapSenderAbout {
+  display: flex;
+}
+.zapSenderAbout p {
+  font-size: 1.2rem;
+  color: var(--bg-secondary-color);
+}
+.zapsAmount {
+  display: flex;
+  align-items: center;
+}
+.zapsAmount span {
+  margin: 0 0.5rem;
+}
+.createdTime {
+  font-size: 0.85rem;
+  color: var(--bg-secondary-color);
+}
