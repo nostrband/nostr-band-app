@@ -1,6 +1,7 @@
-import { ArrowRight, ArrowRightCircleFill } from "react-bootstrap-icons";
+import { ArrowRightCircleFill } from "react-bootstrap-icons";
 import cl from "./ZapTransfer.module.css";
 import { formatAMPM } from "../../../utils/formatDate";
+import UserIcon from "../../../assets/user.png";
 
 const ZapTransfer = ({ sender, receiver, amount, created }) => {
   const createdAt = new Date(created * 1000);
@@ -10,13 +11,19 @@ const ZapTransfer = ({ sender, receiver, amount, created }) => {
     <div className={cl.zap}>
       <div className={cl.zapSender}>
         <div className={cl.zapSenderAbout}>
-          {sender && (
+          {sender ? (
             <div className={cl.zapSenderImage}>
               <img src={sender.picture} />
             </div>
+          ) : (
+            <div className={cl.zapSenderImage}>
+              <img src={UserIcon} />
+            </div>
           )}
-          {sender && (
+          {sender ? (
             <p>{sender.displayName ? sender.displayName : sender.name}</p>
+          ) : (
+            "Unknown"
           )}
         </div>
         <div className={cl.zapsAmount}>
