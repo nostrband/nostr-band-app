@@ -21,7 +21,7 @@
 .zapSender {
   display: flex;
   justify-content: space-between;
-  align-items: start;
+  align-items: flex-start;
 }
 .zapSenderImage img {
   border-radius: 50%;
@@ -44,5 +44,11 @@
 }
 .createdTime {
   font-size: 0.85rem;
+  color: var(--bg-secondary-color);
+  text-align: right;
+  margin: 0;
+}
+.details {
+  font-size: 2rem;
   color: var(--bg-secondary-color);
 }
