@@ -150,9 +150,19 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
         </div>
         <div className="profile-content__stats">
           <p>
-            <span>{stats.pub_following_pubkey_count}</span> Following
-            &nbsp;&nbsp;<span>{stats.followers_pubkey_count}</span> Followers
-            <span className="new-followers">&nbsp;+{newFollowersCount}</span>
+            <span>
+              {stats.pub_following_pubkey_count
+                ? stats.pub_following_pubkey_count
+                : 0}
+            </span>{" "}
+            Following &nbsp;&nbsp;
+            <span>
+              {stats.followers_pubkey_count ? stats.followers_pubkey_count : 0}
+            </span>{" "}
+            Followers
+            {newFollowersCount && (
+              <span className="new-followers">&nbsp;+{newFollowersCount}</span>
+            )}
           </p>
         </div>
       </div>

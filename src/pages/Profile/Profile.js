@@ -340,7 +340,7 @@ const Profile = () => {
                         />
                       );
                     })
-                  : ""}
+                  : "No posts"}
               </Tab>
               <Tab
                 eventKey="zaps"
@@ -376,7 +376,7 @@ const Profile = () => {
                         />
                       );
                     })
-                  : ""}
+                  : "No received zaps"}
               </Tab>
               <Tab
                 eventKey="zaps-sent"
