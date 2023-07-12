@@ -47,6 +47,7 @@ const Profile = () => {
   const [amountReceivedZaps, setAmountReceivedZaps] = useState([]);
   const [sentAuthors, setSentAuthors] = useState([]);
   const [createdTimes, setCreatedTimes] = useState([]);
+  const [sendersComments, setSendersComments] = useState([]);
 
   const fetchUser = async () => {
     try {
@@ -103,22 +104,6 @@ const Profile = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tabKey]);
 
-  function findDuplicates(arr) {
-    const duplicates = [];
-    const countMap = {};
-
-    for (let i = 0; i < arr.length; i++) {
-      const element = arr[i];
-      countMap[element] = (countMap[element] || 0) + 1;
-
-      if (countMap[element] === 2) {
-        duplicates.push(element);
-      }
-    }
-
-    return duplicates;
-  }
-
   const fetchZaps = async (pk) => {
     try {
       const zaps = Array.from(
@@ -145,6 +130,14 @@ const Profile = () => {
       });
       // console.log(sendersPubkeys);
 
+      const sendersComments = zaps.map((zap) => {
+        const cleanJSON = zap.tags
+          .find((item) => item[0] === "description")[1]
+          .replace(/[^\x20-\x7E]/g, "");
+        return JSON.parse(cleanJSON).content;
+      });
+      setSendersComments(sendersComments);
+
       const createdTimes = zaps.map((zap) => {
         return zap.created_at;
       });
@@ -157,28 +150,11 @@ const Profile = () => {
           limit: 10,
         })
       );
+      // console.log(sendersArr);
       const senders = sendersArr.map((sender) => {
-        return JSON.parse(sender.content);
+        return sender;
       });
-      const repeatedPubkeys = findDuplicates(sendersPubkeys);
-      // console.log(repeatedPubkeys);
-      // console.log(senders);
-      const repeatedSendersArr = Array.from(
-        await ndk.fetchEvents({
-          kinds: [0],
-          authors: repeatedPubkeys,
-          limit: 10,
-        })
-      );
-      const repeatedSenders = repeatedSendersArr.map((sender) => {
-        return JSON.parse(sender.content);
-      });
-      if (repeatedSenders.length) {
-        senders.push(...repeatedSenders);
-        setSentAuthors(senders);
-      } else {
-        setSentAuthors(senders);
-      }
+      setSentAuthors(senders);
     } catch (e) {
       console.log(e);
     }
@@ -377,12 +353,26 @@ const Profile = () => {
               >
                 {receivedZaps.length && createdTimes.length
                   ? receivedZaps.map((author, index) => {
+                      const sender = sentAuthors.find((item) => {
+                        const cleanJSON = author.tags
+                          .find((item) => item[0] === "description")[1]
+                          .replace(/[^\x20-\x7E]/g, "");
+
+                        const pk = JSON.parse(cleanJSON).pubkey;
+                        return item.pubkey === pk;
+                      });
+                      const senderContent = sender
+                        ? JSON.parse(sender.content)
+                        : "";
+
                       return (
                         <ZapTransfer
+                          key={index}
                           created={createdTimes[index]}
-                          sender={sentAuthors[index]}
+                          sender={senderContent}
                           amount={amountReceivedZaps[index]}
                           receiver={profile}
+                          comment={sendersComments[index]}
                         />
                       );
                     })
