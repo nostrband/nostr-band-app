@@ -38,6 +38,8 @@
 .zapsAmount {
   display: flex;
   align-items: center;
+  text-align: center;
+  font-weight: 500;
 }
 .zapsAmount span {
   margin: 0 0.5rem;
