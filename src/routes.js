@@ -7,7 +7,7 @@ export const allRoutes = [
     Component: Home,
   },
   {
-    path: "profile/:npub",
+    path: "/:npub",
     Component: Profile,
   },
 ];

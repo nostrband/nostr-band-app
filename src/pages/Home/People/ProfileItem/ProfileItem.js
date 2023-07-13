@@ -73,7 +73,7 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
         <div className="profile-info__hero">
           <div className="profile-info__hero-header">
             <Link
-              to={`profile/${npubKey}`}
+              to={`/${npubKey}`}
               href="http://localhost:3000/"
               className="profile-info__hero-name"
             >
