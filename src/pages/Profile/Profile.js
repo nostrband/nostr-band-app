@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import cl from "./Profile.module.css";
 import NDK from "@nostr-dev-kit/ndk";
 import { useEffect, useState } from "react";
@@ -49,6 +49,12 @@ const Profile = () => {
   const [createdTimes, setCreatedTimes] = useState([]);
   const [sendersComments, setSendersComments] = useState([]);
   const [zappedPosts, setZappedPosts] = useState([]);
+  const [providers, setProviders] = useState([]);
+  const location = useLocation();
+
+  useEffect(() => {
+    fetchUser();
+  }, [location.pathname]);
 
   const fetchUser = async () => {
     try {
@@ -115,6 +121,16 @@ const Profile = () => {
         })
       );
       setReceivedZaps(zaps);
+
+      const providersPubkyes = zaps.map((zap) => zap.pubkey);
+      const providers = Array.from(
+        await ndk.fetchEvents({
+          kinds: [0],
+          authors: providersPubkyes,
+          limit: 10,
+        })
+      );
+      setProviders(providers);
 
       const zapsAmount = zaps.map((zap) => {
         return getZapAmount(zap);
@@ -205,9 +221,9 @@ const Profile = () => {
                   <Key /> {npub.slice(0, 8)}...{npub.slice(-4)}
                 </p>
                 {profile.nip05 && (
-                  <p className={cl.profileNip}>
+                  <div className={cl.profileNip}>
                     <TextCenter /> <MarkdownComponent content={profile.nip05} />
-                  </p>
+                  </div>
                 )}
               </div>
             </div>
@@ -363,11 +379,11 @@ const Profile = () => {
               >
                 {receivedZaps.length && createdTimes.length
                   ? receivedZaps.map((author, index) => {
+                      const cleanJSON = author.tags
+                        .find((item) => item[0] === "description")[1]
+                        .replace(/[^\x20-\x7E]/g, "");
+                      const pk = JSON.parse(cleanJSON).pubkey;
                       const sender = sentAuthors.find((item) => {
-                        const cleanJSON = author.tags
-                          .find((item) => item[0] === "description")[1]
-                          .replace(/[^\x20-\x7E]/g, "");
-                        const pk = JSON.parse(cleanJSON).pubkey;
                         return item.pubkey === pk;
                       });
                       const senderContent = sender
@@ -380,6 +396,13 @@ const Profile = () => {
                           : "";
                         return item.id === e;
                       });
+
+                      const provider = JSON.parse(
+                        providers.find(
+                          (provider) => provider.pubkey === author.pubkey
+                        ).content
+                      );
+
                       return (
                         <ZapTransfer
                           key={index}
@@ -389,6 +412,8 @@ const Profile = () => {
                           receiver={profile}
                           comment={sendersComments[index]}
                           zappedPost={zappedPost ? zappedPost.content : ""}
+                          provider={provider}
+                          senderPubkey={pk}
                         />
                       );
                     })

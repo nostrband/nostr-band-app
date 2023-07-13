@@ -1,6 +1,6 @@
 import {
   ArrowRight,
-  Lightning,
+  ArrowRightCircleFill,
   LightningChargeFill,
 } from "react-bootstrap-icons";
 import cl from "./ZapTransfer.module.css";
@@ -8,6 +8,7 @@ import { formatAMPM } from "../../../utils/formatDate";
 import UserIcon from "../../../assets/user.png";
 import MarkdownComponent from "../../../components/MarkdownComponent/MarkdownComponent";
 import { Link } from "react-router-dom";
+import { nip19 } from "nostr-tools";
 
 const ZapTransfer = ({
   sender,
@@ -16,9 +17,12 @@ const ZapTransfer = ({
   created,
   comment,
   zappedPost,
+  provider,
+  senderPubkey,
 }) => {
   const createdAt = new Date(created * 1000);
   const data = formatAMPM(createdAt);
+  const senderPk = nip19.npubEncode(senderPubkey);
 
   return (
     <div className={cl.zap}>
@@ -46,7 +50,9 @@ const ZapTransfer = ({
             </div>
           )}
           {sender ? (
-            <p>{sender.displayName ? sender.displayName : sender.name}</p>
+            <Link to={`/${senderPk}`}>
+              {sender.displayName ? sender.displayName : sender.name}
+            </Link>
           ) : (
             "Unknown"
           )}
@@ -62,6 +68,7 @@ const ZapTransfer = ({
             {amount / 1000} <br />
             sats
           </span>
+          <ArrowRightCircleFill color="orange" width="1.8rem" height="100%" />
         </div>
         <div className={cl.zapSenderAbout}>
           <div className={cl.zapSenderImage}>
@@ -71,7 +78,9 @@ const ZapTransfer = ({
               onError={({ currentTarget }) => (currentTarget.srcset = UserIcon)}
             />
           </div>
-          <p>{receiver.displayName ? receiver.displayName : receiver.name}</p>
+          <Link>
+            {receiver.displayName ? receiver.displayName : receiver.name}
+          </Link>
         </div>
       </div>
       {zappedPost && (
@@ -83,12 +92,13 @@ const ZapTransfer = ({
           "
         </p>
       )}
-      {comment && (
-        <p className={cl.zapComment}>
-          Comment: "<MarkdownComponent content={comment} />"
-        </p>
-      )}
-      <p className={cl.createdTime}>{data}</p>
+      {comment && <MarkdownComponent content={comment} />}
+      <p className={cl.createdTime}>
+        {data} to{" "}
+        <Link>
+          {provider.displayName ? provider.displayName : provider.name}
+        </Link>
+      </p>
     </div>
   );
 };
