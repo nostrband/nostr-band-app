@@ -107,7 +107,7 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
             />
           )}
         </div>
-        <Link className={cl.postNameLink} to={`profile/${npubKey}`}>
+        <Link className={cl.postNameLink} to={`/${npubKey}`}>
           {name}
         </Link>
         <Dropdown id="profile-dropdown" className="profile-dropdown">
