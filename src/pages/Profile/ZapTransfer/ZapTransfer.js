@@ -1,4 +1,4 @@
-import { ArrowRightCircleFill } from "react-bootstrap-icons";
+import { ArrowRightCircleFill, Lightning } from "react-bootstrap-icons";
 import cl from "./ZapTransfer.module.css";
 import { formatAMPM } from "../../../utils/formatDate";
 import UserIcon from "../../../assets/user.png";
@@ -40,9 +40,9 @@ const ZapTransfer = ({ sender, receiver, amount, created, comment }) => {
           )}
         </div>
         <div className={cl.zapsAmount}>
-          <ArrowRightCircleFill />
+          <Lightning />
           <span>{amount / 1000} sats</span>
-          <ArrowRightCircleFill />
+          <Lightning />
         </div>
         <div className={cl.zapSenderAbout}>
           <div className={cl.zapSenderImage}>

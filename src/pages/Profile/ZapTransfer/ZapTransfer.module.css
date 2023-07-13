@@ -52,3 +52,16 @@
   font-size: 2rem;
   color: var(--bg-secondary-color);
 }
+
+@media screen and (max-width: 500px) {
+  .zapSenderAbout {
+    flex-direction: column;
+    align-items: center;
+  }
+  .zapSenderAbout p {
+    text-align: center;
+  }
+  .zapSender {
+    align-items: center;
+  }
+}
