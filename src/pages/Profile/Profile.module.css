@@ -9,12 +9,14 @@
 }
 .profile p {
   margin-bottom: 0;
+  overflow-x: scroll;
 }
 .profileTitle {
   display: flex;
   align-items: center;
 }
 .profileInfo {
+  width: 70%;
   margin-left: 0.5rem;
   display: flex;
   flex-direction: column;
