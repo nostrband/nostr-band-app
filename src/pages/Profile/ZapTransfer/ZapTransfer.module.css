@@ -35,6 +35,13 @@
   font-size: 1.2rem;
   color: var(--bg-secondary-color);
 }
+.zapComment {
+  display: flex;
+  align-items: center;
+}
+.zapComment p {
+  margin: 0;
+}
 .zapsAmount {
   display: flex;
   align-items: center;

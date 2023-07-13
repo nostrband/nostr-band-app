@@ -84,8 +84,8 @@ const ZapTransfer = ({
         </p>
       )}
       {comment && (
-        <p>
-          Comment: <MarkdownComponent content={comment} />
+        <p className={cl.zapComment}>
+          Comment: "<MarkdownComponent content={comment} />"
         </p>
       )}
       <p className={cl.createdTime}>{data}</p>
