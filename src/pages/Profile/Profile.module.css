@@ -30,8 +30,8 @@
 }
 
 .profileTitleAvatar img {
-  width: 6.7rem;
-  height: 6.7rem;
+  aspect-ratio: 1 / 1;
+  width: 100%;
   border-radius: 50%;
   font-size: 0.8rem;
   text-align: center;
