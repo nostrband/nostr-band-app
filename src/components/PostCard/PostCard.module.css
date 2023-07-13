@@ -22,9 +22,9 @@
   cursor: pointer;
 }
 .postImage img {
-  aspect-ratio: 1 / 1;
   border-radius: 50%;
-  width: 100%;
+  width: 2rem;
+  height: 2rem;
 }
 .postNameLink {
   text-decoration: none;
