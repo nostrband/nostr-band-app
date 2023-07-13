@@ -9,14 +9,19 @@
 }
 .profile p {
   margin-bottom: 0;
-  overflow-x: scroll;
+}
+.profileNip {
+  display: flex;
+  align-items: center;
+}
+.profileNip a {
+  color: var(--bg-secondary-color);
 }
 .profileTitle {
   display: flex;
   align-items: center;
 }
 .profileInfo {
-  width: 70%;
   margin-left: 0.5rem;
   display: flex;
   flex-direction: column;
@@ -121,7 +126,9 @@
   text-decoration: underline;
   color: black;
 }
-
+.profileNip p {
+  margin: 0px;
+}
 .tab li {
   flex-grow: unset !important;
   margin-right: 5px;

@@ -1,10 +1,22 @@
-import { Lightning, LightningChargeFill } from "react-bootstrap-icons";
+import {
+  ArrowRight,
+  Lightning,
+  LightningChargeFill,
+} from "react-bootstrap-icons";
 import cl from "./ZapTransfer.module.css";
 import { formatAMPM } from "../../../utils/formatDate";
 import UserIcon from "../../../assets/user.png";
 import MarkdownComponent from "../../../components/MarkdownComponent/MarkdownComponent";
+import { Link } from "react-router-dom";
 
-const ZapTransfer = ({ sender, receiver, amount, created, comment }) => {
+const ZapTransfer = ({
+  sender,
+  receiver,
+  amount,
+  created,
+  comment,
+  zappedPost,
+}) => {
   const createdAt = new Date(created * 1000);
   const data = formatAMPM(createdAt);
 
@@ -62,7 +74,20 @@ const ZapTransfer = ({ sender, receiver, amount, created, comment }) => {
           <p>{receiver.displayName ? receiver.displayName : receiver.name}</p>
         </div>
       </div>
-      {comment && <MarkdownComponent content={comment} />}
+      {zappedPost && (
+        <p>
+          Zapped for: "{zappedPost.slice(0, 25)}...
+          <Link>
+            <ArrowRight fontWeight={900} />
+          </Link>
+          "
+        </p>
+      )}
+      {comment && (
+        <p>
+          Comment: <MarkdownComponent content={comment} />
+        </p>
+      )}
       <p className={cl.createdTime}>{data}</p>
     </div>
   );
