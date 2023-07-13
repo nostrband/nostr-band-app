@@ -48,6 +48,7 @@ const Profile = () => {
   const [sentAuthors, setSentAuthors] = useState([]);
   const [createdTimes, setCreatedTimes] = useState([]);
   const [sendersComments, setSendersComments] = useState([]);
+  const [zappedPosts, setZappedPosts] = useState([]);
 
   const fetchUser = async () => {
     try {
@@ -113,7 +114,6 @@ const Profile = () => {
           limit: 10,
         })
       );
-      // console.log(zaps);
       setReceivedZaps(zaps);
 
       const zapsAmount = zaps.map((zap) => {
@@ -121,6 +121,16 @@ const Profile = () => {
       });
       // console.log(zapsAmount);
       setAmountReceivedZaps(zapsAmount);
+
+      const postsIds = zaps.map((zap) => {
+        return zap.tags.find((item) => item[0] === "e")
+          ? zap.tags.find((item) => item[0] === "e")[1]
+          : "";
+      });
+      const zappedPosts = Array.from(
+        await ndk.fetchEvents({ kinds: [1], ids: postsIds, limit: 10 })
+      );
+      setZappedPosts(zappedPosts);
 
       const sendersPubkeys = zaps.map((zap) => {
         const cleanJSON = zap.tags
@@ -195,8 +205,8 @@ const Profile = () => {
                   <Key /> {npub.slice(0, 8)}...{npub.slice(-4)}
                 </p>
                 {profile.nip05 && (
-                  <p>
-                    <TextCenter /> {profile.nip05}
+                  <p className={cl.profileNip}>
+                    <TextCenter /> <MarkdownComponent content={profile.nip05} />
                   </p>
                 )}
               </div>
@@ -357,7 +367,6 @@ const Profile = () => {
                         const cleanJSON = author.tags
                           .find((item) => item[0] === "description")[1]
                           .replace(/[^\x20-\x7E]/g, "");
-
                         const pk = JSON.parse(cleanJSON).pubkey;
                         return item.pubkey === pk;
                       });
@@ -365,6 +374,12 @@ const Profile = () => {
                         ? JSON.parse(sender.content)
                         : "";
 
+                      const zappedPost = zappedPosts.find((item) => {
+                        const e = author.tags.find((item) => item[0] === "e")
+                          ? author.tags.find((item) => item[0] === "e")[1]
+                          : "";
+                        return item.id === e;
+                      });
                       return (
                         <ZapTransfer
                           key={index}
@@ -373,6 +388,7 @@ const Profile = () => {
                           amount={amountReceivedZaps[index]}
                           receiver={profile}
                           comment={sendersComments[index]}
+                          zappedPost={zappedPost ? zappedPost.content : ""}
                         />
                       );
                     })
