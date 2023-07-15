@@ -127,7 +127,7 @@ const Profile = () => {
         })
       );
       // console.log(countZaps);
-      setCountOfZaps(countZaps.length);
+      setCountOfZaps(countZaps.length - zaps.length);
 
       const providersPubkyes = zaps.map((zap) => zap.pubkey);
       const providers = Array.from(
@@ -438,7 +438,7 @@ const Profile = () => {
                     onClick={() => getMoreZaps()}
                     disabled={isZapLoading}
                   >
-                    Show more
+                    Show more {countOfZaps}
                   </button>
                 }
               </Tab>
