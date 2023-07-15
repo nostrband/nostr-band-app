@@ -1,7 +1,7 @@
 import { useLocation, useParams } from "react-router-dom";
 import cl from "./Profile.module.css";
 import NDK from "@nostr-dev-kit/ndk";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Search from "../../components/Search/Search";
 import {
   Key,
@@ -50,7 +50,9 @@ const Profile = () => {
   const [sendersComments, setSendersComments] = useState([]);
   const [zappedPosts, setZappedPosts] = useState([]);
   const [providers, setProviders] = useState([]);
-  const location = useLocation();
+  const [countOfZaps, setCountOfZaps] = useState([]);
+  const [limitZaps, setLimitZaps] = useState(10);
+  const [isZapLoading, setIsZapLoading] = useState(false);
 
   const fetchUser = async () => {
     try {
@@ -108,21 +110,31 @@ const Profile = () => {
 
   const fetchZaps = async (pk) => {
     try {
+      setIsZapLoading(true);
       const zaps = Array.from(
         await ndk.fetchEvents({
           kinds: [9735],
           "#p": [pk],
-          limit: 10,
+          limit: limitZaps,
         })
       );
       setReceivedZaps(zaps);
+
+      const countZaps = Array.from(
+        await ndk.fetchEvents({
+          kinds: [9735],
+          "#p": [pk],
+        })
+      );
+      // console.log(countZaps);
+      setCountOfZaps(countZaps.length);
 
       const providersPubkyes = zaps.map((zap) => zap.pubkey);
       const providers = Array.from(
         await ndk.fetchEvents({
           kinds: [0],
           authors: providersPubkyes,
-          limit: 10,
+          limit: limitZaps,
         })
       );
       setProviders(providers);
@@ -130,7 +142,6 @@ const Profile = () => {
       const zapsAmount = zaps.map((zap) => {
         return getZapAmount(zap);
       });
-      // console.log(zapsAmount);
       setAmountReceivedZaps(zapsAmount);
 
       const postsIds = zaps.map((zap) => {
@@ -139,7 +150,7 @@ const Profile = () => {
           : "";
       });
       const zappedPosts = Array.from(
-        await ndk.fetchEvents({ kinds: [1], ids: postsIds, limit: 10 })
+        await ndk.fetchEvents({ kinds: [1], ids: postsIds, limit: limitZaps })
       );
       setZappedPosts(zappedPosts);
 
@@ -168,7 +179,7 @@ const Profile = () => {
         await ndk.fetchEvents({
           kinds: [0],
           authors: sendersPubkeys,
-          limit: 10,
+          limit: limitZaps,
         })
       );
       // console.log(sendersArr);
@@ -176,15 +187,22 @@ const Profile = () => {
         return sender;
       });
       setSentAuthors(senders);
+      setIsZapLoading(false);
     } catch (e) {
       console.log(e);
     }
   };
 
+  useEffect(() => {
+    fetchZaps(pubkey, limitZaps);
+  }, [limitZaps]);
+  const getMoreZaps = () => {
+    setLimitZaps((prevState) => prevState + 10);
+    setCountOfZaps((prevState) => prevState - 10);
+  };
+
   const sats = stats?.zaps_received?.msats / 1000;
   const sentSats = stats.zaps_sent?.msats / 1000;
-
-  //   console.log(npub);
 
   return (
     <div className={cl.profileContainer}>
@@ -415,6 +433,15 @@ const Profile = () => {
                       );
                     })
                   : "No received zaps"}
+                {
+                  <button
+                    className={cl.moreBtn}
+                    onClick={() => getMoreZaps()}
+                    disabled={isZapLoading}
+                  >
+                    Show more
+                  </button>
+                }
               </Tab>
               <Tab
                 eventKey="zaps-sent"
@@ -423,7 +450,6 @@ const Profile = () => {
                     Zaps <ArrowUp />
                   </span>
                 }
-                onClick={() => fetchZaps(pubkey)}
               >
                 Tab content for Zaps
               </Tab>

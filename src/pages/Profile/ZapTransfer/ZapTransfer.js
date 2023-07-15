@@ -9,6 +9,7 @@ import UserIcon from "../../../assets/user.png";
 import MarkdownComponent from "../../../components/MarkdownComponent/MarkdownComponent";
 import { Link, useNavigate } from "react-router-dom";
 import { nip19 } from "nostr-tools";
+import Skeleton from "react-loading-skeleton";
 
 const ZapTransfer = ({
   sender,
@@ -71,12 +72,19 @@ const ZapTransfer = ({
             height="100%"
           />
           <span>
-            {amount / 1000} <br />
-            sats
+            {amount ? (
+              <>
+                {amount / 1000}
+                <br />
+                sats
+              </>
+            ) : (
+              <Skeleton width={30} />
+            )}
           </span>
           <ArrowRightCircleFill color="orange" width="1.8rem" height="100%" />
         </div>
-        <div className={cl.zapSenderAbout}>
+        <div className={`${cl.zapSenderAbout} ${cl.rightSender}`}>
           <div className={cl.zapSenderImage}>
             <img
               src={receiver.image}
@@ -99,12 +107,17 @@ const ZapTransfer = ({
         </p>
       )}
       {comment && <MarkdownComponent content={comment} />}
-      <p className={cl.createdTime}>
-        {data} to{" "}
+      <div className={cl.createdTime}>
+        {created ? (
+          data
+        ) : (
+          <Skeleton width={100} style={{ marginRight: "5px" }} />
+        )}{" "}
+        to&nbsp;
         <Link>
           {provider.displayName ? provider.displayName : provider.name}
         </Link>
-      </p>
+      </div>
     </div>
   );
 };

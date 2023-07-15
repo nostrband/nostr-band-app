@@ -141,3 +141,16 @@
 .tab li button:hover {
   color: black;
 }
+.moreBtn {
+  all: unset;
+  margin: 0 auto;
+  display: block;
+  color: rgb(13, 110, 253);
+  transition: 0.4s;
+}
+.moreBtn:disabled {
+  color: gray;
+}
+.moreBtn:hover {
+  color: #0a58ca;
+}

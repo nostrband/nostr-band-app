@@ -31,6 +31,10 @@
 .zapSenderAbout {
   display: flex;
   align-items: center;
+  width: 40%;
+}
+.rightSender {
+  justify-content: flex-end;
 }
 .zapSenderAbout p {
   font-size: 1.2rem;
@@ -46,6 +50,10 @@
   margin: 0 0.5rem;
 }
 .createdTime {
+  display: flex;
+  float: right;
+  justify-content: flex-end;
+  align-items: center;
   font-size: 0.85rem;
   color: var(--bg-secondary-color);
   text-align: right;
