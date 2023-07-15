@@ -1,7 +1,7 @@
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import cl from "./Profile.module.css";
 import NDK from "@nostr-dev-kit/ndk";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Search from "../../components/Search/Search";
 import {
   Key,
@@ -49,6 +49,10 @@ const Profile = () => {
   const [createdTimes, setCreatedTimes] = useState([]);
   const [sendersComments, setSendersComments] = useState([]);
   const [zappedPosts, setZappedPosts] = useState([]);
+  const [providers, setProviders] = useState([]);
+  const [countOfZaps, setCountOfZaps] = useState([]);
+  const [limitZaps, setLimitZaps] = useState(10);
+  const [isZapLoading, setIsZapLoading] = useState(false);
 
   const fetchUser = async () => {
     try {
@@ -58,7 +62,6 @@ const Profile = () => {
       await user.fetchProfile();
       const pk = user.hexpubkey();
       setPubkey(pk);
-      // console.log(pk);
       fetchStats(pk);
       const lastEv = await ndk.fetchEvent({
         kinds: [1],
@@ -107,19 +110,38 @@ const Profile = () => {
 
   const fetchZaps = async (pk) => {
     try {
+      setIsZapLoading(true);
       const zaps = Array.from(
         await ndk.fetchEvents({
           kinds: [9735],
           "#p": [pk],
-          limit: 10,
+          limit: limitZaps,
         })
       );
       setReceivedZaps(zaps);
 
+      const countZaps = Array.from(
+        await ndk.fetchEvents({
+          kinds: [9735],
+          "#p": [pk],
+        })
+      );
+      // console.log(countZaps);
+      setCountOfZaps(countZaps.length);
+
+      const providersPubkyes = zaps.map((zap) => zap.pubkey);
+      const providers = Array.from(
+        await ndk.fetchEvents({
+          kinds: [0],
+          authors: providersPubkyes,
+          limit: limitZaps,
+        })
+      );
+      setProviders(providers);
+
       const zapsAmount = zaps.map((zap) => {
         return getZapAmount(zap);
       });
-      // console.log(zapsAmount);
       setAmountReceivedZaps(zapsAmount);
 
       const postsIds = zaps.map((zap) => {
@@ -128,7 +150,7 @@ const Profile = () => {
           : "";
       });
       const zappedPosts = Array.from(
-        await ndk.fetchEvents({ kinds: [1], ids: postsIds, limit: 10 })
+        await ndk.fetchEvents({ kinds: [1], ids: postsIds, limit: limitZaps })
       );
       setZappedPosts(zappedPosts);
 
@@ -157,7 +179,7 @@ const Profile = () => {
         await ndk.fetchEvents({
           kinds: [0],
           authors: sendersPubkeys,
-          limit: 10,
+          limit: limitZaps,
         })
       );
       // console.log(sendersArr);
@@ -165,15 +187,22 @@ const Profile = () => {
         return sender;
       });
       setSentAuthors(senders);
+      setIsZapLoading(false);
     } catch (e) {
       console.log(e);
     }
   };
 
+  useEffect(() => {
+    fetchZaps(pubkey, limitZaps);
+  }, [limitZaps]);
+  const getMoreZaps = () => {
+    setLimitZaps((prevState) => prevState + 10);
+    setCountOfZaps((prevState) => prevState - 10);
+  };
+
   const sats = stats?.zaps_received?.msats / 1000;
   const sentSats = stats.zaps_sent?.msats / 1000;
-
-  //   console.log(npub);
 
   return (
     <div className={cl.profileContainer}>
@@ -205,9 +234,9 @@ const Profile = () => {
                   <Key /> {npub.slice(0, 8)}...{npub.slice(-4)}
                 </p>
                 {profile.nip05 && (
-                  <p className={cl.profileNip}>
+                  <div className={cl.profileNip}>
                     <TextCenter /> <MarkdownComponent content={profile.nip05} />
-                  </p>
+                  </div>
                 )}
               </div>
             </div>
@@ -363,11 +392,11 @@ const Profile = () => {
               >
                 {receivedZaps.length && createdTimes.length
                   ? receivedZaps.map((author, index) => {
+                      const cleanJSON = author.tags
+                        .find((item) => item[0] === "description")[1]
+                        .replace(/[^\x20-\x7E]/g, "");
+                      const pk = JSON.parse(cleanJSON).pubkey;
                       const sender = sentAuthors.find((item) => {
-                        const cleanJSON = author.tags
-                          .find((item) => item[0] === "description")[1]
-                          .replace(/[^\x20-\x7E]/g, "");
-                        const pk = JSON.parse(cleanJSON).pubkey;
                         return item.pubkey === pk;
                       });
                       const senderContent = sender
@@ -380,6 +409,15 @@ const Profile = () => {
                           : "";
                         return item.id === e;
                       });
+
+                      const provider = providers.length
+                        ? JSON.parse(
+                            providers.find(
+                              (provider) => provider.pubkey === author.pubkey
+                            ).content
+                          )
+                        : "";
+
                       return (
                         <ZapTransfer
                           key={index}
@@ -389,10 +427,21 @@ const Profile = () => {
                           receiver={profile}
                           comment={sendersComments[index]}
                           zappedPost={zappedPost ? zappedPost.content : ""}
+                          provider={provider}
+                          senderPubkey={pk}
                         />
                       );
                     })
                   : "No received zaps"}
+                {
+                  <button
+                    className={cl.moreBtn}
+                    onClick={() => getMoreZaps()}
+                    disabled={isZapLoading}
+                  >
+                    Show more
+                  </button>
+                }
               </Tab>
               <Tab
                 eventKey="zaps-sent"
@@ -401,7 +450,6 @@ const Profile = () => {
                     Zaps <ArrowUp />
                   </span>
                 }
-                onClick={() => fetchZaps(pubkey)}
               >
                 Tab content for Zaps
               </Tab>

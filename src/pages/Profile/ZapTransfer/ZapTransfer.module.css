@@ -30,17 +30,15 @@
 }
 .zapSenderAbout {
   display: flex;
+  align-items: center;
+  width: 40%;
+}
+.rightSender {
+  justify-content: flex-end;
 }
 .zapSenderAbout p {
   font-size: 1.2rem;
   color: var(--bg-secondary-color);
-}
-.zapComment {
-  display: flex;
-  align-items: center;
-}
-.zapComment p {
-  margin: 0;
 }
 .zapsAmount {
   display: flex;
@@ -52,6 +50,10 @@
   margin: 0 0.5rem;
 }
 .createdTime {
+  display: flex;
+  float: right;
+  justify-content: flex-end;
+  align-items: center;
   font-size: 0.85rem;
   color: var(--bg-secondary-color);
   text-align: right;
@@ -61,11 +63,27 @@
   font-size: 2rem;
   color: var(--bg-secondary-color);
 }
+.createdTime a {
+  color: var(--bg-secondary-color);
+  opacity: 0.8;
+  text-decoration: none;
+  transition: 0.4s;
+}
+.createdTime a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+.zapSenderAbout a {
+  text-decoration: none;
+  color: var(--bg-secondary-color);
+}
+.zapSenderAbout a:hover {
+  text-decoration: underline;
+}
 
 @media screen and (max-width: 500px) {
   .zapSenderAbout {
     flex-direction: column;
-    align-items: center;
   }
   .zapSenderAbout p {
     text-align: center;
