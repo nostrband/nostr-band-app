@@ -7,7 +7,7 @@ import cl from "./ZapTransfer.module.css";
 import { formatAMPM } from "../../../utils/formatDate";
 import UserIcon from "../../../assets/user.png";
 import MarkdownComponent from "../../../components/MarkdownComponent/MarkdownComponent";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 
 const ZapTransfer = ({
@@ -23,6 +23,7 @@ const ZapTransfer = ({
   const createdAt = new Date(created * 1000);
   const data = formatAMPM(createdAt);
   const senderPk = nip19.npubEncode(senderPubkey);
+  const navigate = useNavigate();
 
   return (
     <div className={cl.zap}>
@@ -50,7 +51,12 @@ const ZapTransfer = ({
             </div>
           )}
           {sender ? (
-            <Link to={`/${senderPk}`}>
+            <Link
+              onClick={() => {
+                navigate(`/${senderPk}`);
+                window.location.reload();
+              }}
+            >
               {sender.displayName ? sender.displayName : sender.name}
             </Link>
           ) : (

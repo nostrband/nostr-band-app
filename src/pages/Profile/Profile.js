@@ -52,10 +52,6 @@ const Profile = () => {
   const [providers, setProviders] = useState([]);
   const location = useLocation();
 
-  useEffect(() => {
-    fetchUser();
-  }, [location.pathname]);
-
   const fetchUser = async () => {
     try {
       const ndk = new NDK({ explicitRelayUrls: ["wss://relay.nostr.band"] });
@@ -64,7 +60,6 @@ const Profile = () => {
       await user.fetchProfile();
       const pk = user.hexpubkey();
       setPubkey(pk);
-      // console.log(pk);
       fetchStats(pk);
       const lastEv = await ndk.fetchEvent({
         kinds: [1],
@@ -397,11 +392,13 @@ const Profile = () => {
                         return item.id === e;
                       });
 
-                      const provider = JSON.parse(
-                        providers.find(
-                          (provider) => provider.pubkey === author.pubkey
-                        ).content
-                      );
+                      const provider = providers.length
+                        ? JSON.parse(
+                            providers.find(
+                              (provider) => provider.pubkey === author.pubkey
+                            ).content
+                          )
+                        : "";
 
                       return (
                         <ZapTransfer
