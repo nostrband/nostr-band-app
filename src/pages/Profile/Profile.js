@@ -198,7 +198,6 @@ const Profile = () => {
   }, [limitZaps]);
   const getMoreZaps = () => {
     setLimitZaps((prevState) => prevState + 10);
-    setCountOfZaps((prevState) => prevState - 10);
   };
 
   const sats = stats?.zaps_received?.msats / 1000;
