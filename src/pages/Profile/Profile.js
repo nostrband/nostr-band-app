@@ -1,7 +1,7 @@
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import cl from "./Profile.module.css";
 import NDK from "@nostr-dev-kit/ndk";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Search from "../../components/Search/Search";
 import {
   Key,
@@ -58,6 +58,7 @@ const Profile = () => {
     try {
       const ndk = new NDK({ explicitRelayUrls: ["wss://relay.nostr.band"] });
       ndk.connect();
+      setNdk(ndk);
       const user = ndk.getUser({ npub });
       await user.fetchProfile();
       const pk = user.hexpubkey();
@@ -78,7 +79,6 @@ const Profile = () => {
       // console.log(user.profile);
       setProfile(user.profile);
       setNprofile(nip19.nprofileEncode({ pubkey: pk }));
-      setNdk(ndk);
     } catch (e) {
       console.log(e);
     }
@@ -194,8 +194,12 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    fetchZaps(pubkey, limitZaps);
+    if (tabKey === "zaps") {
+      fetchZaps(pubkey);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limitZaps]);
+
   const getMoreZaps = () => {
     setLimitZaps((prevState) => prevState + 10);
   };
@@ -205,7 +209,7 @@ const Profile = () => {
 
   return (
     <div className={cl.profileContainer}>
-      <Search />
+      <Search isLoading={isZapLoading} />
       <h2>Profile</h2>
       {profile ? (
         <>
@@ -432,7 +436,7 @@ const Profile = () => {
                       );
                     })
                   : "No received zaps"}
-                {
+                {countOfZaps >= 10 && (
                   <button
                     className={cl.moreBtn}
                     onClick={() => getMoreZaps()}
@@ -440,7 +444,7 @@ const Profile = () => {
                   >
                     Show more {countOfZaps}
                   </button>
-                }
+                )}
               </Tab>
               <Tab
                 eventKey="zaps-sent"
