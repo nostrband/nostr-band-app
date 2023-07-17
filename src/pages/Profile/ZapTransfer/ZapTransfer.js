@@ -20,20 +20,24 @@ const ZapTransfer = ({
   zappedPost,
   provider,
   senderPubkey,
+  mode,
 }) => {
   const createdAt = new Date(created * 1000);
   const data = formatAMPM(createdAt);
   const senderPk = nip19.npubEncode(senderPubkey);
   const navigate = useNavigate();
 
+  const senderImage = mode === "sent" ? sender.image : sender.picture;
+  const receiverImage = mode === "sent" ? receiver.picture : receiver.image;
+
   return (
     <div className={cl.zap}>
       <div className={cl.zapSender}>
         <div className={cl.zapSenderAbout}>
-          {sender.picture ? (
+          {senderImage ? (
             <div className={cl.zapSenderImage}>
               <img
-                src={sender.picture}
+                src={senderImage}
                 onError={({ currentTarget }) =>
                   (currentTarget.srcset = UserIcon)
                 }
@@ -80,15 +84,25 @@ const ZapTransfer = ({
         </div>
         <div className={`${cl.zapSenderAbout} ${cl.rightSender}`}>
           <div className={cl.zapSenderImage}>
-            <img
-              src={receiver.image}
-              alt="avatar"
-              onError={({ currentTarget }) => (currentTarget.srcset = UserIcon)}
-            />
+            {receiverImage ? (
+              <img
+                src={receiverImage}
+                alt="avatar"
+                onError={({ currentTarget }) =>
+                  (currentTarget.srcset = UserIcon)
+                }
+              />
+            ) : (
+              <img src={UserIcon} alt="avatar" />
+            )}
           </div>
-          <Link>
-            {receiver.displayName ? receiver.displayName : receiver.name}
-          </Link>
+          {receiver ? (
+            <Link>
+              {receiver.displayName ? receiver.displayName : receiver.name}
+            </Link>
+          ) : (
+            "Unknown"
+          )}
         </div>
       </div>
       {zappedPost && (
@@ -107,7 +121,7 @@ const ZapTransfer = ({
         ) : (
           <Skeleton width={100} style={{ marginRight: "5px" }} />
         )}{" "}
-        to&nbsp;
+        {provider && "to"}&nbsp;
         <Link>
           {provider.displayName ? provider.displayName : provider.name}
         </Link>

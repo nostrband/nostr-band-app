@@ -56,6 +56,13 @@ const Profile = () => {
   const [limitZaps, setLimitZaps] = useState(10);
   const [isZapLoading, setIsZapLoading] = useState(false);
   const [limitPosts, setLimitPosts] = useState(10);
+  const [sentZaps, setSentZaps] = useState([]);
+  const [sentProviders, setSentProviders] = useState([]);
+  const [amountSentZaps, setAmountSentZaps] = useState([]);
+  const [sentComments, setSentComments] = useState([]);
+  const [sentCreatedTimes, setSentCreatedTimes] = useState([]);
+  const [receiverAuthors, setReceiverAuthors] = useState([]);
+  const [sentZappedPosts, setSentZappedPosts] = useState([]);
 
   const fetchUser = async () => {
     try {
@@ -101,9 +108,17 @@ const Profile = () => {
         `${process.env.REACT_APP_API_URL}/stats/profile/${pk}`
       );
       setStats(data.stats[pk]);
-      setCountOfZaps(data.stats[pk].zaps_received.count);
-      setCountOfSentZaps(data.stats[pk].zaps_sent.count);
-      setCountOfPosts(data.stats[pk].pub_post_count);
+      setCountOfZaps(
+        data.stats[pk]?.zaps_received?.count
+          ? data.stats[pk]?.zaps_received?.count
+          : 0
+      );
+      setCountOfSentZaps(
+        data.stats[pk]?.zaps_sent?.count ? data.stats[pk]?.zaps_sent?.count : 0
+      );
+      setCountOfPosts(
+        data.stats[pk]?.pub_post_count ? data.stats[pk]?.pub_post_count : 0
+      );
       // console.log(data.stats[pk]);
     } catch (e) {
       console.log(e);
@@ -118,9 +133,83 @@ const Profile = () => {
   useEffect(() => {
     if (tabKey === "zaps") {
       fetchZaps(pubkey);
+    } else if (tabKey === "zaps-sent") {
+      fetchSentZaps(pubkey);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tabKey]);
+
+  const fetchSentZaps = async (pk) => {
+    try {
+      setIsZapLoading(true);
+      const zaps = Array.from(
+        await ndk.fetchEvents({
+          kinds: [9735],
+          "@zs": [pk],
+          limit: limitZaps,
+        })
+      );
+      setSentZaps(zaps);
+
+      const providersPubkyes = zaps.map((zap) => zap.pubkey);
+      const providers = Array.from(
+        await ndk.fetchEvents({
+          kinds: [0],
+          authors: providersPubkyes,
+          limit: limitZaps,
+        })
+      );
+      setSentProviders(providers);
+
+      const zapsAmount = zaps.map((zap) => {
+        return getZapAmount(zap);
+      });
+      setAmountSentZaps(zapsAmount);
+
+      const postsIds = zaps.map((zap) => {
+        return zap.tags.find((item) => item[0] === "e")
+          ? zap.tags.find((item) => item[0] === "e")[1]
+          : "";
+      });
+      const zappedPosts = Array.from(
+        await ndk.fetchEvents({ kinds: [1], ids: postsIds, limit: limitZaps })
+      );
+      setSentZappedPosts(zappedPosts);
+
+      const sendersComments = zaps.map((zap) => {
+        const cleanJSON = zap.tags
+          .find((item) => item[0] === "description")[1]
+          .replace(/[^\x20-\x7E]/g, "");
+        return JSON.parse(cleanJSON).content;
+      });
+      setSentComments(sendersComments);
+
+      const createdTimes = zaps.map((zap) => {
+        return zap.created_at;
+      });
+      setSentCreatedTimes(createdTimes);
+
+      const receiversPubkeys = zaps.map((zap) => {
+        return zap.tags.find((item) => item[0] === "p")[1];
+      });
+
+      const receiversArr = Array.from(
+        await ndk.fetchEvents({
+          kinds: [0],
+          authors: receiversPubkeys,
+          limit: limitZaps,
+        })
+      );
+
+      const receivers = receiversArr.map((receiver) => {
+        return receiver;
+      });
+      setReceiverAuthors(receivers);
+      setIsZapLoading(false);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const fetchZaps = async (pk) => {
     try {
@@ -450,13 +539,10 @@ const Profile = () => {
                         return item.id === e;
                       });
 
-                      const provider = providers.length
-                        ? JSON.parse(
-                            providers.find(
-                              (provider) => provider.pubkey === author.pubkey
-                            ).content
-                          )
-                        : "";
+                      const pr = providers.find(
+                        (provider) => provider.pubkey === author.pubkey
+                      );
+                      const provider = pr ? JSON.parse(pr.content) : "";
 
                       return (
                         <ZapTransfer
@@ -494,7 +580,47 @@ const Profile = () => {
                   </div>
                 }
               >
-                Tab content for Zaps
+                {sentZaps.length && sentCreatedTimes.length
+                  ? sentZaps.map((author, index) => {
+                      const pk = author.tags.find((item) => item[0] === "p")[1];
+
+                      const receiver = receiverAuthors.find(
+                        (item) => item.pubkey === pk
+                      );
+
+                      console.log(receiver);
+                      const receiverContent = receiver
+                        ? JSON.parse(receiver.content)
+                        : "";
+
+                      const zappedPost = sentZappedPosts.find((item) => {
+                        const e = author.tags.find((item) => item[0] === "e")
+                          ? author.tags.find((item) => item[0] === "e")[1]
+                          : "";
+                        return item.id === e;
+                      });
+
+                      const pr = sentProviders.find(
+                        (provider) => provider.pubkey === author.pubkey
+                      );
+                      const provider = pr ? JSON.parse(pr.content) : "";
+
+                      return (
+                        <ZapTransfer
+                          key={index}
+                          created={sentCreatedTimes[index]}
+                          sender={profile}
+                          amount={amountSentZaps[index]}
+                          receiver={receiverContent}
+                          comment={sentComments[index]}
+                          zappedPost={zappedPost ? zappedPost.content : ""}
+                          provider={provider}
+                          senderPubkey={pubkey}
+                          mode="sent"
+                        />
+                      );
+                    })
+                  : "No sent zaps"}
               </Tab>
             </Tabs>
           </div>
