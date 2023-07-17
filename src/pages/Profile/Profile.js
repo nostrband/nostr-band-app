@@ -63,6 +63,7 @@ const Profile = () => {
   const [sentCreatedTimes, setSentCreatedTimes] = useState([]);
   const [receiverAuthors, setReceiverAuthors] = useState([]);
   const [sentZappedPosts, setSentZappedPosts] = useState([]);
+  const [limitSentZaps, setLimitSentZaps] = useState(10);
 
   const fetchUser = async () => {
     try {
@@ -146,7 +147,7 @@ const Profile = () => {
         await ndk.fetchEvents({
           kinds: [9735],
           "@zs": [pk],
-          limit: limitZaps,
+          limit: limitSentZaps,
         })
       );
       setSentZaps(zaps);
@@ -156,7 +157,7 @@ const Profile = () => {
         await ndk.fetchEvents({
           kinds: [0],
           authors: providersPubkyes,
-          limit: limitZaps,
+          limit: limitSentZaps,
         })
       );
       setSentProviders(providers);
@@ -172,7 +173,11 @@ const Profile = () => {
           : "";
       });
       const zappedPosts = Array.from(
-        await ndk.fetchEvents({ kinds: [1], ids: postsIds, limit: limitZaps })
+        await ndk.fetchEvents({
+          kinds: [1],
+          ids: postsIds,
+          limit: limitSentZaps,
+        })
       );
       setSentZappedPosts(zappedPosts);
 
@@ -197,7 +202,7 @@ const Profile = () => {
         await ndk.fetchEvents({
           kinds: [0],
           authors: receiversPubkeys,
-          limit: limitZaps,
+          limit: limitSentZaps,
         })
       );
 
@@ -295,6 +300,13 @@ const Profile = () => {
   }, [limitZaps]);
 
   useEffect(() => {
+    if (tabKey === "zaps-sent") {
+      fetchSentZaps(pubkey);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [limitSentZaps]);
+
+  useEffect(() => {
     if (tabKey === "posts") {
       fetchPosts(pubkey, ndk);
     }
@@ -307,6 +319,10 @@ const Profile = () => {
 
   const getMorePosts = () => {
     setLimitPosts((prevState) => prevState + 10);
+  };
+
+  const getMoreSentZaps = () => {
+    setLimitSentZaps((prevState) => prevState + 10);
   };
 
   const sats = stats?.zaps_received?.msats / 1000;
@@ -620,6 +636,16 @@ const Profile = () => {
                       );
                     })
                   : "No sent zaps"}
+                {countOfSentZaps - sentZaps.length > 0 && (
+                  <div className={cl.moreBtn}>
+                    <Button
+                      onClick={() => getMoreSentZaps()}
+                      disabled={isZapLoading}
+                    >
+                      Load more
+                    </Button>
+                  </div>
+                )}
               </Tab>
             </Tabs>
           </div>
