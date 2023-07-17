@@ -42,13 +42,7 @@ const ZapTransfer = ({
             </div>
           ) : (
             <div className={cl.zapSenderImage}>
-              <img
-                src={UserIcon}
-                alt="avatar"
-                onError={({ currentTarget }) =>
-                  (currentTarget.srcset = UserIcon)
-                }
-              />
+              <Skeleton circle width="100%" height="100%" />
             </div>
           )}
           {sender ? (
