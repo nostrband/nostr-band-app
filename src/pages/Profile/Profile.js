@@ -12,9 +12,8 @@ import {
   Share,
   FileEarmarkPlus,
   Lightning,
-  ArrowDown,
-  ArrowUp,
   ChatQuote,
+  LightningFill,
 } from "react-bootstrap-icons";
 import axios from "axios";
 import { formatAMPM } from "../../utils/formatDate";
@@ -56,9 +55,11 @@ const Profile = () => {
   const [countOfPosts, setCountOfPosts] = useState("");
   const [limitZaps, setLimitZaps] = useState(10);
   const [isZapLoading, setIsZapLoading] = useState(false);
+  const [limitPosts, setLimitPosts] = useState(10);
 
   const fetchUser = async () => {
     try {
+      setIsZapLoading(true);
       const ndk = new NDK({ explicitRelayUrls: ["wss://relay.nostr.band"] });
       ndk.connect();
       setNdk(ndk);
@@ -72,18 +73,25 @@ const Profile = () => {
         authors: [pk],
         limit: 1,
       });
-      const events = await ndk.fetchEvents({
-        kinds: [1],
-        authors: [pk],
-        limit: 10,
-      });
-      setEvents(Array.from(events));
       setLastEvent(lastEv);
+      fetchPosts(pk, ndk);
       // console.log(user.profile);
       setProfile(user.profile);
       setNprofile(nip19.nprofileEncode({ pubkey: pk }));
+      setIsZapLoading(false);
     } catch (e) {
       console.log(e);
+    }
+  };
+
+  const fetchPosts = async (pk, ndk) => {
+    if (ndk instanceof NDK) {
+      const events = await ndk.fetchEvents({
+        kinds: [1],
+        authors: [pk],
+        limit: limitPosts,
+      });
+      setEvents(Array.from(events));
     }
   };
 
@@ -96,7 +104,7 @@ const Profile = () => {
       setCountOfZaps(data.stats[pk].zaps_received.count);
       setCountOfSentZaps(data.stats[pk].zaps_sent.count);
       setCountOfPosts(data.stats[pk].pub_post_count);
-      console.log(data.stats[pk]);
+      // console.log(data.stats[pk]);
     } catch (e) {
       console.log(e);
     }
@@ -197,8 +205,19 @@ const Profile = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limitZaps]);
 
+  useEffect(() => {
+    if (tabKey === "posts") {
+      fetchPosts(pubkey, ndk);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [limitPosts]);
+
   const getMoreZaps = () => {
     setLimitZaps((prevState) => prevState + 10);
+  };
+
+  const getMorePosts = () => {
+    setLimitPosts((prevState) => prevState + 10);
   };
 
   const sats = stats?.zaps_received?.msats / 1000;
@@ -364,9 +383,9 @@ const Profile = () => {
                 eventKey="posts"
                 title={
                   <span className="d-flex align-items-center">
-                    Posts&nbsp;
-                    <ChatQuote />
-                    &nbsp;{countOfPosts}
+                    <ChatQuote style={{ marginRight: "5px" }} />
+                    posts&nbsp;
+                    {countOfPosts}
                   </span>
                 }
               >
@@ -389,14 +408,24 @@ const Profile = () => {
                       );
                     })
                   : "No posts"}
+                {countOfPosts - events.length > 0 && (
+                  <div className={cl.moreBtn}>
+                    <Button
+                      onClick={() => getMorePosts()}
+                      disabled={isZapLoading}
+                    >
+                      Load more
+                    </Button>
+                  </div>
+                )}
               </Tab>
               <Tab
                 eventKey="zaps"
                 title={
                   <span className="d-flex align-items-center">
-                    Zaps&nbsp;
-                    <ArrowDown />
-                    &nbsp;{countOfZaps}
+                    <LightningFill />
+                    received&nbsp;
+                    {countOfZaps}
                   </span>
                 }
                 onClick={() => fetchZaps(pubkey)}
@@ -444,7 +473,7 @@ const Profile = () => {
                       );
                     })
                   : "No received zaps"}
-                {countOfZaps >= 10 && (
+                {countOfZaps - receivedZaps.length > 0 && (
                   <div className={cl.moreBtn}>
                     <Button
                       onClick={() => getMoreZaps()}
@@ -459,9 +488,9 @@ const Profile = () => {
                 eventKey="zaps-sent"
                 title={
                   <div className="d-flex align-items-center">
-                    Zaps&nbsp;
-                    <ArrowUp />
-                    &nbsp;{countOfSentZaps}
+                    <LightningFill />
+                    sent&nbsp;
+                    {countOfSentZaps}
                   </div>
                 }
               >
