@@ -14,6 +14,7 @@ import {
   Lightning,
   ArrowDown,
   ArrowUp,
+  ChatQuote,
 } from "react-bootstrap-icons";
 import axios from "axios";
 import { formatAMPM } from "../../utils/formatDate";
@@ -50,7 +51,9 @@ const Profile = () => {
   const [sendersComments, setSendersComments] = useState([]);
   const [zappedPosts, setZappedPosts] = useState([]);
   const [providers, setProviders] = useState([]);
-  const [countOfZaps, setCountOfZaps] = useState([]);
+  const [countOfZaps, setCountOfZaps] = useState("");
+  const [countOfSentZaps, setCountOfSentZaps] = useState("");
+  const [countOfPosts, setCountOfPosts] = useState("");
   const [limitZaps, setLimitZaps] = useState(10);
   const [isZapLoading, setIsZapLoading] = useState(false);
 
@@ -90,7 +93,10 @@ const Profile = () => {
         `${process.env.REACT_APP_API_URL}/stats/profile/${pk}`
       );
       setStats(data.stats[pk]);
-      // console.log(data.stats[pk]);
+      setCountOfZaps(data.stats[pk].zaps_received.count);
+      setCountOfSentZaps(data.stats[pk].zaps_sent.count);
+      setCountOfPosts(data.stats[pk].pub_post_count);
+      console.log(data.stats[pk]);
     } catch (e) {
       console.log(e);
     }
@@ -119,15 +125,6 @@ const Profile = () => {
         })
       );
       setReceivedZaps(zaps);
-
-      const countZaps = Array.from(
-        await ndk.fetchEvents({
-          kinds: [9735],
-          "#p": [pk],
-        })
-      );
-      // console.log(countZaps);
-      setCountOfZaps(countZaps.length - zaps.length);
 
       const providersPubkyes = zaps.map((zap) => zap.pubkey);
       const providers = Array.from(
@@ -363,7 +360,16 @@ const Profile = () => {
               variant="pills"
               justify
             >
-              <Tab eventKey="posts" title="Posts">
+              <Tab
+                eventKey="posts"
+                title={
+                  <span className="d-flex align-items-center">
+                    Posts&nbsp;
+                    <ChatQuote />
+                    &nbsp;{countOfPosts}
+                  </span>
+                }
+              >
                 {events && events.length
                   ? events.map((event) => {
                       return (
@@ -388,7 +394,9 @@ const Profile = () => {
                 eventKey="zaps"
                 title={
                   <span className="d-flex align-items-center">
-                    Zaps <ArrowDown />
+                    Zaps&nbsp;
+                    <ArrowDown />
+                    &nbsp;{countOfZaps}
                   </span>
                 }
                 onClick={() => fetchZaps(pubkey)}
@@ -437,21 +445,24 @@ const Profile = () => {
                     })
                   : "No received zaps"}
                 {countOfZaps >= 10 && (
-                  <button
-                    className={cl.moreBtn}
-                    onClick={() => getMoreZaps()}
-                    disabled={isZapLoading}
-                  >
-                    Show more {countOfZaps}
-                  </button>
+                  <div className={cl.moreBtn}>
+                    <Button
+                      onClick={() => getMoreZaps()}
+                      disabled={isZapLoading}
+                    >
+                      Load more
+                    </Button>
+                  </div>
                 )}
               </Tab>
               <Tab
                 eventKey="zaps-sent"
                 title={
-                  <span className="d-flex align-items-center">
-                    Zaps <ArrowUp />
-                  </span>
+                  <div className="d-flex align-items-center">
+                    Zaps&nbsp;
+                    <ArrowUp />
+                    &nbsp;{countOfSentZaps}
+                  </div>
                 }
               >
                 Tab content for Zaps
