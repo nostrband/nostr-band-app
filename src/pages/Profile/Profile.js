@@ -588,7 +588,6 @@ const Profile = () => {
                         (item) => item.pubkey === pk
                       );
 
-                      console.log(receiver);
                       const receiverContent = receiver
                         ? JSON.parse(receiver.content)
                         : "";
