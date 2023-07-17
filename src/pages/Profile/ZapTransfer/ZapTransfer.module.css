@@ -7,6 +7,9 @@
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   border-radius: 16px;
 }
+.zap p {
+  margin-bottom: 0.2rem;
+}
 .zapSenderImage {
   display: flex;
   align-items: center;
@@ -22,6 +25,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  margin-bottom: 0.5rem;
 }
 .zapSenderImage img {
   border-radius: 50%;
@@ -87,5 +91,8 @@
   }
   .zapSenderAbout p {
     text-align: center;
+  }
+  .zapSenderImage {
+    margin: 0;
   }
 }
