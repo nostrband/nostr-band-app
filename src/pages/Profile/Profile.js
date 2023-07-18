@@ -118,7 +118,7 @@ const Profile = () => {
         data.stats[pk]?.zaps_sent?.count ? data.stats[pk]?.zaps_sent?.count : 0
       );
       setCountOfPosts(
-        data.stats[pk]?.pub_post_count ? data.stats[pk]?.pub_post_count : 0
+        data.stats[pk]?.pub_note_count ? data.stats[pk]?.pub_note_count : 0
       );
       // console.log(data.stats[pk]);
     } catch (e) {
@@ -630,7 +630,7 @@ const Profile = () => {
                           comment={sentComments[index]}
                           zappedPost={zappedPost ? zappedPost.content : ""}
                           provider={provider}
-                          senderPubkey={pubkey}
+                          senderPubkey={pk}
                           mode="sent"
                         />
                       );
