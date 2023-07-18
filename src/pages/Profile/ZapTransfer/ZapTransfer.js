@@ -50,14 +50,20 @@ const ZapTransfer = ({
             </div>
           )}
           {sender ? (
-            <Link
-              onClick={() => {
-                navigate(`/${senderPk}`);
-                window.location.reload();
-              }}
-            >
-              {sender.displayName ? sender.displayName : sender.name}
-            </Link>
+            mode === "sent" ? (
+              <Link>
+                {sender.displayName ? sender.displayName : sender.name}
+              </Link>
+            ) : (
+              <Link
+                onClick={() => {
+                  navigate(`/${senderPk}`);
+                  window.location.reload();
+                }}
+              >
+                {sender.displayName ? sender.displayName : sender.name}
+              </Link>
+            )
           ) : (
             "Unknown"
           )}
@@ -97,9 +103,20 @@ const ZapTransfer = ({
             )}
           </div>
           {receiver ? (
-            <Link>
-              {receiver.displayName ? receiver.displayName : receiver.name}
-            </Link>
+            mode === "sent" ? (
+              <Link
+                onClick={() => {
+                  navigate(`/${senderPk}`);
+                  window.location.reload();
+                }}
+              >
+                {receiver.displayName ? receiver.displayName : receiver.name}
+              </Link>
+            ) : (
+              <Link>
+                {receiver.displayName ? receiver.displayName : receiver.name}
+              </Link>
+            )
           ) : (
             "Unknown"
           )}
