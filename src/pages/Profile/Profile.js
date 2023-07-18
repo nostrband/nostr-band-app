@@ -64,6 +64,68 @@ const Profile = () => {
   const [receiverAuthors, setReceiverAuthors] = useState([]);
   const [sentZappedPosts, setSentZappedPosts] = useState([]);
   const [limitSentZaps, setLimitSentZaps] = useState(10);
+  const [isPostMoreButton, setIsPostMoreButton] = useState(false);
+  const [isBottom, setIsBottom] = useState(false);
+  const [isZapMoreButton, setIsZapMoreButton] = useState(false);
+  const [isSentZapMoreButton, setIsSentZapMoreButton] = useState(false);
+
+  const handleScroll = () => {
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollBottom = scrollTop + windowHeight;
+    if (scrollBottom >= documentHeight) {
+      setIsBottom(true);
+    } else {
+      setIsBottom(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isBottom) {
+      if (tabKey === "posts") {
+        if (
+          events.length <= 50 &&
+          countOfPosts - events.length > 0 &&
+          !isZapLoading
+        ) {
+          getMorePosts(pubkey);
+        } else {
+          setIsPostMoreButton(true);
+        }
+      } else if (tabKey === "zaps") {
+        if (
+          receivedZaps.length <= 50 &&
+          countOfZaps - receivedZaps.length > 0 &&
+          !isZapLoading
+        ) {
+          getMoreZaps(pubkey);
+        } else {
+          setIsZapMoreButton(true);
+        }
+      } else if (tabKey === "zaps-sent") {
+        if (
+          sentZaps.length <= 50 &&
+          countOfSentZaps - sentZaps.length > 0 &&
+          !isZapLoading
+        ) {
+          getMoreSentZaps(pubkey);
+        } else {
+          setIsSentZapMoreButton(true);
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isBottom]);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const fetchUser = async () => {
     try {
@@ -94,12 +156,18 @@ const Profile = () => {
 
   const fetchPosts = async (pk, ndk) => {
     if (ndk instanceof NDK) {
-      const events = await ndk.fetchEvents({
-        kinds: [1],
-        authors: [pk],
-        limit: limitPosts,
-      });
-      setEvents(Array.from(events));
+      try {
+        setIsZapLoading(true);
+        const events = await ndk.fetchEvents({
+          kinds: [1],
+          authors: [pk],
+          limit: limitPosts,
+        });
+        setEvents(Array.from(events));
+        setIsZapLoading(false);
+      } catch (e) {
+        console.log(e);
+      }
     }
   };
 
@@ -513,7 +581,7 @@ const Profile = () => {
                       );
                     })
                   : "No posts"}
-                {countOfPosts - events.length > 0 && (
+                {countOfPosts - events.length > 0 && isPostMoreButton && (
                   <div className={cl.moreBtn}>
                     <Button
                       onClick={() => getMorePosts()}
@@ -575,7 +643,7 @@ const Profile = () => {
                       );
                     })
                   : "No received zaps"}
-                {countOfZaps - receivedZaps.length > 0 && (
+                {countOfZaps - receivedZaps.length > 0 && isZapMoreButton && (
                   <div className={cl.moreBtn}>
                     <Button
                       onClick={() => getMoreZaps()}
@@ -636,16 +704,17 @@ const Profile = () => {
                       );
                     })
                   : "No sent zaps"}
-                {countOfSentZaps - sentZaps.length > 0 && (
-                  <div className={cl.moreBtn}>
-                    <Button
-                      onClick={() => getMoreSentZaps()}
-                      disabled={isZapLoading}
-                    >
-                      Load more
-                    </Button>
-                  </div>
-                )}
+                {countOfSentZaps - sentZaps.length > 0 &&
+                  isSentZapMoreButton && (
+                    <div className={cl.moreBtn}>
+                      <Button
+                        onClick={() => getMoreSentZaps()}
+                        disabled={isZapLoading}
+                      >
+                        Load more
+                      </Button>
+                    </div>
+                  )}
               </Tab>
             </Tabs>
           </div>
