@@ -33,6 +33,7 @@ const Images = ({ setIsLoading }) => {
           return (
             <PostCard
               key={image.id}
+              eventId={image.event.id}
               name={
                 authorContent.display_name
                   ? authorContent.display_name
