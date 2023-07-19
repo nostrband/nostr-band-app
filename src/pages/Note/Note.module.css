@@ -48,3 +48,44 @@
   align-items: center;
   font-size: 0.85rem;
 }
+
+.postStats {
+  display: flex;
+  align-items: center;
+  color: var(--bg-secondary-color);
+}
+
+.postState {
+  margin-right: 0.6rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+}
+.postState span {
+  margin-left: 0.25rem;
+}
+.profileContentControl {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 0.8rem;
+}
+.profileButtons button {
+  margin-top: 0.3rem;
+  font-size: 0.9rem;
+  padding: 4px 10px;
+  background-color: transparent;
+  color: var(--bg-secondary-color);
+  margin-right: 0.3rem;
+  align-items: baseline;
+}
+.profileButtons button:hover {
+  background-color: var(--bg-secondary-color);
+  color: white;
+}
+#menu-id a {
+  display: flex;
+  align-items: center;
+}
+#menu-id svg {
+  margin-right: 5px;
+}
