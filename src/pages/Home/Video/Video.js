@@ -32,6 +32,7 @@ const Video = ({ setIsLoading }) => {
           const authorContent = JSON.parse(video.author.content);
           return (
             <PostCard
+              eventId={video.event.id}
               key={video.id}
               name={
                 authorContent.display_name

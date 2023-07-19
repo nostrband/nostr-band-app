@@ -31,6 +31,7 @@ const Audio = ({ setIsLoading }) => {
           const authorContent = JSON.parse(image.author.content);
           return (
             <PostCard
+              eventId={image.event.id}
               key={image.id}
               name={
                 authorContent.display_name
