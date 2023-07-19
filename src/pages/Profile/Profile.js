@@ -41,6 +41,9 @@ const Profile = () => {
   const { npub } = useParams();
   const [stats, setStats] = useState([]);
   const [ndk, setNdk] = useState({});
+  const [isPostMoreButton, setIsPostMoreButton] = useState(false);
+  const [isZapMoreButton, setIsZapMoreButton] = useState(false);
+  const [isSentZapMoreButton, setIsSentZapMoreButton] = useState(false);
   const [tabKey, setTabKey] = useState("posts");
   const [nprofile, setNprofile] = useState("");
   const [receivedZaps, setReceivedZaps] = useState([]);
@@ -64,10 +67,7 @@ const Profile = () => {
   const [receiverAuthors, setReceiverAuthors] = useState([]);
   const [sentZappedPosts, setSentZappedPosts] = useState([]);
   const [limitSentZaps, setLimitSentZaps] = useState(10);
-  const [isPostMoreButton, setIsPostMoreButton] = useState(false);
   const [isBottom, setIsBottom] = useState(false);
-  const [isZapMoreButton, setIsZapMoreButton] = useState(false);
-  const [isSentZapMoreButton, setIsSentZapMoreButton] = useState(false);
 
   const handleScroll = () => {
     const windowHeight = window.innerHeight;
@@ -581,7 +581,7 @@ const Profile = () => {
                       );
                     })
                   : "No posts"}
-                {countOfPosts - events.length > 0 && isPostMoreButton && (
+                {countOfPosts - events.length > 0 && isPostMoreButton ? (
                   <div className={cl.moreBtn}>
                     <Button
                       onClick={() => getMorePosts()}
@@ -590,6 +590,8 @@ const Profile = () => {
                       Load more
                     </Button>
                   </div>
+                ) : (
+                  ""
                 )}
               </Tab>
               <Tab
@@ -643,7 +645,7 @@ const Profile = () => {
                       );
                     })
                   : "No received zaps"}
-                {countOfZaps - receivedZaps.length > 0 && isZapMoreButton && (
+                {countOfZaps - receivedZaps.length > 0 && isZapMoreButton ? (
                   <div className={cl.moreBtn}>
                     <Button
                       onClick={() => getMoreZaps()}
@@ -652,6 +654,8 @@ const Profile = () => {
                       Load more
                     </Button>
                   </div>
+                ) : (
+                  ""
                 )}
               </Tab>
               <Tab
@@ -705,16 +709,18 @@ const Profile = () => {
                     })
                   : "No sent zaps"}
                 {countOfSentZaps - sentZaps.length > 0 &&
-                  isSentZapMoreButton && (
-                    <div className={cl.moreBtn}>
-                      <Button
-                        onClick={() => getMoreSentZaps()}
-                        disabled={isZapLoading}
-                      >
-                        Load more
-                      </Button>
-                    </div>
-                  )}
+                isSentZapMoreButton ? (
+                  <div className={cl.moreBtn}>
+                    <Button
+                      onClick={() => getMoreSentZaps()}
+                      disabled={isZapLoading}
+                    >
+                      Load more
+                    </Button>
+                  </div>
+                ) : (
+                  ""
+                )}
               </Tab>
             </Tabs>
           </div>

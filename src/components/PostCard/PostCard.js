@@ -16,7 +16,7 @@ import { Button, Carousel, Modal } from "react-bootstrap";
 import { formatAMPM } from "../../utils/formatDate";
 import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
 import UserIcon from "../../assets/user.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import {
   copyNprofile,
@@ -34,7 +34,10 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
   const [npubKey, setNpubKey] = useState("");
   const [nprofile, setNprofile] = useState("");
 
+  const navigate = useNavigate();
+
   const windowSize = useRef(window.innerWidth);
+  const note = nip19.noteEncode(eventId);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -135,7 +138,10 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
           </Dropdown.Menu>
         </Dropdown>
       </div>
-      <div>
+      <div
+        style={{ cursor: "pointer" }}
+        onClick={(e) => navigate(`/note/${note}`)}
+      >
         <MarkdownComponent content={about} />
       </div>
       <div className={cl.postStats}>

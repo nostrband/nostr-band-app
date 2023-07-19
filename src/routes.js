@@ -1,4 +1,5 @@
 import Home from "./pages/Home/Home";
+import Note from "./pages/Note/Note";
 import Profile from "./pages/Profile/Profile";
 
 export const allRoutes = [
@@ -9,5 +10,9 @@ export const allRoutes = [
   {
     path: "/:npub",
     Component: Profile,
+  },
+  {
+    path: "/note/:note",
+    Component: Note,
   },
 ];
