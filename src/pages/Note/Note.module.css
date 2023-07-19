@@ -1,0 +1,50 @@
+.note {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  margin-bottom: 2rem;
+  padding: 0.9rem;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  border-radius: 16px;
+}
+.noteAuthorAvatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  margin-right: 10px;
+  border: 2px solid rgba(200, 200, 200, 0.4);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.noteAuthorAvatar img {
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.noteNameLink {
+  text-decoration: none;
+  font-size: 1.2rem;
+  color: var(--bg-secondary-color);
+  cursor: pointer;
+  transition: all 0.4s;
+  margin-right: 0.3rem;
+}
+.noteNameLink:hover {
+  text-decoration: underline;
+}
+.noteAuthor {
+  display: flex;
+  align-items: center;
+}
+
+.noteCreated {
+  color: var(--bg-secondary-color);
+  margin-right: 0.6rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+}

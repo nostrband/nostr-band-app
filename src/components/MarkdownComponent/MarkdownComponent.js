@@ -36,7 +36,10 @@ const MarkdownComponent = ({ content }) => {
         {content.length > MAX_CONTENT_LENGTH && (
           <button
             className={cl.postMoreBtn}
-            onClick={() => setIsFullContent(!isFullContent)}
+            onClick={(e) => {
+              setIsFullContent(!isFullContent);
+              e.stopPropagation();
+            }}
           >
             {isFullContent ? "Hide" : "Show more"}
           </button>
