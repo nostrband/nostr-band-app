@@ -1,0 +1,39 @@
+.reply {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  margin-bottom: 2rem;
+  padding: 0.9rem;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  border-radius: 16px;
+}
+
+.replyAuthorName {
+  display: flex;
+}
+.replyAuthorImage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  margin-right: 10px;
+  border: 2px solid rgba(200, 200, 200, 0.4);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.replyAuthorImage img {
+  border-radius: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.replyAuthoNameLink {
+  text-decoration: none;
+  font-size: 1rem;
+  color: var(--bg-secondary-color);
+  cursor: pointer;
+  transition: all 0.4s;
+}
+.replyAuthoNameLink:hover {
+  text-decoration: underline;
+}
