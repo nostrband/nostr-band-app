@@ -14,19 +14,24 @@ import {
   Share,
   FileEarmarkPlus,
   Tags,
+  Reply as ReplyIcon,
+  LightningFill,
 } from "react-bootstrap-icons";
 import {
   copyNprofile,
   copyNpub,
   copyPubkey,
 } from "../../utils/copy-funtions/copyFuntions";
-import { Button, Dropdown } from "react-bootstrap";
+import { Button, Dropdown, Tab, Tabs } from "react-bootstrap";
 import MarkdownComponent from "../../components/MarkdownComponent/MarkdownComponent";
 import { formatAMPM } from "../../utils/formatDate";
 import axios from "axios";
+import NoteSkeleton from "./NoteSkeleton/NoteSkeleton";
+import Reply from "../../components/Reply/Reply";
 
 const Note = () => {
   const [event, setEvent] = useState([]);
+  const [tabKey, setTabKey] = useState("replies");
   const [isLoading, setIsLoading] = useState(false);
   const [ndk, setNdk] = useState({});
   const [pubkey, setPubkey] = useState("");
@@ -35,7 +40,10 @@ const Note = () => {
   const [author, setAuthor] = useState([]);
   const [imgError, setImgError] = useState(false);
   const [createdTime, setCreatedTime] = useState("");
+  const [repliesCount, setRepliesCount] = useState("");
   const [stats, setStats] = useState([]);
+  const [authors, setAuthors] = useState([]);
+  const [replies, setReplies] = useState([]);
 
   const { note } = useParams();
   const noteId = nip19.decode(note).data;
@@ -60,7 +68,9 @@ const Note = () => {
       setNpubKey(npub);
       setNprofile(nprofile);
       fetchStats();
+      fetchReplies(ndk);
       //   console.log(JSON.parse(author.content));
+      setIsLoading(false);
     } catch (e) {
       console.log(e);
     }
@@ -72,8 +82,41 @@ const Note = () => {
         `${process.env.REACT_APP_API_URL}/stats/event/${noteId}`
       );
       setStats(data.stats[noteId]);
+      setRepliesCount(
+        data.stats[noteId]?.reply_count ? data.stats[noteId]?.reply_count : 0
+      );
     } catch (e) {
       console.log(e);
+    }
+  };
+
+  const fetchReplies = async (ndk) => {
+    if (ndk) {
+      try {
+        const repliesArr = Array.from(
+          await ndk.fetchEvents({ kinds: [1], "#e": [noteId], limit: 100 })
+        );
+
+        const authorPks = repliesArr.map((author) => author.pubkey);
+        const replies = repliesArr.map((reply) => {
+          const eTag = reply.tags.find((r) => r[0] === "e");
+          reply.tags.find((rep) => rep[0][1] === noteId);
+          // console.log(eTag);
+          if (eTag.includes("root")) {
+            return reply;
+          }
+          return "";
+        });
+        // console.log(replies);
+        setReplies(replies);
+
+        const authors = Array.from(
+          await ndk.fetchEvents({ kinds: [0], authors: authorPks, limit: 100 })
+        );
+        setAuthors(authors);
+      } catch (e) {
+        console.log(e);
+      }
     }
   };
 
@@ -82,11 +125,17 @@ const Note = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (tabKey === "replies") {
+      fetchReplies();
+    }
+  }, [tabKey]);
+
   const sats = stats?.zaps?.msats / 1000;
 
   return (
     <div className={cl.noteContainer}>
-      <Search />
+      <Search isLoading={isLoading} />
       <h2>Note</h2>
       {event ? (
         <>
@@ -251,9 +300,70 @@ const Note = () => {
               </Dropdown>
             </div>
           </div>
+          <div className={cl.userEvents}>
+            <Tabs
+              activeKey={tabKey}
+              onSelect={(k) => setTabKey(k)}
+              defaultActiveKey="profile"
+              id="justify-tab-example"
+              className={`mb-3 ${cl.tab}`}
+              variant="pills"
+              justify
+            >
+              <Tab
+                eventKey="replies"
+                title={
+                  <span className="d-flex align-items-center">
+                    <ReplyIcon style={{ marginRight: "5px" }} />
+                    replies&nbsp;
+                    {repliesCount}
+                  </span>
+                }
+              >
+                {replies.length
+                  ? replies.map((reply) => {
+                      const author = authors.find(
+                        (author) => author.pubkey === reply.pubkey
+                      );
+                      const authorContent = author
+                        ? JSON.parse(author.content)
+                        : "";
+
+                      return reply ? (
+                        <Reply
+                          key={reply.id}
+                          author={authorContent}
+                          content={reply.content}
+                        />
+                      ) : (
+                        ""
+                      );
+                    })
+                  : ""}
+              </Tab>
+              <Tab
+                eventKey="zaps"
+                title={
+                  <span className="d-flex align-items-center">
+                    <LightningFill />
+                    received&nbsp;
+                  </span>
+                }
+              ></Tab>
+              <Tab
+                eventKey="zaps-sent"
+                title={
+                  <span className="d-flex align-items-center">
+                    <LightningFill />
+                    sent&nbsp;
+                  </span>
+                }
+              ></Tab>
+            </Tabs>
+          </div>
         </>
       ) : (
-        ""
+        <NoteSkeleton />
       )}
     </div>
   );

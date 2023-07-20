@@ -89,3 +89,15 @@
 #menu-id svg {
   margin-right: 5px;
 }
+.tab li {
+  flex-grow: unset !important;
+  margin-right: 5px;
+}
+.tab li button {
+  border-radius: 50px !important;
+  background-color: white;
+  color: black;
+}
+.tab li button:hover {
+  color: black;
+}
