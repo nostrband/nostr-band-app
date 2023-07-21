@@ -28,6 +28,8 @@ import { formatAMPM } from "../../utils/formatDate";
 import axios from "axios";
 import NoteSkeleton from "./NoteSkeleton/NoteSkeleton";
 import Reply from "../../components/Reply/Reply";
+import PostCard from "../../components/PostCard/PostCard";
+import { getAllTags } from "../../utils/getTags";
 
 const Note = () => {
   const [event, setEvent] = useState([]);
@@ -44,6 +46,8 @@ const Note = () => {
   const [stats, setStats] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [replies, setReplies] = useState([]);
+  const [rootPost, setRootPost] = useState(null);
+  const [rootPostAuthor, setRootPostAuthor] = useState(null);
 
   const { note } = useParams();
   const noteId = nip19.decode(note).data;
@@ -55,6 +59,33 @@ const Note = () => {
       ndk.connect();
       setNdk(ndk);
       const note = await ndk.fetchEvent({ ids: [noteId] });
+      //   console.log(note);
+      let countOfE = 0;
+      note.tags.map((r) => {
+        if (r[0] === "e") {
+          countOfE++;
+        }
+        return "";
+      });
+      const rootId = note.tags.find((r) => r[0] === "e");
+      if (rootId) {
+        note.tags.map((n) => {
+          if (!rootId.includes("mention")) {
+            return n;
+          } else if (rootId.includes("root")) {
+            return n;
+          }
+        });
+        const rootPost = await ndk.fetchEvent({ ids: [rootId[1]] });
+        const rootPostAuthor = await ndk.fetchEvent({
+          kinds: [0],
+          authors: [rootPost.pubkey],
+        });
+        setRootPost(rootPost);
+        const authorContent = JSON.parse(rootPostAuthor.content);
+        setRootPostAuthor(authorContent);
+      }
+
       setEvent(note);
       const author = await ndk.fetchEvent({
         kinds: [0],
@@ -69,7 +100,7 @@ const Note = () => {
       setNprofile(nprofile);
       fetchStats();
       fetchReplies(ndk);
-      //   console.log(JSON.parse(author.content));
+      // console.log(JSON.parse(author.content));
       setIsLoading(false);
     } catch (e) {
       console.log(e);
@@ -100,23 +131,19 @@ const Note = () => {
         const authorPks = repliesArr.map((author) => author.pubkey);
         const replies = repliesArr
           .map((reply) => {
-            let countOfE = 0;
-            reply.tags.map((r) => {
-              if (r[0] === "e") {
-                countOfE++;
-              }
-              return "";
-            });
-            const eTag = reply.tags.find((r) => r[0] === "e");
-            if (!eTag.includes("mention") && countOfE === 1) {
+            const tagsE = getAllTags(reply.tags, "e");
+
+            const eTag = tagsE.find((r) => r[0] === "e");
+            if (!eTag.includes("mention") && tagsE.length === 1) {
               return reply;
             } else if (eTag.includes("root")) {
+              return reply;
+            } else if (eTag.length <= 3) {
               return reply;
             }
             return "";
           })
           .sort((a, b) => a.created_at - b.created_at);
-        console.log(replies);
         setReplies(replies);
         const authors = Array.from(
           await ndk.fetchEvents({ kinds: [0], authors: authorPks, limit: 100 })
@@ -146,9 +173,33 @@ const Note = () => {
     <div className={cl.noteContainer}>
       <Search isLoading={isLoading} />
       <h2>Note</h2>
+      {rootPost ? (
+        <PostCard
+          name={
+            rootPostAuthor.display_name
+              ? rootPostAuthor.display_name
+              : rootPostAuthor.name
+          }
+          picture={rootPostAuthor.picture}
+          eventId={rootPost.id}
+          about={rootPost.content}
+          pubkey={rootPost.pubkey}
+          createdDate={rootPost.created_at}
+        />
+      ) : (
+        ""
+      )}
       {event ? (
         <>
           <div className={cl.note}>
+            {rootPost && (
+              <p className={cl.replyTo}>
+                Repling to{" "}
+                {rootPostAuthor.display_name
+                  ? rootPostAuthor.display_name
+                  : rootPostAuthor.name}
+              </p>
+            )}
             <div className={cl.noteAuthor}>
               <div className={cl.noteAuthorAvatar}>
                 {!imgError ? (

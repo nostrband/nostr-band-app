@@ -40,7 +40,11 @@
   display: flex;
   align-items: center;
 }
-
+.replyTo {
+  color: var(--bg-secondary-color);
+  font-size: 0.8rem;
+  margin: 0;
+}
 .noteCreated {
   color: var(--bg-secondary-color);
   margin-right: 0.6rem;
