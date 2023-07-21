@@ -12,7 +12,7 @@ const MarkdownComponent = ({ content, mode }) => {
 
     const fullContent = isFullContent
       ? content
-      : content.slice(0, MAX_CONTENT_LENGTH);
+      : content.slice(0, MAX_CONTENT_LENGTH) + "...";
 
     const renderLink = ({ children, href }) => {
       return (
@@ -31,7 +31,11 @@ const MarkdownComponent = ({ content, mode }) => {
           remarkPlugins={[remarkGfm]}
           components={{ a: renderLink }}
         >
-          {mode === "post" ? content : fullContent + "..."}
+          {mode === "post"
+            ? content
+            : content.length <= MAX_CONTENT_LENGTH
+            ? content
+            : fullContent}
         </ReactMarkdown>
         {content.length > MAX_CONTENT_LENGTH && mode !== "post" && (
           <button
