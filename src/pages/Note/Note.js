@@ -334,6 +334,8 @@ const Note = () => {
                           key={reply.id}
                           author={authorContent}
                           content={reply.content}
+                          eventId={reply.id}
+                          createdDateAt={reply.created_at}
                         />
                       ) : (
                         ""
