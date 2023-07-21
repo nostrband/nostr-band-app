@@ -38,3 +38,18 @@
 .replyAuthoNameLink:hover {
   text-decoration: underline;
 }
+
+.postStats {
+  display: flex;
+  align-items: center;
+  color: var(--bg-secondary-color);
+}
+.postState {
+  margin-right: 0.6rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+}
+.postState span {
+  margin-left: 0.25rem;
+}

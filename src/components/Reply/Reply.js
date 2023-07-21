@@ -1,12 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import cl from "./Reply.module.css";
 import UserIcon from "../../assets/user.png";
 import { Link } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
 import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
+import axios from "axios";
+import { Chat, HandThumbsUp } from "react-bootstrap-icons";
+import { formatAMPM } from "../../utils/formatDate";
 
-const Reply = ({ author, content }) => {
+const Reply = ({ author, content, eventId, createdDateAt }) => {
   const [imgError, setImgError] = useState(false);
+  const [stats, setStats] = useState([]);
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API_URL}/stats/event/${eventId}`
+      );
+      setStats(data.stats[eventId]);
+      console.log(data.stats[eventId]);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   return (
     <div className={cl.reply}>
@@ -51,6 +71,28 @@ const Reply = ({ author, content }) => {
       </div>
       <div>
         <MarkdownComponent content={content} />
+      </div>
+      <div className={cl.postStats}>
+        {stats.reply_count && (
+          <div className={cl.postState}>
+            <Chat />
+            <span>{stats.reply_count}</span>
+          </div>
+        )}
+        {stats.reaction_count && (
+          <div className={cl.postState}>
+            <HandThumbsUp />
+            <span>
+              {stats.reaction_count > 1000
+                ? `${Math.round(stats.reaction_count / 1000)}K`
+                : stats.reaction_count}
+            </span>
+          </div>
+        )}
+
+        <div className={cl.postState}>
+          <span>{formatAMPM(createdDateAt * 1000)}</span>
+        </div>
       </div>
     </div>
   );
