@@ -192,7 +192,7 @@ const Note = () => {
               </Dropdown>
             </div>
             <div>
-              <MarkdownComponent content={event.content} />
+              <MarkdownComponent content={event.content} mode="post" />
             </div>
             <div className={cl.noteCreated}>
               <span>{formatAMPM(createdTime * 1000)}</span>
