@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import cl from "./MarkdownComponent.module.css";
 import { useState } from "react";
 
-const MarkdownComponent = ({ content }) => {
+const MarkdownComponent = ({ content, mode }) => {
   const [isFullContent, setIsFullContent] = useState(false);
 
   if (content) {
@@ -31,9 +31,9 @@ const MarkdownComponent = ({ content }) => {
           remarkPlugins={[remarkGfm]}
           components={{ a: renderLink }}
         >
-          {fullContent}
+          {mode === "post" ? content : fullContent + "..."}
         </ReactMarkdown>
-        {content.length > MAX_CONTENT_LENGTH && (
+        {content.length > MAX_CONTENT_LENGTH && mode !== "post" && (
           <button
             className={cl.postMoreBtn}
             onClick={(e) => {
