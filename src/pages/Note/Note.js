@@ -91,25 +91,33 @@ const Note = () => {
   };
 
   const fetchReplies = async (ndk) => {
-    if (ndk) {
+    if (ndk instanceof NDK) {
       try {
         const repliesArr = Array.from(
           await ndk.fetchEvents({ kinds: [1], "#e": [noteId], limit: 100 })
         );
 
         const authorPks = repliesArr.map((author) => author.pubkey);
-        const replies = repliesArr.map((reply) => {
-          const eTag = reply.tags.find((r) => r[0] === "e");
-          reply.tags.find((rep) => rep[0][1] === noteId);
-          // console.log(eTag);
-          if (!eTag.includes("mention")) {
-            return reply;
-          }
-          return "";
-        });
-        // console.log(replies);
+        const replies = repliesArr
+          .map((reply) => {
+            let countOfE = 0;
+            reply.tags.map((r) => {
+              if (r[0] === "e") {
+                countOfE++;
+              }
+              return "";
+            });
+            const eTag = reply.tags.find((r) => r[0] === "e");
+            if (!eTag.includes("mention") && countOfE === 1) {
+              return reply;
+            } else if (eTag.includes("root")) {
+              return reply;
+            }
+            return "";
+          })
+          .sort((a, b) => a.created_at - b.created_at);
+        console.log(replies);
         setReplies(replies);
-
         const authors = Array.from(
           await ndk.fetchEvents({ kinds: [0], authors: authorPks, limit: 100 })
         );
@@ -129,6 +137,7 @@ const Note = () => {
     if (tabKey === "replies") {
       fetchReplies();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tabKey]);
 
   const sats = stats?.zaps?.msats / 1000;
@@ -321,7 +330,7 @@ const Note = () => {
                 }
               >
                 {replies.length
-                  ? replies.map((reply) => {
+                  ? replies.map((reply, index) => {
                       const author = authors.find(
                         (author) => author.pubkey === reply.pubkey
                       );
@@ -331,7 +340,7 @@ const Note = () => {
 
                       return reply ? (
                         <Reply
-                          key={reply.id}
+                          key={index}
                           author={authorContent}
                           content={reply.content}
                           eventId={reply.id}

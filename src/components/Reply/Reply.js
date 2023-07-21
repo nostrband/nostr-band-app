@@ -8,12 +8,15 @@ import axios from "axios";
 import { Chat, HandThumbsUp } from "react-bootstrap-icons";
 import { formatAMPM } from "../../utils/formatDate";
 
-const Reply = ({ author, content, eventId, createdDateAt }) => {
+const Reply = ({ author, content, eventId, createdDateAt, mode }) => {
   const [imgError, setImgError] = useState(false);
   const [stats, setStats] = useState([]);
 
   useEffect(() => {
-    fetchStats();
+    if (eventId) {
+      fetchStats();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchStats = async () => {
@@ -22,14 +25,13 @@ const Reply = ({ author, content, eventId, createdDateAt }) => {
         `${process.env.REACT_APP_API_URL}/stats/event/${eventId}`
       );
       setStats(data.stats[eventId]);
-      console.log(data.stats[eventId]);
     } catch (e) {
       console.log(e);
     }
   };
 
   return (
-    <div className={cl.reply}>
+    <div className={mode === "rereply" ? cl.rereply : cl.reply}>
       <div className={cl.replyAuthorName}>
         <div className={cl.replyAuthorImage}>
           {!imgError ? (
@@ -69,7 +71,7 @@ const Reply = ({ author, content, eventId, createdDateAt }) => {
           </Dropdown.Menu>
         </Dropdown>
       </div>
-      <div>
+      <div className={cl.replyContent}>
         <MarkdownComponent content={content} />
       </div>
       <div className={cl.postStats}>
@@ -90,9 +92,11 @@ const Reply = ({ author, content, eventId, createdDateAt }) => {
           </div>
         )}
 
-        <div className={cl.postState}>
-          <span>{formatAMPM(createdDateAt * 1000)}</span>
-        </div>
+        {createdDateAt && (
+          <div className={cl.postState}>
+            <span>{formatAMPM(createdDateAt * 1000)}</span>
+          </div>
+        )}
       </div>
     </div>
   );
