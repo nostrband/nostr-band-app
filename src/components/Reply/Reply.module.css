@@ -7,7 +7,13 @@
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   border-radius: 16px;
 }
-
+.rereply {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  padding: 0.9rem 0.9rem 0 3rem;
+  border-radius: 16px;
+}
 .replyAuthorName {
   display: flex;
   align-items: center;
@@ -37,6 +43,9 @@
 }
 .replyAuthoNameLink:hover {
   text-decoration: underline;
+}
+.replyContent p {
+  margin-bottom: 0.5rem;
 }
 
 .postStats {
