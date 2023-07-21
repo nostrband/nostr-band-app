@@ -102,7 +102,7 @@ const Note = () => {
           const eTag = reply.tags.find((r) => r[0] === "e");
           reply.tags.find((rep) => rep[0][1] === noteId);
           // console.log(eTag);
-          if (eTag.includes("root")) {
+          if (!eTag.includes("mention")) {
             return reply;
           }
           return "";

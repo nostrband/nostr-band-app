@@ -10,6 +10,7 @@
 
 .replyAuthorName {
   display: flex;
+  align-items: center;
 }
 .replyAuthorImage {
   display: flex;
