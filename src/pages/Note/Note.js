@@ -186,7 +186,6 @@ const Note = () => {
   return (
     <div className={cl.noteContainer}>
       <Search isLoading={isLoading} />
-      <h2>Note</h2>
       {rootPost ? (
         <PostCard
           name={
@@ -290,7 +289,7 @@ const Note = () => {
                 </Dropdown.Menu>
               </Dropdown>
             </div>
-            <div>
+            <div className={cl.noteAbout}>
               <MarkdownComponent content={event.content} mode="post" />
             </div>
             <div className={cl.noteCreated}>
