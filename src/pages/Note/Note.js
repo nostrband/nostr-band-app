@@ -48,6 +48,8 @@ const Note = () => {
   const [replies, setReplies] = useState([]);
   const [rootPost, setRootPost] = useState(null);
   const [rootPostAuthor, setRootPostAuthor] = useState(null);
+  const [threadPost, setThreadPost] = useState(null);
+  const [threadPostAuthor, setThreadPostAuthor] = useState(null);
 
   const { note } = useParams();
   const noteId = nip19.decode(note).data;
@@ -59,14 +61,7 @@ const Note = () => {
       ndk.connect();
       setNdk(ndk);
       const note = await ndk.fetchEvent({ ids: [noteId] });
-      //   console.log(note);
-      let countOfE = 0;
-      note.tags.map((r) => {
-        if (r[0] === "e") {
-          countOfE++;
-        }
-        return "";
-      });
+      const tagsE = getAllTags(note.tags, "e");
       const rootId = note.tags.find((r) => r[0] === "e");
       if (rootId) {
         note.tags.map((n) => {
@@ -75,6 +70,7 @@ const Note = () => {
           } else if (rootId.includes("root")) {
             return n;
           }
+          return "";
         });
         const rootPost = await ndk.fetchEvent({ ids: [rootId[1]] });
         const rootPostAuthor = await ndk.fetchEvent({
@@ -85,6 +81,24 @@ const Note = () => {
         const authorContent = JSON.parse(rootPostAuthor.content);
         setRootPostAuthor(authorContent);
       }
+
+      if (tagsE.length >= 2) {
+        for (const e of tagsE) {
+          if (e.includes("reply")) {
+            const threadId = e[1];
+            const threadPost = await ndk.fetchEvent({ ids: [threadId] });
+            const threadPostAuthor = await ndk.fetchEvent({
+              kinds: [0],
+              authors: [threadPost.pubkey],
+            });
+            const authorContent = JSON.parse(threadPostAuthor.content);
+            setThreadPost(threadPost);
+            setThreadPostAuthor(authorContent);
+          }
+        }
+      }
+
+      // console.log(note);
 
       setEvent(note);
       const author = await ndk.fetchEvent({
@@ -189,12 +203,33 @@ const Note = () => {
       ) : (
         ""
       )}
+      {threadPost && threadPostAuthor ? (
+        <PostCard
+          name={
+            threadPostAuthor.display_name
+              ? threadPostAuthor.display_name
+              : threadPostAuthor.name
+          }
+          picture={threadPostAuthor.picture}
+          eventId={threadPost.id}
+          about={threadPost.content}
+          pubkey={threadPost.pubkey}
+          createdDate={threadPost.created_at}
+          thread={
+            rootPostAuthor.display_name
+              ? rootPostAuthor.display_name
+              : rootPostAuthor.name
+          }
+        />
+      ) : (
+        ""
+      )}
       {event ? (
         <>
           <div className={cl.note}>
             {rootPost && (
               <p className={cl.replyTo}>
-                Repling to{" "}
+                Replying to{" "}
                 {rootPostAuthor.display_name
                   ? rootPostAuthor.display_name
                   : rootPostAuthor.name}

@@ -134,6 +134,11 @@
   max-height: 75vh;
   border-radius: 16px;
 }
+.replyTo {
+  color: var(--bg-secondary-color);
+  font-size: 0.8rem;
+  margin: 0;
+}
 @media screen and (max-width: 400px) {
   .bannerMovie {
     width: 100%;
