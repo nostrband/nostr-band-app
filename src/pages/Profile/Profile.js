@@ -32,6 +32,7 @@ import {
 import { nip19 } from "nostr-tools";
 import { getZapAmount } from "../../utils/zapFunctions";
 import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
+import UserIcon from "../../assets/user.png";
 
 const Profile = () => {
   const [pubkey, setPubkey] = useState("");
@@ -405,18 +406,22 @@ const Profile = () => {
           <div className={cl.profile}>
             <div className={cl.profileTitle}>
               <div className={cl.profileTitleAvatar}>
-                <a href={profile.image} target="_blanc">
-                  <img
-                    alt="Avatar"
-                    src={profile.image}
-                    onError={({ currentTarget }) => {
-                      currentTarget.onerror = null;
-                      currentTarget.src = `https://media.nostr.band/thumbs/${pubkey.slice(
-                        -4
-                      )}/${pubkey}-picture-64`;
-                    }}
-                  />
-                </a>
+                {profile.image ? (
+                  <a href={profile.image} target="_blanc">
+                    <img
+                      alt="Avatar"
+                      src={profile.image}
+                      onError={({ currentTarget }) => {
+                        currentTarget.onerror = null;
+                        currentTarget.src = `https://media.nostr.band/thumbs/${pubkey.slice(
+                          -4
+                        )}/${pubkey}-picture-64`;
+                      }}
+                    />
+                  </a>
+                ) : (
+                  <img alt="Avatar" src={UserIcon} />
+                )}
               </div>
               <div className={cl.profileInfo}>
                 <p className={cl.profileInfoName}>
