@@ -39,7 +39,8 @@ const Profile = () => {
   const [lastEvent, setLastEvent] = useState("");
   const [events, setEvents] = useState([]);
   const [profile, setProfile] = useState("");
-  const { npub } = useParams();
+  const { router } = useParams();
+  const npub = router;
   const [stats, setStats] = useState([]);
   const [ndk, setNdk] = useState({});
   const [isPostMoreButton, setIsPostMoreButton] = useState(false);

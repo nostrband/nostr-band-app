@@ -77,7 +77,7 @@ const Reply = ({ author, content, eventId, createdDateAt, mode }) => {
             />
           )}
         </div>
-        <Link className={cl.replyAuthoNameLink} to={`/}`}>
+        <Link className={cl.replyAuthoNameLink}>
           {author.display_name ? author.display_name : author.name}
         </Link>
         <Dropdown id="profile-dropdown" className="profile-dropdown">
@@ -95,7 +95,7 @@ const Reply = ({ author, content, eventId, createdDateAt, mode }) => {
       <div
         className={cl.replyContent}
         onClick={() => {
-          navigate(`/note/${noteId}`);
+          navigate(`/${noteId}`);
           window.location.reload();
         }}
       >
