@@ -31,7 +31,7 @@ import {
 } from "../../utils/copy-funtions/copyFuntions";
 import { nip19 } from "nostr-tools";
 import { getZapAmount } from "../../utils/zapFunctions";
-import ZapTransfer from "./ZapTransfer/ZapTransfer";
+import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
 
 const Profile = () => {
   const [pubkey, setPubkey] = useState("");
