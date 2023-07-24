@@ -1,4 +1,21 @@
 export function formatAMPM(date) {
+  let agoTime = "";
+  const timeNow = Date.now();
+
+  if (timeNow - date <= 86400000) {
+    const time = new Date(timeNow - date * 1000);
+    if (time.getHours()) {
+      const hs = time.getHours();
+      agoTime = `${hs > 1 ? hs : ""} ${hs > 1 ? "hours" : "an hour"} ago`;
+    } else if (time.getMinutes()) {
+      const minutes = time.getMinutes();
+      agoTime = `${minutes} ${minutes > 1 ? "minutes" : "minute"} ago`;
+    } else {
+      const secs = time.getSeconds();
+      agoTime = `${secs} ${secs > 5 ? "seconds ago" : "right now"}`;
+    }
+  }
+
   let dateObj = new Date(date);
 
   let month = dateObj.getMonth() + 1;
@@ -31,5 +48,5 @@ export function formatAMPM(date) {
     " " +
     ampm;
 
-  return formattedTime;
+  return agoTime ? agoTime : formattedTime;
 }

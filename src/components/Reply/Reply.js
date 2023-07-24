@@ -14,6 +14,24 @@ const Reply = ({ author, content, eventId, createdDateAt, mode }) => {
   const [stats, setStats] = useState([]);
   const navigate = useNavigate();
   const noteId = nip19.noteEncode(eventId);
+  const [agoTime, setAgoTime] = useState("");
+  const timeNow = Date.now();
+
+  useEffect(() => {
+    if (timeNow - createdDateAt * 1000 <= 86400000) {
+      const time = new Date(timeNow - createdDateAt * 1000);
+      if (time.getHours()) {
+        const hs = time.getHours();
+        setAgoTime(`${hs} ${hs > 1 ? "hours" : "hour"} ago`);
+      } else if (time.getMinutes()) {
+        const minutes = time.getMinutes();
+        setAgoTime(`${minutes} ${minutes > 1 ? "minutes" : "minute"} ago`);
+      } else {
+        const secs = time.getSeconds();
+        setAgoTime(`${secs} ${secs > 5 ? "seconds ago" : "right now"}`);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (eventId) {
@@ -103,7 +121,7 @@ const Reply = ({ author, content, eventId, createdDateAt, mode }) => {
 
         {createdDateAt && (
           <div className={cl.postState}>
-            <span>{formatAMPM(createdDateAt * 1000)}</span>
+            <span>{agoTime ? agoTime : formatAMPM(createdDateAt * 1000)}</span>
           </div>
         )}
       </div>
