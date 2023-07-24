@@ -147,10 +147,7 @@ const PostItem = ({
           </Dropdown.Menu>
         </Dropdown>
       </div>
-      <div
-        style={{ cursor: "pointer" }}
-        onClick={(e) => navigate(`/note/${note}`)}
-      >
+      <div style={{ cursor: "pointer" }} onClick={(e) => navigate(`/${note}`)}>
         <MarkdownComponent content={about} />
       </div>
       <div className={cl.postStats}>

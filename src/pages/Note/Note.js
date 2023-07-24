@@ -111,7 +111,8 @@ const Note = () => {
     setLimitReplies((prevState) => prevState + 10);
   };
 
-  const { note } = useParams();
+  const { router } = useParams();
+  const note = router;
   const noteId = nip19.decode(note).data;
 
   const fetchNote = async () => {
