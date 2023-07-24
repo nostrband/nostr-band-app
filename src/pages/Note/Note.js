@@ -50,6 +50,50 @@ const Note = () => {
   const [rootPostAuthor, setRootPostAuthor] = useState(null);
   const [threadPost, setThreadPost] = useState(null);
   const [threadPostAuthor, setThreadPostAuthor] = useState(null);
+  const [limitReplies, setLimitReplies] = useState(50);
+  const [isBottom, setIsBottom] = useState(false);
+
+  const handleScroll = () => {
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollBottom = scrollTop + windowHeight;
+    if (scrollBottom >= documentHeight) {
+      setIsBottom(true);
+    } else {
+      setIsBottom(false);
+    }
+  };
+
+  useEffect(() => {
+    if (tabKey === "replies") {
+      fetchReplies(ndk);
+    }
+  }, [limitReplies]);
+
+  useEffect(() => {
+    if (isBottom) {
+      if (tabKey === "replies") {
+        if (repliesCount - replies.length > 0) {
+          getMoreReplies();
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isBottom]);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const getMoreReplies = () => {
+    setLimitReplies((prevState) => prevState + 10);
+  };
 
   const { note } = useParams();
   const noteId = nip19.decode(note).data;
@@ -139,7 +183,11 @@ const Note = () => {
     if (ndk instanceof NDK) {
       try {
         const repliesArr = Array.from(
-          await ndk.fetchEvents({ kinds: [1], "#e": [noteId], limit: 100 })
+          await ndk.fetchEvents({
+            kinds: [1],
+            "#e": [noteId],
+            limit: limitReplies,
+          })
         );
 
         const authorPks = repliesArr.map((author) => author.pubkey);
@@ -160,7 +208,11 @@ const Note = () => {
           .sort((a, b) => a.created_at - b.created_at);
         setReplies(replies);
         const authors = Array.from(
-          await ndk.fetchEvents({ kinds: [0], authors: authorPks, limit: 100 })
+          await ndk.fetchEvents({
+            kinds: [0],
+            authors: authorPks,
+            limit: limitReplies,
+          })
         );
         setAuthors(authors);
       } catch (e) {
