@@ -24,7 +24,15 @@ import {
   copyPubkey,
 } from "../../utils/copy-funtions/copyFuntions";
 
-const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
+const PostItem = ({
+  name,
+  picture,
+  about,
+  pubkey,
+  createdDate,
+  eventId,
+  thread,
+}) => {
   const [imgError, setImgError] = useState(false);
   const [stats, setStats] = useState([]);
   const [isBannerVisible, setIsBannerVisible] = useState(false);
@@ -90,6 +98,7 @@ const PostItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
 
   return (
     <div className={cl.post}>
+      {thread && <p className={cl.replyTo}>In a thread by {thread}</p>}
       <div className={cl.postName}>
         <div className={cl.postImage}>
           {!imgError ? (
