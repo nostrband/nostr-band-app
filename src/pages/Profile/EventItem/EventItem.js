@@ -76,22 +76,26 @@ const EventItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
     <div className={cl.post}>
       <div className={cl.postName}>
         <div className={cl.postImage}>
-          {!imgError ? (
-            <img
-              src={picture}
-              alt="Profile icon"
-              onError={() => setImgError(true)}
-            />
+          {picture ? (
+            !imgError ? (
+              <img
+                src={picture}
+                alt="Profile icon"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              <img
+                src={`https://media.nostr.band/thumbs/${pubkey.slice(
+                  -4
+                )}/${pubkey}-picture-64`}
+                alt="Profile icon"
+                onError={({ currentTarget }) => {
+                  currentTarget.srcset = UserIcon;
+                }}
+              />
+            )
           ) : (
-            <img
-              src={`https://media.nostr.band/thumbs/${pubkey.slice(
-                -4
-              )}/${pubkey}-picture-64`}
-              alt="Profile icon"
-              onError={({ currentTarget }) => {
-                currentTarget.srcset = UserIcon;
-              }}
-            />
+            <img src={UserIcon} alt="Profile icon" />
           )}
         </div>
         <p>{name}</p>
