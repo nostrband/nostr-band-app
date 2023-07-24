@@ -230,7 +230,11 @@ const Note = () => {
             {rootPost && (
               <p className={cl.replyTo}>
                 Replying to{" "}
-                {rootPostAuthor.display_name
+                {threadPostAuthor
+                  ? threadPostAuthor.display_name
+                    ? threadPostAuthor.display_name
+                    : threadPostAuthor.name
+                  : rootPostAuthor.display_name
                   ? rootPostAuthor.display_name
                   : rootPostAuthor.name}
               </p>
