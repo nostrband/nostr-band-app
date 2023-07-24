@@ -4,9 +4,9 @@ import {
   LightningChargeFill,
 } from "react-bootstrap-icons";
 import cl from "./ZapTransfer.module.css";
-import { formatAMPM } from "../../../utils/formatDate";
-import UserIcon from "../../../assets/user.png";
-import MarkdownComponent from "../../../components/MarkdownComponent/MarkdownComponent";
+import { formatAMPM } from "../../utils/formatDate";
+import UserIcon from "../../assets/user.png";
+import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
 import { Link, useNavigate } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import Skeleton from "react-loading-skeleton";
@@ -28,7 +28,6 @@ const ZapTransfer = ({
   const navigate = useNavigate();
 
   const senderImage = mode === "sent" ? sender.image : sender.picture;
-  const receiverImage = mode === "sent" ? receiver.picture : receiver.image;
 
   return (
     <div className={cl.zap}>
@@ -90,9 +89,17 @@ const ZapTransfer = ({
         </div>
         <div className={`${cl.zapSenderAbout} ${cl.rightSender}`}>
           <div className={cl.zapSenderImage}>
-            {receiverImage ? (
+            {receiver.image ? (
               <img
-                src={receiverImage}
+                src={receiver.image}
+                alt="avatar"
+                onError={({ currentTarget }) =>
+                  (currentTarget.srcset = UserIcon)
+                }
+              />
+            ) : receiver.picture ? (
+              <img
+                src={receiver.picture}
                 alt="avatar"
                 onError={({ currentTarget }) =>
                   (currentTarget.srcset = UserIcon)

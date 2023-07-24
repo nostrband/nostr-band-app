@@ -30,6 +30,8 @@ import NoteSkeleton from "./NoteSkeleton/NoteSkeleton";
 import Reply from "../../components/Reply/Reply";
 import PostCard from "../../components/PostCard/PostCard";
 import { getAllTags } from "../../utils/getTags";
+import { getZapAmount } from "../../utils/zapFunctions";
+import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
 
 const Note = () => {
   const [event, setEvent] = useState([]);
@@ -50,8 +52,17 @@ const Note = () => {
   const [rootPostAuthor, setRootPostAuthor] = useState(null);
   const [threadPost, setThreadPost] = useState(null);
   const [threadPostAuthor, setThreadPostAuthor] = useState(null);
-  const [limitReplies, setLimitReplies] = useState(50);
+  const [limitReplies, setLimitReplies] = useState(100);
   const [isBottom, setIsBottom] = useState(false);
+  const [receivedZaps, setReceivedZaps] = useState([]);
+  const [amountReceivedZaps, setAmountReceivedZaps] = useState([]);
+  const [sentAuthors, setSentAuthors] = useState([]);
+  const [createdTimes, setCreatedTimes] = useState([]);
+  const [sendersComments, setSendersComments] = useState([]);
+  const [zappedPosts, setZappedPosts] = useState([]);
+  const [providers, setProviders] = useState([]);
+  const [limitZaps, setLimitZaps] = useState(10);
+  const [countOfZaps, setCountOfZaps] = useState("");
 
   const handleScroll = () => {
     const windowHeight = window.innerHeight;
@@ -69,6 +80,7 @@ const Note = () => {
     if (tabKey === "replies") {
       fetchReplies(ndk);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limitReplies]);
 
   useEffect(() => {
@@ -76,6 +88,10 @@ const Note = () => {
       if (tabKey === "replies") {
         if (repliesCount - replies.length > 0) {
           getMoreReplies();
+        }
+      } else if (tabKey === "zaps") {
+        if (countOfZaps - receivedZaps.length > 0) {
+          getMoreZaps(pubkey);
         }
       }
     }
@@ -165,6 +181,17 @@ const Note = () => {
     }
   };
 
+  const getMoreZaps = () => {
+    setLimitZaps((prevState) => prevState + 10);
+  };
+
+  useEffect(() => {
+    if (tabKey === "zaps") {
+      fetchZaps(noteId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [limitZaps]);
+
   const fetchStats = async () => {
     try {
       const { data } = await axios.get(
@@ -173,6 +200,9 @@ const Note = () => {
       setStats(data.stats[noteId]);
       setRepliesCount(
         data.stats[noteId]?.reply_count ? data.stats[noteId]?.reply_count : 0
+      );
+      setCountOfZaps(
+        data.stats[noteId]?.zaps?.count ? data.stats[noteId]?.zaps?.count : 0
       );
     } catch (e) {
       console.log(e);
@@ -221,6 +251,80 @@ const Note = () => {
     }
   };
 
+  const fetchZaps = async (eventId) => {
+    try {
+      const zaps = Array.from(
+        await ndk.fetchEvents({
+          kinds: [9735],
+          "#e": [eventId],
+          limit: limitZaps,
+        })
+      );
+      setReceivedZaps(zaps);
+
+      const providersPubkyes = zaps.map((zap) => zap.pubkey);
+      const providers = Array.from(
+        await ndk.fetchEvents({
+          kinds: [0],
+          authors: providersPubkyes,
+          limit: limitZaps,
+        })
+      );
+      setProviders(providers);
+
+      const zapsAmount = zaps.map((zap) => {
+        return getZapAmount(zap);
+      });
+      setAmountReceivedZaps(zapsAmount);
+
+      const postsIds = zaps.map((zap) => {
+        return zap.tags.find((item) => item[0] === "e")
+          ? zap.tags.find((item) => item[0] === "e")[1]
+          : "";
+      });
+      const zappedPosts = Array.from(
+        await ndk.fetchEvents({ kinds: [1], ids: postsIds, limit: limitZaps })
+      );
+      setZappedPosts(zappedPosts);
+
+      const sendersPubkeys = zaps.map((zap) => {
+        const cleanJSON = zap.tags
+          .find((item) => item[0] === "description")[1]
+          .replace(/[^\x20-\x7E]/g, "");
+        return JSON.parse(cleanJSON).pubkey;
+      });
+      // console.log(sendersPubkeys);
+
+      const sendersComments = zaps.map((zap) => {
+        const cleanJSON = zap.tags
+          .find((item) => item[0] === "description")[1]
+          .replace(/[^\x20-\x7E]/g, "");
+        return JSON.parse(cleanJSON).content;
+      });
+      setSendersComments(sendersComments);
+
+      const createdTimes = zaps.map((zap) => {
+        return zap.created_at;
+      });
+      setCreatedTimes(createdTimes);
+
+      const sendersArr = Array.from(
+        await ndk.fetchEvents({
+          kinds: [0],
+          authors: sendersPubkeys,
+          limit: limitZaps,
+        })
+      );
+      // console.log(sendersArr);
+      const senders = sendersArr.map((sender) => {
+        return sender;
+      });
+      setSentAuthors(senders);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   useEffect(() => {
     fetchNote();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -229,6 +333,8 @@ const Note = () => {
   useEffect(() => {
     if (tabKey === "replies") {
       fetchReplies();
+    } else if (tabKey === "zaps") {
+      fetchZaps(noteId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tabKey]);
@@ -499,18 +605,50 @@ const Note = () => {
                   <span className="d-flex align-items-center">
                     <LightningFill />
                     received&nbsp;
+                    {countOfZaps}
                   </span>
                 }
-              ></Tab>
-              <Tab
-                eventKey="zaps-sent"
-                title={
-                  <span className="d-flex align-items-center">
-                    <LightningFill />
-                    sent&nbsp;
-                  </span>
-                }
-              ></Tab>
+              >
+                {receivedZaps.length && createdTimes.length
+                  ? receivedZaps.map((rzap, index) => {
+                      const cleanJSON = rzap.tags
+                        .find((item) => item[0] === "description")[1]
+                        .replace(/[^\x20-\x7E]/g, "");
+                      const pk = JSON.parse(cleanJSON).pubkey;
+                      const sender = sentAuthors.find((item) => {
+                        return item.pubkey === pk;
+                      });
+                      const senderContent = sender
+                        ? JSON.parse(sender.content)
+                        : "";
+
+                      const zappedPost = zappedPosts.find((item) => {
+                        const e = rzap.tags.find((item) => item[0] === "e")
+                          ? rzap.tags.find((item) => item[0] === "e")[1]
+                          : "";
+                        return item.id === e;
+                      });
+
+                      const pr = providers.find(
+                        (provider) => provider.pubkey === rzap.pubkey
+                      );
+                      const provider = pr ? JSON.parse(pr.content) : "";
+                      return (
+                        <ZapTransfer
+                          key={index}
+                          created={createdTimes[index]}
+                          sender={senderContent}
+                          amount={amountReceivedZaps[index]}
+                          receiver={author}
+                          comment={sendersComments[index]}
+                          zappedPost={zappedPost ? zappedPost.content : ""}
+                          provider={provider}
+                          senderPubkey={pk}
+                        />
+                      );
+                    })
+                  : "No received zaps"}
+              </Tab>
             </Tabs>
           </div>
         </>

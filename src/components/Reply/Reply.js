@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
 import cl from "./Reply.module.css";
 import UserIcon from "../../assets/user.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
 import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
 import axios from "axios";
 import { Chat, HandThumbsUp } from "react-bootstrap-icons";
 import { formatAMPM } from "../../utils/formatDate";
+import { nip19 } from "nostr-tools";
 
 const Reply = ({ author, content, eventId, createdDateAt, mode }) => {
   const [imgError, setImgError] = useState(false);
   const [stats, setStats] = useState([]);
+  const navigate = useNavigate();
+  const noteId = nip19.noteEncode(eventId);
 
   useEffect(() => {
     if (eventId) {
@@ -71,7 +74,13 @@ const Reply = ({ author, content, eventId, createdDateAt, mode }) => {
           </Dropdown.Menu>
         </Dropdown>
       </div>
-      <div className={cl.replyContent}>
+      <div
+        className={cl.replyContent}
+        onClick={() => {
+          navigate(`/note/${noteId}`);
+          window.location.reload();
+        }}
+      >
         <MarkdownComponent content={content} />
       </div>
       <div className={cl.postStats}>
