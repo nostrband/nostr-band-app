@@ -16,9 +16,13 @@ const Home = () => {
     searchParams.get("trending") ? searchParams.get("trending") : "people"
   );
 
-  const linkHandle = (trending) => {
-    setTrendingQuery(`${trending}`);
-  };
+  useEffect(() => {
+    if (searchParams.get("trending")) {
+      setTrendingQuery(searchParams.get("trending"));
+    } else {
+      setTrendingQuery("people");
+    }
+  }, [searchParams.get("trending")]);
 
   return (
     <div>
@@ -34,7 +38,6 @@ const Home = () => {
           <Link to={`/?trending=people`}>
             <Button
               variant={`${trendingQuery === "people" ? "primary" : "link"}`}
-              onClick={() => linkHandle("people")}
             >
               People
             </Button>
@@ -42,7 +45,6 @@ const Home = () => {
           <Link to={`/?trending=posts`}>
             <Button
               variant={`${trendingQuery === "posts" ? "primary" : "link"}`}
-              onClick={() => linkHandle("posts")}
             >
               Posts
             </Button>
@@ -50,7 +52,6 @@ const Home = () => {
           <Link to={`/?trending=zapped`}>
             <Button
               variant={`${trendingQuery === "zapped" ? "primary" : "link"}`}
-              onClick={() => linkHandle("zapped")}
             >
               Zapped
             </Button>
@@ -58,7 +59,6 @@ const Home = () => {
           <Link to={`/?trending=links`}>
             <Button
               variant={`${trendingQuery === "links" ? "primary" : "link"}`}
-              onClick={() => linkHandle("links")}
             >
               Links
             </Button>
@@ -66,7 +66,6 @@ const Home = () => {
           <Link to={`/?trending=hashtags`}>
             <Button
               variant={`${trendingQuery === "hashtags" ? "primary" : "link"}`}
-              onClick={() => linkHandle("hashtags")}
             >
               Hashtags
             </Button>
@@ -74,7 +73,6 @@ const Home = () => {
           <Link to={`/?trending=images`}>
             <Button
               variant={`${trendingQuery === "images" ? "primary" : "link"}`}
-              onClick={() => linkHandle("images")}
             >
               Images
             </Button>
@@ -82,7 +80,6 @@ const Home = () => {
           <Link to={`/?trending=video`}>
             <Button
               variant={`${trendingQuery === "video" ? "primary" : "link"}`}
-              onClick={() => linkHandle("video")}
             >
               Video
             </Button>
@@ -90,7 +87,6 @@ const Home = () => {
           <Link to={`/?trending=audio`}>
             <Button
               variant={`${trendingQuery === "audio" ? "primary" : "link"}`}
-              onClick={() => linkHandle("audio")}
             >
               Audio
             </Button>
