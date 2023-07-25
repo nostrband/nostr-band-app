@@ -16,7 +16,7 @@ const MarkdownComponent = ({ content, mode }) => {
 
     const renderLink = ({ children, href }) => {
       return (
-        <Link to={href} target="_blanc">
+        <Link to={href} target="_blanc" onClick={(e) => e.stopPropagation()}>
           {children[0]
             .replace(/^(https|http)?:\/\//, "")
             .replace(/(.{16}).*(.{10})$/, "$1...$2")}
@@ -41,8 +41,8 @@ const MarkdownComponent = ({ content, mode }) => {
           <button
             className={cl.postMoreBtn}
             onClick={(e) => {
-              setIsFullContent(!isFullContent);
               e.stopPropagation();
+              setIsFullContent(!isFullContent);
             }}
           >
             {isFullContent ? "Hide" : "Show more"}
