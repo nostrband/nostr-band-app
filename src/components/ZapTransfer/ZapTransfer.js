@@ -20,12 +20,15 @@ const ZapTransfer = ({
   zappedPost,
   provider,
   senderPubkey,
+  eventId,
   mode,
 }) => {
   const createdAt = new Date(created * 1000);
   const data = formatAMPM(createdAt);
   const senderPk = nip19.npubEncode(senderPubkey);
   const navigate = useNavigate();
+
+  const noteId = eventId ? nip19.noteEncode(eventId) : "";
 
   const senderImage = mode === "sent" ? sender.image : sender.picture;
 
@@ -132,7 +135,12 @@ const ZapTransfer = ({
       {zappedPost && (
         <p>
           Zapped for: "{zappedPost.slice(0, 25)}...
-          <Link>
+          <Link
+            onClick={() => {
+              navigate(`/${noteId}`);
+              window.location.reload();
+            }}
+          >
             <ArrowRight fontWeight={900} />
           </Link>
           "
