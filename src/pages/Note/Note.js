@@ -644,7 +644,7 @@ const Note = () => {
                           comment={sendersComments[index]}
                           zappedPost={zappedPost ? zappedPost.content : ""}
                           provider={provider}
-                          eventId={rzap.id}
+                          eventId={zappedPost ? zappedPost?.id : ""}
                           senderPubkey={pk}
                         />
                       );

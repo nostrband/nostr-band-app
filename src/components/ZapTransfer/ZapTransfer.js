@@ -28,7 +28,7 @@ const ZapTransfer = ({
   const senderPk = nip19.npubEncode(senderPubkey);
   const navigate = useNavigate();
 
-  const noteId = nip19.noteEncode(eventId);
+  const noteId = eventId ? nip19.noteEncode(eventId) : "";
 
   const senderImage = mode === "sent" ? sender.image : sender.picture;
 

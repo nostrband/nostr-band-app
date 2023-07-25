@@ -646,7 +646,7 @@ const Profile = () => {
                           comment={sendersComments[index]}
                           zappedPost={zappedPost ? zappedPost.content : ""}
                           provider={provider}
-                          eventId={author.id}
+                          eventId={zappedPost ? zappedPost?.id : ""}
                           senderPubkey={pk}
                         />
                       );
@@ -710,7 +710,7 @@ const Profile = () => {
                           zappedPost={zappedPost ? zappedPost.content : ""}
                           provider={provider}
                           senderPubkey={pk}
-                          eventId={author.id}
+                          eventId={zappedPost ? zappedPost?.id : ""}
                           mode="sent"
                         />
                       );
