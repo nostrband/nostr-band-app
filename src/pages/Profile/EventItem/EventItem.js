@@ -16,6 +16,12 @@ import { Button, Carousel, Modal } from "react-bootstrap";
 import { formatAMPM } from "../../../utils/formatDate";
 import MarkdownComponent from "../../../components/MarkdownComponent/MarkdownComponent";
 import UserIcon from "../../../assets/user.png";
+import { nip19 } from "nostr-tools";
+import {
+  copyNprofile,
+  copyNpub,
+  copyPubkey,
+} from "../../../utils/copy-funtions/copyFuntions";
 
 const EventItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
   const [imgError, setImgError] = useState(false);
@@ -24,6 +30,9 @@ const EventItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
   const createdDateAt = new Date(createdDate * 1000);
   const [show, setShow] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
+
+  const npub = pubkey ? nip19.npubEncode(pubkey) : "";
+  const nprofile = pubkey ? nip19.nprofileEncode({ pubkey: pubkey }) : "";
 
   const windowSize = useRef(window.innerWidth);
 
@@ -102,10 +111,24 @@ const EventItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
         <Dropdown id="profile-dropdown" className="profile-dropdown">
           <Dropdown.Toggle size="sm" id="dropdown-basic"></Dropdown.Toggle>
           <Dropdown.Menu>
-            <Dropdown.Item href="#/action-1">Open</Dropdown.Item>
-            <Dropdown.Item href="#/action-2">Copy npub</Dropdown.Item>
-            <Dropdown.Item href="#/action-3">Copy nprofile</Dropdown.Item>
-            <Dropdown.Item href="#/action-3">Copy pubkey</Dropdown.Item>
+            <Dropdown.Item
+              href={`https://nostrapp.link/#${npub}`}
+              target="_blanc"
+            >
+              Open
+            </Dropdown.Item>
+            <Dropdown.Item href="#/action-2" onClick={() => copyNpub(npub)}>
+              Copy npub
+            </Dropdown.Item>
+            <Dropdown.Item
+              href="#/action-3"
+              onClick={() => copyNprofile(nprofile)}
+            >
+              Copy nprofile
+            </Dropdown.Item>
+            <Dropdown.Item href="#/action-3" onClick={() => copyPubkey(pubkey)}>
+              Copy pubkey
+            </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
       </div>

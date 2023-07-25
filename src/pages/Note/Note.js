@@ -582,14 +582,11 @@ const Note = () => {
                       const author = authors.find(
                         (author) => author.pubkey === reply.pubkey
                       );
-                      const authorContent = author
-                        ? JSON.parse(author.content)
-                        : "";
 
                       return reply ? (
                         <Reply
                           key={index}
-                          author={authorContent}
+                          author={author}
                           content={reply.content}
                           eventId={reply.id}
                           createdDateAt={reply.created_at}
