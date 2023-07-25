@@ -106,9 +106,12 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
                 href={`http://localhost:3000/?trending=people`}
                 className="profile-info__hero-keys-mail"
               >
-                {mailName === "_" ? mailName.replace("_", "") : mailName}
+                {mailName === "_"
+                  ? mailName.replace("_", "")
+                  : mailName.slice(0, 4)}
+                ...
                 <CheckCircle />
-                {mailAdress}
+                {mailAdress.slice(-10)}
               </a>
             )}
             {/* {twitter && (
