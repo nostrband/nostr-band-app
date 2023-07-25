@@ -8,12 +8,21 @@ import axios from "axios";
 import { Chat, HandThumbsUp } from "react-bootstrap-icons";
 import { formatAMPM } from "../../utils/formatDate";
 import { nip19 } from "nostr-tools";
+import {
+  copyNprofile,
+  copyNpub,
+  copyPubkey,
+} from "../../utils/copy-funtions/copyFuntions";
 
 const Reply = ({ author, content, eventId, createdDateAt, mode }) => {
+  const authorContent = author ? JSON.parse(author.content) : "";
   const [imgError, setImgError] = useState(false);
   const [stats, setStats] = useState([]);
   const navigate = useNavigate();
   const noteId = nip19.noteEncode(eventId);
+  const pk = author ? author?.pubkey : "";
+  const nprofile = pk ? nip19.nprofileEncode({ pubkey: pk }) : "";
+  const npub = pk ? nip19.npubEncode(pk) : "";
   const [agoTime, setAgoTime] = useState("");
   const timeNow = Date.now();
 
@@ -56,9 +65,9 @@ const Reply = ({ author, content, eventId, createdDateAt, mode }) => {
       <div className={cl.replyAuthorName}>
         <div className={cl.replyAuthorImage}>
           {!imgError ? (
-            author.picture ? (
+            authorContent.picture ? (
               <img
-                src={author.picture}
+                src={authorContent.picture}
                 alt="avatar"
                 onError={() => setImgError(true)}
               />
@@ -78,17 +87,28 @@ const Reply = ({ author, content, eventId, createdDateAt, mode }) => {
           )}
         </div>
         <Link className={cl.replyAuthoNameLink}>
-          {author.display_name ? author.display_name : author.name}
+          {authorContent.display_name
+            ? authorContent.display_name
+            : authorContent.name}
         </Link>
         <Dropdown id="profile-dropdown" className="profile-dropdown">
           <Dropdown.Toggle size="sm" id="dropdown-basic"></Dropdown.Toggle>
           <Dropdown.Menu>
-            <Dropdown.Item target="_blanc" href={`https://nostrapp.link/#`}>
+            <Dropdown.Item
+              target="_blanc"
+              href={`https://nostrapp.link/#${npub}`}
+            >
               Open
             </Dropdown.Item>
-            <Dropdown.Item>Copy npub</Dropdown.Item>
-            <Dropdown.Item>Copy nprofile</Dropdown.Item>
-            <Dropdown.Item>Copy pubkey</Dropdown.Item>
+            <Dropdown.Item onClick={() => copyNpub(npub)}>
+              Copy npub
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => copyNprofile(nprofile)}>
+              Copy nprofile
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => copyPubkey(pk)}>
+              Copy pubkey
+            </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
       </div>
