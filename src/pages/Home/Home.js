@@ -8,10 +8,11 @@ import Posts from "./Posts/Posts";
 import Images from "./Images/Images";
 import Video from "./Video/Video";
 import Audio from "./Audio/Audio";
+import Result from "../Result/Result";
 
 const Home = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [trendingQuery, setTrendingQuery] = useState(
     searchParams.get("trending") ? searchParams.get("trending") : "people"
   );
@@ -22,9 +23,12 @@ const Home = () => {
     } else {
       setTrendingQuery("people");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("trending")]);
 
-  return (
+  return searchParams.get("q") ? (
+    <Result />
+  ) : (
     <div>
       <Search isLoading={isLoading} />
       <div className="home-hero">

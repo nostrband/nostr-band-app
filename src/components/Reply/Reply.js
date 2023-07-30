@@ -40,6 +40,7 @@ const Reply = ({ author, content, eventId, createdDateAt, mode }) => {
         setAgoTime(`${secs} ${secs > 5 ? "seconds ago" : "right now"}`);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

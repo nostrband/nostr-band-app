@@ -4,10 +4,11 @@ import Profile from "../../pages/Profile/Profile";
 
 const RouteSwitcher = () => {
   const { router } = useParams();
+  console.log(router);
   if (router.length) {
     if (router.slice(0, 4) === "note") {
       return <Note />;
-    } else {
+    } else if (router.slice(0, 4) === "npub") {
       return <Profile />;
     }
   }
