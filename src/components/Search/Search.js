@@ -5,12 +5,26 @@ import Dropdown from "react-bootstrap/Dropdown";
 import { Button } from "react-bootstrap";
 import { Search as SearchIcon } from "react-bootstrap-icons";
 import Spinner from "react-bootstrap/Spinner";
+import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const Search = ({ isLoading }) => {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [inputValue, setInputValue] = useState(
+    searchParams.get("q") ? searchParams.get("q") : ""
+  );
+
+  const searchHandle = () => {
+    navigate(`/?q=${inputValue}`);
+  };
+
   return (
     <>
       <InputGroup className="mb-3" id="search-input">
         <Form.Control
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
           placeholder="Keyword, hashtag, pubkey or post ID"
           aria-label="Recipient's username"
           aria-describedby="basic-addon2"
@@ -33,7 +47,12 @@ const Search = ({ isLoading }) => {
             <Dropdown.Item href="#/action-3">Zaps</Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
-        <Button className="btn" id="search-btn" variant="secondary">
+        <Button
+          className="btn"
+          id="search-btn"
+          variant="secondary"
+          onClick={() => searchHandle()}
+        >
           <SearchIcon />
         </Button>
       </InputGroup>
