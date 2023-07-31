@@ -129,11 +129,10 @@ const PostItem = ({
         <Dropdown id="profile-dropdown" className="profile-dropdown">
           <Dropdown.Toggle size="sm" id="dropdown-basic"></Dropdown.Toggle>
           <Dropdown.Menu>
-            <Dropdown.Item
-              target="_blanc"
-              href={`https://nostrapp.link/#${npubKey}`}
-            >
-              Open
+            <Dropdown.Item target="_blanc">
+              <Link to={`/${npubKey}`} style={{ all: "unset" }}>
+                Open
+              </Link>
             </Dropdown.Item>
             <Dropdown.Item onClick={() => copyNpub(npubKey)}>
               Copy npub

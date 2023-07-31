@@ -509,7 +509,7 @@ const Profile = () => {
                 <Dropdown.Menu id={cl["menu-id"]}>
                   <Dropdown.Item
                     target="_blanc"
-                    href={`https://nostrapp.link/#${npub}`}
+                    href={`https://nostrapp.link/#${npub}?select=true`}
                   >
                     <BoxArrowUpRight /> Open with
                   </Dropdown.Item>
