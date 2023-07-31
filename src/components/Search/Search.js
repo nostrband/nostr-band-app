@@ -5,7 +5,7 @@ import Dropdown from "react-bootstrap/Dropdown";
 import { Button } from "react-bootstrap";
 import { Search as SearchIcon } from "react-bootstrap-icons";
 import Spinner from "react-bootstrap/Spinner";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 const Search = ({ isLoading }) => {
