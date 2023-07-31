@@ -518,7 +518,7 @@ const Note = () => {
                 <Dropdown.Menu id={cl["menu-id"]}>
                   <Dropdown.Item
                     target="_blanc"
-                    href={`https://nostrapp.link/#${npubKey}`}
+                    href={`https://nostrapp.link/#${npubKey}?select=true`}
                   >
                     <BoxArrowUpRight /> Open with
                   </Dropdown.Item>
