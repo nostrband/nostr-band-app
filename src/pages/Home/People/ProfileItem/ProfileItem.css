@@ -26,8 +26,9 @@ a {
 }
 
 .profile-info__image img {
-  width: 4.9rem;
-  height: 4.9rem;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   font-size: 0.8rem;
   text-align: center;
