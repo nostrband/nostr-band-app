@@ -29,8 +29,9 @@
 }
 .zapSenderImage img {
   border-radius: 50%;
-  width: 2rem;
-  height: 2rem;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
 }
 .zapSenderAbout {
   display: flex;

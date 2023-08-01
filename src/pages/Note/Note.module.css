@@ -21,8 +21,9 @@
 
 .noteAuthorAvatar img {
   border-radius: 50%;
-  width: 2.7rem;
-  height: 2.7rem;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
 }
 
 .noteNameLink {

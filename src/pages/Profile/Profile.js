@@ -70,6 +70,7 @@ const Profile = () => {
   const [sentZappedPosts, setSentZappedPosts] = useState([]);
   const [limitSentZaps, setLimitSentZaps] = useState(10);
   const [isBottom, setIsBottom] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   const handleScroll = () => {
     const windowHeight = window.innerHeight;
@@ -407,21 +408,22 @@ const Profile = () => {
           <div className={cl.profile}>
             <div className={cl.profileTitle}>
               <div className={cl.profileTitleAvatar}>
-                {profile.image ? (
-                  <a href={profile.image} target="_blanc">
-                    <img
-                      alt="Avatar"
-                      src={profile.image}
-                      onError={({ currentTarget }) => {
-                        currentTarget.onerror = null;
-                        currentTarget.src = `https://media.nostr.band/thumbs/${pubkey.slice(
-                          -4
-                        )}/${pubkey}-picture-64`;
-                      }}
-                    />
-                  </a>
+                {!imgError ? (
+                  <img
+                    src={profile.image}
+                    alt="Profile icon"
+                    onError={() => setImgError(true)}
+                  />
                 ) : (
-                  <img alt="Avatar" src={UserIcon} />
+                  <img
+                    src={`https://media.nostr.band/thumbs/${pubkey.slice(
+                      -4
+                    )}/${pubkey}-picture-64`}
+                    alt="Profile icon"
+                    onError={({ currentTarget }) => {
+                      currentTarget.srcset = UserIcon;
+                    }}
+                  />
                 )}
               </div>
               <div className={cl.profileInfo}>
