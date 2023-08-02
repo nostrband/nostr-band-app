@@ -6,7 +6,7 @@ import ProfileItem from "../Home/People/ProfileItem/ProfileItem";
 
 const Result = () => {
   const [searchParams] = useSearchParams();
-  const [profiles, setProfiles] = useState();
+  const [profiles, setProfiles] = useState([]);
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
@@ -14,17 +14,16 @@ const Result = () => {
     setSocket(socket);
     if (socket instanceof WebSocket) {
       let resCount = "";
-      const events = [];
       socket.onopen = function (e) {
+        setProfiles([]);
         socket.onmessage = function (e) {
           const data = JSON.parse(e.data);
           if (data[0] === "EVENT") {
-            events.push(data[2]);
-            setProfiles(events);
+            // events.push(data[2]);
+            setProfiles((prevState) => [...prevState, data[2]]);
           } else if (data[0] === "COUNT") {
             resCount = data[2];
           }
-          // console.log(events);
         };
         socket.onerror = function (err) {
           console.log(err);
@@ -32,7 +31,7 @@ const Result = () => {
         const reqSearch = [
           "REQ",
           1,
-          { kinds: [0], search: searchParams.get("q"), limit: 100 },
+          { kinds: [0], search: searchParams.get("q"), limit: 10 },
         ];
         const countRes = [
           "COUNT",
