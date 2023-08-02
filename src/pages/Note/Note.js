@@ -3,7 +3,7 @@ import Search from "../../components/Search/Search";
 import cl from "./Note.module.css";
 import { Link, useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
-import NDK from "@nostr-dev-kit/ndk";
+import NDK from "@nostrband/ndk";
 import UserIcon from "../../assets/user.png";
 import {
   ArrowRepeat,
@@ -122,6 +122,8 @@ const Note = () => {
       ndk.connect();
       setNdk(ndk);
       const note = await ndk.fetchEvent({ ids: [noteId] });
+      const count = await ndk.fetchCount({ ids: [noteId] });
+      console.log(count);
       const tagsE = getAllTags(note.tags, "e");
       const rootId = note.tags.find((r) => r[0] === "e");
       if (rootId) {
