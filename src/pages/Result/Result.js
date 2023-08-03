@@ -22,7 +22,7 @@ const Result = () => {
     if (ndk instanceof NDK) {
       const topProfilesIds = await ndk.fetchTop({
         kinds: [0],
-        search: "jack",
+        search: searchParams.get("q"),
         limit: 3,
       });
       const topProfiles = Array.from(
