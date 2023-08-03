@@ -91,7 +91,7 @@ const Profiles = () => {
       <Search isLoading={isLoadingProfiles} />
       {profiles && profiles?.length ? (
         <div className={cl.resultProfiles}>
-          <h2>
+          <h2 className={cl.prTitle}>
             Profiles <br />
             <span>found {profilesCount} profiles</span>
           </h2>
