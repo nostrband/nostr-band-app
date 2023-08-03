@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import cl from "./AllResults.module.css";
 import Search from "../../../components/Search/Search";
-import ProfileItem from "../../Home/People/ProfileItem/ProfileItem";
+import ProfileItem from "../../../components/ProfileItem/ProfileItem";
 import NDK from "@nostrband/ndk";
 import { Link, useSearchParams } from "react-router-dom";
+import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 
 const AllResults = () => {
   const [searchParams] = useSearchParams();
@@ -49,29 +50,33 @@ const AllResults = () => {
   return (
     <div className={cl.result}>
       <Search isLoading={isLoadingProfiles} />
-      {profiles && profiles?.length ? (
-        <div className={cl.resultProfiles}>
-          <h2>Profiles</h2>
-          {profiles.map((profile) => {
-            const profileContent = JSON.parse(profile.content);
-            return (
-              <ProfileItem
-                img={profileContent.picture}
-                pubKey={profile.pubkey}
-                bio={profileContent.about}
-                name={
-                  profileContent.display_name
-                    ? profileContent.display_name
-                    : profileContent.name
-                }
-                key={profile.id}
-                mail={profileContent.nip05}
-              />
-            );
-          })}
-        </div>
+      {!isLoadingProfiles ? (
+        profiles?.length ? (
+          <div className={cl.resultProfiles}>
+            <h2>Profiles</h2>
+            {profiles.map((profile) => {
+              const profileContent = JSON.parse(profile.content);
+              return (
+                <ProfileItem
+                  img={profileContent.picture}
+                  pubKey={profile.pubkey}
+                  bio={profileContent.about}
+                  name={
+                    profileContent.display_name
+                      ? profileContent.display_name
+                      : profileContent.name
+                  }
+                  key={profile.id}
+                  mail={profileContent.nip05}
+                />
+              );
+            })}
+          </div>
+        ) : (
+          "No profiles"
+        )
       ) : (
-        "No profiles"
+        <CardSkeleton cards={3} />
       )}
       {profilesCount >= 4 && (
         <Link to={`/?q=${searchParams.get("q")}&type=profiles`}>

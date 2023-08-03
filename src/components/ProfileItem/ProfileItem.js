@@ -13,12 +13,12 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { nip19 } from "nostr-tools";
 import { Link } from "react-router-dom";
-import UserIcon from "../../../../assets/user.png";
+import UserIcon from "../../assets/user.png";
 import {
   copyNprofile,
   copyNpub,
   copyPubkey,
-} from "../../../../utils/copy-funtions/copyFuntions";
+} from "../../utils/copy-funtions/copyFuntions";
 
 const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
   const [imgError, setImgError] = useState(false);

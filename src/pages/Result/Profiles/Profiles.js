@@ -3,7 +3,8 @@ import cl from "./Profiles.module.css";
 import NDK from "@nostrband/ndk";
 import Search from "../../../components/Search/Search";
 import { useSearchParams } from "react-router-dom";
-import ProfileItem from "../../Home/People/ProfileItem/ProfileItem";
+import ProfileItem from "../../../components/ProfileItem/ProfileItem";
+import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 
 const Profiles = () => {
   const [searchParams] = useSearchParams();
@@ -89,32 +90,36 @@ const Profiles = () => {
   return (
     <div className={cl.profiles}>
       <Search isLoading={isLoadingProfiles} />
-      {profiles && profiles?.length ? (
-        <div className={cl.resultProfiles}>
-          <h2 className={cl.prTitle}>
-            Profiles <br />
-            <span>found {profilesCount} profiles</span>
-          </h2>
-          {profiles.map((profile) => {
-            const profileContent = JSON.parse(profile.content);
-            return (
-              <ProfileItem
-                img={profileContent.picture}
-                pubKey={profile.pubkey}
-                bio={profileContent.about}
-                name={
-                  profileContent.display_name
-                    ? profileContent.display_name
-                    : profileContent.name
-                }
-                key={profile.id}
-                mail={profileContent.nip05}
-              />
-            );
-          })}
-        </div>
+      {!isLoadingProfiles ? (
+        profiles?.length ? (
+          <div className={cl.resultProfiles}>
+            <h2 className={cl.prTitle}>
+              Profiles <br />
+              <span>found {profilesCount} profiles</span>
+            </h2>
+            {profiles.map((profile) => {
+              const profileContent = JSON.parse(profile.content);
+              return (
+                <ProfileItem
+                  img={profileContent.picture}
+                  pubKey={profile.pubkey}
+                  bio={profileContent.about}
+                  name={
+                    profileContent.display_name
+                      ? profileContent.display_name
+                      : profileContent.name
+                  }
+                  key={profile.id}
+                  mail={profileContent.nip05}
+                />
+              );
+            })}
+          </div>
+        ) : (
+          "No profiles"
+        )
       ) : (
-        "No profiles"
+        <CardSkeleton cards={8} />
       )}
     </div>
   );
