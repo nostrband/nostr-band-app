@@ -9,17 +9,24 @@ const Result = () => {
   const [searchParams] = useSearchParams();
   const [profiles, setProfiles] = useState([]);
   const [ndk, setNdk] = useState(null);
+  const [isLoadingProfiles, setIsLoadingProfiles] = useState();
 
   useEffect(() => {
     const ndk = new NDK({ explicitRelayUrls: ["wss://relay.nostr.band"] });
     ndk.connect();
     setNdk(ndk);
-    getProfiles();
+    getProfiles(ndk);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    getProfiles(ndk);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("q")]);
 
-  const getProfiles = async () => {
+  const getProfiles = async (ndk) => {
     if (ndk instanceof NDK) {
+      setIsLoadingProfiles(true);
       const topProfilesIds = await ndk.fetchTop({
         kinds: [0],
         search: searchParams.get("q"),
@@ -29,18 +36,18 @@ const Result = () => {
         await ndk.fetchEvents({ kinds: [0], ids: topProfilesIds.ids })
       );
       setProfiles(topProfiles);
+      setIsLoadingProfiles(false);
     }
   };
 
   return (
     <div className={cl.result}>
-      <Search />
+      <Search isLoading={isLoadingProfiles} />
       {profiles && profiles?.length ? (
         <div className={cl.resultProfiles}>
           <h2>Profiles</h2>
           {profiles.map((profile) => {
             const profileContent = JSON.parse(profile.content);
-            console.log(profileContent);
             return (
               <ProfileItem
                 img={profileContent.picture}
@@ -58,7 +65,7 @@ const Result = () => {
           })}
         </div>
       ) : (
-        ""
+        "No profiles"
       )}
     </div>
   );
