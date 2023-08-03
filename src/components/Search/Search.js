@@ -15,7 +15,13 @@ const Search = ({ isLoading }) => {
     searchParams.get("q") ? searchParams.get("q") : ""
   );
 
-  const searchHandle = () => {
+  const searchHandleByEnter = (e) => {
+    if (e.key === "Enter") {
+      navigate(`/?q=${inputValue}`);
+    }
+  };
+
+  const searchHandle = (e) => {
     navigate(`/?q=${inputValue}`);
   };
 
@@ -28,6 +34,7 @@ const Search = ({ isLoading }) => {
           placeholder="Keyword, hashtag, pubkey or post ID"
           aria-label="Recipient's username"
           aria-describedby="basic-addon2"
+          onKeyDown={searchHandleByEnter}
         />
         {isLoading && (
           <div className="loader">
@@ -51,7 +58,7 @@ const Search = ({ isLoading }) => {
           className="btn"
           id="search-btn"
           variant="secondary"
-          onClick={() => searchHandle()}
+          onClick={searchHandle}
         >
           <SearchIcon />
         </Button>
