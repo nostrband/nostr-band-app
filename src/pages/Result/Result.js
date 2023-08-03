@@ -3,46 +3,34 @@ import cl from "./Result.module.css";
 import Search from "../../components/Search/Search";
 import { useSearchParams } from "react-router-dom";
 import ProfileItem from "../Home/People/ProfileItem/ProfileItem";
+import NDK from "@nostrband/ndk";
 
 const Result = () => {
   const [searchParams] = useSearchParams();
   const [profiles, setProfiles] = useState([]);
-  const [socket, setSocket] = useState(null);
+  const [ndk, setNdk] = useState(null);
 
   useEffect(() => {
-    const socket = new WebSocket("wss://relay.nostr.band");
-    setSocket(socket);
-    if (socket instanceof WebSocket) {
-      let resCount = "";
-      socket.onopen = function (e) {
-        setProfiles([]);
-        socket.onmessage = function (e) {
-          const data = JSON.parse(e.data);
-          if (data[0] === "EVENT") {
-            // events.push(data[2]);
-            setProfiles((prevState) => [...prevState, data[2]]);
-          } else if (data[0] === "COUNT") {
-            resCount = data[2];
-          }
-        };
-        socket.onerror = function (err) {
-          console.log(err);
-        };
-        const reqSearch = [
-          "REQ",
-          1,
-          { kinds: [0], search: searchParams.get("q"), limit: 10 },
-        ];
-        const countRes = [
-          "COUNT",
-          2,
-          { kinds: [1], search: searchParams.get("q") },
-        ];
-        socket.send(JSON.stringify(reqSearch));
-      };
-    }
+    const ndk = new NDK({ explicitRelayUrls: ["wss://relay.nostr.band"] });
+    ndk.connect();
+    setNdk(ndk);
+    getProfiles();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("q")]);
+
+  const getProfiles = async () => {
+    if (ndk instanceof NDK) {
+      const topProfilesIds = await ndk.fetchTop({
+        kinds: [0],
+        search: "jack",
+        limit: 3,
+      });
+      const topProfiles = Array.from(
+        await ndk.fetchEvents({ kinds: [0], ids: topProfilesIds.ids })
+      );
+      setProfiles(topProfiles);
+    }
+  };
 
   return (
     <div className={cl.result}>

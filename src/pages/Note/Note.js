@@ -122,8 +122,6 @@ const Note = () => {
       ndk.connect();
       setNdk(ndk);
       const note = await ndk.fetchEvent({ ids: [noteId] });
-      const count = await ndk.fetchCount({ ids: [noteId] });
-      console.log(count);
       const tagsE = getAllTags(note.tags, "e");
       const rootId = note.tags.find((r) => r[0] === "e");
       if (rootId) {
