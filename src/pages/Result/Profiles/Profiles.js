@@ -90,30 +90,34 @@ const Profiles = () => {
   return (
     <div className={cl.profiles}>
       <Search isLoading={isLoadingProfiles} />
-      {profiles && profiles?.length ? (
-        <div className={cl.resultProfiles}>
-          <h2 className={cl.prTitle}>
-            Profiles <br />
-            <span>found {profilesCount} profiles</span>
-          </h2>
-          {profiles.map((profile) => {
-            const profileContent = JSON.parse(profile.content);
-            return (
-              <ProfileItem
-                img={profileContent.picture}
-                pubKey={profile.pubkey}
-                bio={profileContent.about}
-                name={
-                  profileContent.display_name
-                    ? profileContent.display_name
-                    : profileContent.name
-                }
-                key={profile.id}
-                mail={profileContent.nip05}
-              />
-            );
-          })}
-        </div>
+      {!isLoadingProfiles ? (
+        profiles?.length ? (
+          <div className={cl.resultProfiles}>
+            <h2 className={cl.prTitle}>
+              Profiles <br />
+              <span>found {profilesCount} profiles</span>
+            </h2>
+            {profiles.map((profile) => {
+              const profileContent = JSON.parse(profile.content);
+              return (
+                <ProfileItem
+                  img={profileContent.picture}
+                  pubKey={profile.pubkey}
+                  bio={profileContent.about}
+                  name={
+                    profileContent.display_name
+                      ? profileContent.display_name
+                      : profileContent.name
+                  }
+                  key={profile.id}
+                  mail={profileContent.nip05}
+                />
+              );
+            })}
+          </div>
+        ) : (
+          "No profiles"
+        )
       ) : (
         <CardSkeleton cards={8} />
       )}
