@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import cl from "./Profile.module.css";
-import NDK from "@nostr-dev-kit/ndk";
+import NDK from "@nostrband/ndk";
 import { useEffect, useState } from "react";
 import Search from "../../components/Search/Search";
 import {
