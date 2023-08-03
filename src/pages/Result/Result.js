@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import cl from "./Result.module.css";
 import Search from "../../components/Search/Search";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import ProfileItem from "../Home/People/ProfileItem/ProfileItem";
 import NDK from "@nostrband/ndk";
 
 const Result = () => {
   const [searchParams] = useSearchParams();
   const [profiles, setProfiles] = useState([]);
+  const [profilesCount, setProfilesCount] = useState(0);
   const [ndk, setNdk] = useState(null);
   const [isLoadingProfiles, setIsLoadingProfiles] = useState();
 
@@ -36,6 +37,11 @@ const Result = () => {
         await ndk.fetchEvents({ kinds: [0], ids: topProfilesIds.ids })
       );
       setProfiles(topProfiles);
+      const profilesCount = await ndk.fetchCount({
+        kinds: [0],
+        search: searchParams.get("q"),
+      });
+      setProfilesCount(profilesCount.count);
       setIsLoadingProfiles(false);
     }
   };
@@ -66,6 +72,9 @@ const Result = () => {
         </div>
       ) : (
         "No profiles"
+      )}
+      {profilesCount >= 4 && (
+        <Link>And {profilesCount ? profilesCount : 0} more profiles →</Link>
       )}
     </div>
   );
