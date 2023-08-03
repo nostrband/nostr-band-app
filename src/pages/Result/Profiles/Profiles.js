@@ -3,7 +3,8 @@ import cl from "./Profiles.module.css";
 import NDK from "@nostrband/ndk";
 import Search from "../../../components/Search/Search";
 import { useSearchParams } from "react-router-dom";
-import ProfileItem from "../../Home/People/ProfileItem/ProfileItem";
+import ProfileItem from "../../../components/ProfileItem/ProfileItem";
+import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 
 const Profiles = () => {
   const [searchParams] = useSearchParams();
@@ -114,7 +115,7 @@ const Profiles = () => {
           })}
         </div>
       ) : (
-        "No profiles"
+        <CardSkeleton cards={8} />
       )}
     </div>
   );
