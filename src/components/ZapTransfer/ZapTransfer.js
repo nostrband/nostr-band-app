@@ -53,7 +53,7 @@ const ZapTransfer = ({
           )}
           {sender ? (
             mode === "sent" ? (
-              <Link>
+              <Link className={cl.zapsSenderName}>
                 {sender.displayName ? sender.displayName : sender.name}
               </Link>
             ) : (
@@ -62,6 +62,7 @@ const ZapTransfer = ({
                   navigate(`/${senderPk}`);
                   window.location.reload();
                 }}
+                className={cl.zapsSenderName}
               >
                 {sender.displayName ? sender.displayName : sender.name}
               </Link>
@@ -119,11 +120,12 @@ const ZapTransfer = ({
                   navigate(`/${senderPk}`);
                   window.location.reload();
                 }}
+                className={cl.zapsSenderName}
               >
                 {receiver.displayName ? receiver.displayName : receiver.name}
               </Link>
             ) : (
-              <Link>
+              <Link className={cl.zapsSenderName}>
                 {receiver.displayName ? receiver.displayName : receiver.name}
               </Link>
             )
