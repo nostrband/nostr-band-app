@@ -106,7 +106,7 @@ const Profiles = () => {
   return (
     <div className={cl.profiles}>
       <Search isLoading={isLoadingProfiles} />
-      {!isLoadingProfiles ? (
+      {profiles.length !== 0 ? (
         profiles?.length ? (
           <div className={cl.resultProfiles}>
             <h2 className={cl.prTitle}>
