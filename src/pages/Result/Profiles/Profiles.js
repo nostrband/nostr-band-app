@@ -12,6 +12,7 @@ const Profiles = () => {
   const [profilesCount, setProfilesCount] = useState(0);
   const [ndk, setNdk] = useState(null);
   const [isLoadingProfiles, setIsLoadingProfiles] = useState();
+  const [profilesIds, setProfilesIds] = useState([]);
   const [limitProfiles, setLimitProfiles] = useState(10);
   const [isBottom, setIsBottom] = useState(false);
 
@@ -53,31 +54,46 @@ const Profiles = () => {
     const ndk = new NDK({ explicitRelayUrls: ["wss://relay.nostr.band"] });
     ndk.connect();
     setNdk(ndk);
-    getProfiles(ndk);
+    fetchProfilesIds(ndk);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const fetchProfilesIds = async (ndk) => {
+    if (ndk instanceof NDK) {
+      const profilesIds = await ndk.fetchTop({
+        kinds: [0],
+        search: searchParams.get("q"),
+        limit: 200,
+      });
+      setProfilesIds(profilesIds.ids);
+      getProfiles(ndk, profilesIds.ids);
+    }
+  };
+
   useEffect(() => {
-    getProfiles(ndk);
+    getProfiles(ndk, profilesIds);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limitProfiles]);
 
   useEffect(() => {
-    getProfiles(ndk);
+    getProfiles(ndk, profilesIds);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("q")]);
 
-  const getProfiles = async (ndk) => {
+  function compareByKeys(a, b, ids) {
+    return ids.indexOf(a.id) - ids.indexOf(b.id);
+  }
+
+  const getProfiles = async (ndk, ids) => {
     if (ndk instanceof NDK) {
       setIsLoadingProfiles(true);
       const profiles = Array.from(
-        await ndk.fetchEvents({
-          kinds: [0],
-          search: searchParams.get("q"),
-          limit: limitProfiles,
-        })
+        await ndk.fetchEvents({ kinds: [0], ids: ids.slice(0, limitProfiles) })
       );
-      setProfiles(profiles);
+      const sortedContentArray = profiles
+        .slice()
+        .sort((a, b) => compareByKeys(a, b, ids));
+      setProfiles(sortedContentArray);
       const profilesCount = await ndk.fetchCount({
         kinds: [0],
         search: searchParams.get("q"),
