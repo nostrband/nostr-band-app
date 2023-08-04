@@ -52,6 +52,9 @@ a {
   color: var(--bg-secondary-color);
   margin-right: 0.45rem;
   transition: all 0.3s;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .profile-info__hero-name:hover {
   text-decoration: underline;
