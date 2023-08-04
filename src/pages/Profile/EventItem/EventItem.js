@@ -107,7 +107,7 @@ const EventItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
             <img src={UserIcon} alt="Profile icon" />
           )}
         </div>
-        <p>{name}</p>
+        <p className={cl.eventAuthorName}>{name}</p>
         <Dropdown id="profile-dropdown" className="profile-dropdown">
           <Dropdown.Toggle size="sm" id="dropdown-basic"></Dropdown.Toggle>
           <Dropdown.Menu>

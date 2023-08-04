@@ -67,6 +67,11 @@ const Profiles = () => {
       });
       setProfilesIds(profilesIds.ids);
       getProfiles(ndk, profilesIds.ids);
+      const profilesCount = await ndk.fetchCount({
+        kinds: [0],
+        search: searchParams.get("q"),
+      });
+      setProfilesCount(profilesCount.count);
     }
   };
 
@@ -94,11 +99,6 @@ const Profiles = () => {
         .slice()
         .sort((a, b) => compareByKeys(a, b, ids));
       setProfiles(sortedContentArray);
-      const profilesCount = await ndk.fetchCount({
-        kinds: [0],
-        search: searchParams.get("q"),
-      });
-      setProfilesCount(profilesCount.count);
       setIsLoadingProfiles(false);
     }
   };

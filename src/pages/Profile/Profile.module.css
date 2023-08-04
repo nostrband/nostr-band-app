@@ -1,7 +1,7 @@
 .profile {
   display: flex;
   flex-direction: column;
-  max-width: 100%;
+  width: 100%;
   margin-bottom: 2rem;
   padding: 1rem;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
@@ -20,6 +20,7 @@
 .profileTitle {
   display: flex;
   align-items: center;
+  width: 100%;
 }
 .profileInfo {
   margin-left: 0.5rem;
@@ -49,6 +50,9 @@
 .profileInfo {
   color: var(--bg-secondary-color);
   font-size: 1.2rem;
+  width: 70%;
+  white-space: nowrap;
+  overflow: hidden;
 }
 .profileInfoName {
   font-size: 1.5rem;
@@ -63,6 +67,8 @@
 }
 .profileInfo p {
   margin-bottom: 0.5rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 .profileStats span {
   font-weight: 700;

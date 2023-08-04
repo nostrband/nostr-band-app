@@ -408,7 +408,7 @@ const Profile = () => {
           <div className={cl.profile}>
             <div className={cl.profileTitle}>
               <div className={cl.profileTitleAvatar}>
-                {!imgError ? (
+                {!imgError && profile.image ? (
                   <img
                     src={profile.image}
                     alt="Profile icon"

@@ -41,6 +41,9 @@
   color: var(--bg-secondary-color);
   cursor: pointer;
   transition: all 0.4s;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .replyAuthoNameLink:hover {
   text-decoration: underline;

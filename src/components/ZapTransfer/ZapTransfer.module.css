@@ -21,6 +21,12 @@
   border-radius: 50%;
   cursor: pointer;
 }
+.zapsSenderName {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .zapSender {
   display: flex;
   justify-content: space-between;
