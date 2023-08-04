@@ -106,13 +106,13 @@ const Profiles = () => {
   return (
     <div className={cl.profiles}>
       <Search isLoading={isLoadingProfiles} />
+      <h2 className={cl.prTitle}>
+        Profiles <br />
+        <span>found {profilesCount} profiles</span>
+      </h2>
       {profiles.length !== 0 ? (
         profiles?.length ? (
           <div className={cl.resultProfiles}>
-            <h2 className={cl.prTitle}>
-              Profiles <br />
-              <span>found {profilesCount} profiles</span>
-            </h2>
             {profiles.map((profile) => {
               const profileContent = JSON.parse(profile.content);
               return (
