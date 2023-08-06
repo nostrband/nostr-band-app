@@ -7,10 +7,12 @@ import AllResults from "./AllResults/AllResults";
 const Result = () => {
   const [searchParams] = useSearchParams();
 
-  if (!searchParams.get("type") || searchParams.get("type") === "all") {
+  if (!searchParams.get("type")) {
     return <AllResults />;
+  } else if (searchParams.get("type") === "profiles") {
+    return <Profiles />;
   }
-  return <Profiles />;
+  return <AllResults />;
 };
 
 export default Result;

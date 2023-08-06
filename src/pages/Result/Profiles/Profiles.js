@@ -81,7 +81,7 @@ const Profiles = () => {
   }, [limitProfiles]);
 
   useEffect(() => {
-    getProfiles(ndk, profilesIds);
+    fetchProfilesIds(ndk);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("q")]);
 
