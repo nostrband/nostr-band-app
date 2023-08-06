@@ -1,11 +1,10 @@
 import "./Search.css";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
-import Dropdown from "react-bootstrap/Dropdown";
 import { Button } from "react-bootstrap";
 import { Search as SearchIcon } from "react-bootstrap-icons";
 import Spinner from "react-bootstrap/Spinner";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 const Search = ({ isLoading }) => {
@@ -17,12 +16,20 @@ const Search = ({ isLoading }) => {
 
   const searchHandleByEnter = (e) => {
     if (e.key === "Enter") {
-      navigate(`/?q=${inputValue}`);
+      if (searchParams.get("type")) {
+        navigate(`/?q=${inputValue}&type=${searchParams.get("type")}`);
+      } else {
+        navigate(`/?q=${inputValue}`);
+      }
     }
   };
 
   const searchHandle = (e) => {
-    navigate(`/?q=${inputValue}`);
+    if (searchParams.get("type")) {
+      navigate(`/?q=${inputValue}&type=${searchParams.get("type")}`);
+    } else {
+      navigate(`/?q=${inputValue}`);
+    }
   };
 
   return (
@@ -42,18 +49,20 @@ const Search = ({ isLoading }) => {
           </div>
         )}
 
-        <Dropdown className="search-dropdown">
-          <Dropdown.Toggle variant="secondary" id="dropdown-basic">
-            All
-          </Dropdown.Toggle>
-
-          <Dropdown.Menu>
-            <Dropdown.Item href="#/action-1">All</Dropdown.Item>
-            <Dropdown.Item href="#/action-2">Posts</Dropdown.Item>
-            <Dropdown.Item href="#/action-3">Profiles</Dropdown.Item>
-            <Dropdown.Item href="#/action-3">Zaps</Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+        <div id="dropdown-basic">
+          <Form.Select
+            onChange={(e) => {
+              searchParams.set("type", e.currentTarget.value);
+              setSearchParams(searchParams);
+            }}
+            value={searchParams.get("type")}
+          >
+            <option value="all">All</option>
+            <option value="posts">Posts</option>
+            <option value="profiles">Profiles</option>
+            <option value="zaps">Zaps</option>
+          </Form.Select>
+        </div>
         <Button
           className="btn"
           id="search-btn"
