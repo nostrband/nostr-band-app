@@ -13,23 +13,30 @@ const Search = ({ isLoading }) => {
   const [inputValue, setInputValue] = useState(
     searchParams.get("q") ? searchParams.get("q") : ""
   );
+  const [selectValue, setSelectValue] = useState(
+    searchParams.get("type") ? searchParams.get("type") : ""
+  );
 
   const searchHandleByEnter = (e) => {
     if (e.key === "Enter") {
-      if (searchParams.get("type")) {
-        navigate(`/?q=${inputValue}&type=${searchParams.get("type")}`);
+      searchParams.set("q", inputValue);
+      if (selectValue) {
+        searchParams.set("type", selectValue);
       } else {
-        navigate(`/?q=${inputValue}`);
+        searchParams.delete("type");
       }
+      setSearchParams(searchParams);
     }
   };
 
   const searchHandle = (e) => {
-    if (searchParams.get("type")) {
-      navigate(`/?q=${inputValue}&type=${searchParams.get("type")}`);
+    searchParams.set("q", inputValue);
+    if (selectValue) {
+      searchParams.set("type", selectValue);
     } else {
-      navigate(`/?q=${inputValue}`);
+      searchParams.delete("type");
     }
+    setSearchParams(searchParams);
   };
 
   return (
@@ -51,13 +58,10 @@ const Search = ({ isLoading }) => {
 
         <div id="dropdown-basic">
           <Form.Select
-            onChange={(e) => {
-              searchParams.set("type", e.currentTarget.value);
-              setSearchParams(searchParams);
-            }}
-            value={searchParams.get("type")}
+            onChange={(e) => setSelectValue(e.currentTarget.value)}
+            value={selectValue}
           >
-            <option value="all">All</option>
+            <option value="">All</option>
             <option value="posts">Posts</option>
             <option value="profiles">Profiles</option>
             <option value="zaps">Zaps</option>
