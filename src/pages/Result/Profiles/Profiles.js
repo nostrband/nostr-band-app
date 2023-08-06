@@ -137,6 +137,14 @@ const Profiles = () => {
       ) : (
         <CardSkeleton cards={8} />
       )}
+      <p>
+        {profilesIds.length - profiles.length === 0 && profiles.length !== 200
+          ? `End of results (${
+              profilesCount - profiles.length
+            } profiles in spam)`
+          : ""}
+      </p>
+      <p>{profiles.length >= 200 ? "We only show top 200 results" : ""}</p>
     </div>
   );
 };
