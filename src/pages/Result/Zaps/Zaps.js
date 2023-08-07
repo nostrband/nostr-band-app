@@ -237,6 +237,7 @@ const Zaps = () => {
           })
         : ""}
       {isLoading && <p>Loading...</p>}
+      {zapsCount - receivedZaps.length === 0 && <p>End of results</p>}
     </div>
   );
 };
