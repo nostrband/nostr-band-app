@@ -137,6 +137,7 @@ const Profiles = () => {
       ) : (
         <CardSkeleton cards={8} />
       )}
+      {isLoadingProfiles && <p>Loading...</p>}
       <p>
         {profilesIds.length - profiles.length === 0 && profiles.length !== 200
           ? `End of results (${
