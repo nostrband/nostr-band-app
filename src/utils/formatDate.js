@@ -3,7 +3,7 @@ export function formatAMPM(date) {
   const timeNow = Date.now();
 
   if (timeNow - date <= 86400000) {
-    const time = new Date(timeNow - date * 1000);
+    const time = new Date(timeNow - date);
     if (time.getHours()) {
       const hs = time.getHours();
       agoTime = `${hs > 1 ? hs : ""} ${hs > 1 ? "hours" : "an hour"} ago`;
