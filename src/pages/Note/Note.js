@@ -107,7 +107,7 @@ const Note = () => {
   }, [isBottom]);
 
   function extractNostrStrings(inputString) {
-    const nostrPattern = /nostr:npub([^\s]+)/g;
+    const nostrPattern = /nostr:[^\s.]+/g;
     const matches = inputString.match(nostrPattern);
 
     if (matches) {
@@ -126,7 +126,7 @@ const Note = () => {
 
   if (content) {
     const links = extractNostrStrings(content);
-    if (links.length) {
+    if (links) {
       const pubkeys = links.map((link) => nip19.decode(link).data);
       if (ndk instanceof NDK) {
         fetchProfiles(pubkeys);
@@ -148,17 +148,12 @@ const Note = () => {
       taggedProfiles.map((profile) => {
         const profileContent = JSON.parse(profile.content);
         const npub = nip19.npubEncode(profile.pubkey);
-        console.log(
-          replaceNostrLinks(
-            content,
-            profileContent?.display_name,
-            `nostr:${npub}`
-          )
-        );
         setContent(
           replaceNostrLinks(
             content,
-            profileContent?.display_name,
+            profileContent?.display_name
+              ? profileContent?.display_name
+              : profileContent?.name,
             `nostr:${npub}`
           )
         );
