@@ -64,30 +64,32 @@ const Reply = ({ author, content, eventId, createdDateAt, mode }) => {
   return (
     <div className={mode === "rereply" ? cl.rereply : cl.reply}>
       <div className={cl.replyAuthorName}>
-        <div className={cl.replyAuthorImage}>
-          {!imgError ? (
-            authorContent.picture ? (
-              <img
-                src={authorContent.picture}
-                alt="avatar"
-                onError={() => setImgError(true)}
-              />
+        <Link to={`/${npub}`}>
+          <div className={cl.replyAuthorImage}>
+            {!imgError ? (
+              authorContent.picture ? (
+                <img
+                  src={authorContent.picture}
+                  alt="avatar"
+                  onError={() => setImgError(true)}
+                />
+              ) : (
+                <img alt="avatar" src={UserIcon} />
+              )
             ) : (
-              <img alt="avatar" src={UserIcon} />
-            )
-          ) : (
-            <img
-              src={`https://media.nostr.band/thumbs/${"pubkey".slice(
-                -4
-              )}/${"pubkey"}-picture-64`}
-              alt="avatar"
-              onError={({ currentTarget }) => {
-                currentTarget.srcset = UserIcon;
-              }}
-            />
-          )}
-        </div>
-        <Link className={cl.replyAuthoNameLink}>
+              <img
+                src={`https://media.nostr.band/thumbs/${"pubkey".slice(
+                  -4
+                )}/${"pubkey"}-picture-64`}
+                alt="avatar"
+                onError={({ currentTarget }) => {
+                  currentTarget.srcset = UserIcon;
+                }}
+              />
+            )}
+          </div>
+        </Link>
+        <Link to={`/${npub}`} className={cl.replyAuthoNameLink}>
           {authorContent.display_name
             ? authorContent.display_name
             : authorContent.name}

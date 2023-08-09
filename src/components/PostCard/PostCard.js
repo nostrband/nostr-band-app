@@ -100,29 +100,31 @@ const PostItem = ({
     <div className={cl.post}>
       {thread && <p className={cl.replyTo}>In a thread by {thread}</p>}
       <div className={cl.postName}>
-        <div className={cl.postImage}>
-          {!imgError ? (
-            picture ? (
-              <img
-                src={picture}
-                alt="avatar"
-                onError={() => setImgError(true)}
-              />
+        <Link to={`/${npubKey}`}>
+          <div className={cl.postImage}>
+            {!imgError ? (
+              picture ? (
+                <img
+                  src={picture}
+                  alt="avatar"
+                  onError={() => setImgError(true)}
+                />
+              ) : (
+                <img alt="avatar" src={UserIcon} />
+              )
             ) : (
-              <img alt="avatar" src={UserIcon} />
-            )
-          ) : (
-            <img
-              src={`https://media.nostr.band/thumbs/${pubkey.slice(
-                -4
-              )}/${pubkey}-picture-64`}
-              alt="avatar"
-              onError={({ currentTarget }) => {
-                currentTarget.srcset = UserIcon;
-              }}
-            />
-          )}
-        </div>
+              <img
+                src={`https://media.nostr.band/thumbs/${pubkey.slice(
+                  -4
+                )}/${pubkey}-picture-64`}
+                alt="avatar"
+                onError={({ currentTarget }) => {
+                  currentTarget.srcset = UserIcon;
+                }}
+              />
+            )}
+          </div>
+        </Link>
         <Link className={cl.postNameLink} to={`/${npubKey}`}>
           {name}
         </Link>

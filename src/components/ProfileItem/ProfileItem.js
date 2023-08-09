@@ -49,25 +49,27 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
     <div className="profile">
       <div className="profile-info">
         {img && (
-          <div className="profile-info__image">
-            {!imgError ? (
-              <img
-                src={img}
-                alt="Profile icon"
-                onError={() => setImgError(true)}
-              />
-            ) : (
-              <img
-                src={`https://media.nostr.band/thumbs/${pubKey.slice(
-                  -4
-                )}/${pubKey}-picture-64`}
-                alt="Profile icon"
-                onError={({ currentTarget }) => {
-                  currentTarget.srcset = UserIcon;
-                }}
-              />
-            )}
-          </div>
+          <Link to={`/${npubKey}`}>
+            <div className="profile-info__image">
+              {!imgError ? (
+                <img
+                  src={img}
+                  alt="Profile icon"
+                  onError={() => setImgError(true)}
+                />
+              ) : (
+                <img
+                  src={`https://media.nostr.band/thumbs/${pubKey.slice(
+                    -4
+                  )}/${pubKey}-picture-64`}
+                  alt="Profile icon"
+                  onError={({ currentTarget }) => {
+                    currentTarget.srcset = UserIcon;
+                  }}
+                />
+              )}
+            </div>
+          </Link>
         )}
 
         <div className="profile-info__hero">
