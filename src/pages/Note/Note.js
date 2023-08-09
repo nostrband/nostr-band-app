@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Search from "../../components/Search/Search";
 import cl from "./Note.module.css";
 import { Link, useLocation, useParams } from "react-router-dom";
@@ -63,6 +63,8 @@ const Note = () => {
   const [providers, setProviders] = useState([]);
   const [limitZaps, setLimitZaps] = useState(10);
   const [countOfZaps, setCountOfZaps] = useState("");
+  const [taggedProfiles, setTaggedProfiles] = useState([]);
+  const [content, setContent] = useState("");
   const location = useLocation();
 
   const handleScroll = () => {
@@ -103,6 +105,66 @@ const Note = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isBottom]);
+
+  function extractNostrStrings(inputString) {
+    const nostrPattern = /nostr:npub([^\s]+)/g;
+    const matches = inputString.match(nostrPattern);
+
+    if (matches) {
+      return matches.map((match) => match.slice("nostr:".length));
+    } else {
+      return [];
+    }
+  }
+
+  const fetchProfiles = async (pubkeys) => {
+    const profiles = Array.from(
+      await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
+    );
+    setTaggedProfiles(profiles);
+  };
+
+  if (content) {
+    const links = extractNostrStrings(content);
+    if (links.length) {
+      const pubkeys = links.map((link) => nip19.decode(link).data);
+      if (ndk instanceof NDK) {
+        fetchProfiles(pubkeys);
+      }
+    }
+  }
+  function replaceNostrLinks(inputText, replacementText, pattern) {
+    const nostrPattern = pattern;
+    return inputText
+      .toString()
+      ?.replace(
+        nostrPattern,
+        `[@${replacementText}](/${pattern.split(":")[1]})`
+      );
+  }
+
+  useEffect(() => {
+    if (taggedProfiles) {
+      taggedProfiles.map((profile) => {
+        const profileContent = JSON.parse(profile.content);
+        const npub = nip19.npubEncode(profile.pubkey);
+        console.log(
+          replaceNostrLinks(
+            content,
+            profileContent?.display_name,
+            `nostr:${npub}`
+          )
+        );
+        setContent(
+          replaceNostrLinks(
+            content,
+            profileContent?.display_name,
+            `nostr:${npub}`
+          )
+        );
+      });
+    }
+  }, [taggedProfiles]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
@@ -170,6 +232,7 @@ const Note = () => {
       // console.log(note);
 
       setEvent(note);
+      setContent(note.content);
       const author = await ndk.fetchEvent({
         kinds: [0],
         authors: [note.pubkey],
@@ -457,7 +520,7 @@ const Note = () => {
               </Dropdown>
             </div>
             <div className={cl.noteAbout}>
-              <MarkdownComponent content={event.content} mode="post" />
+              <MarkdownComponent content={content} mode="post" ndk={ndk} />
             </div>
             <div className={cl.noteCreated}>
               <span>{formatAMPM(createdTime * 1000)}</span>
