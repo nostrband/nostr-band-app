@@ -119,7 +119,6 @@ const Reply = ({ author, content, eventId, createdDateAt, mode }) => {
         className={cl.replyContent}
         onClick={() => {
           navigate(`/${noteId}`);
-          window.location.reload();
         }}
       >
         <MarkdownComponent content={content} />

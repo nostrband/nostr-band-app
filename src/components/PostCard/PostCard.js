@@ -152,7 +152,6 @@ const PostItem = ({
         style={{ cursor: "pointer" }}
         onClick={(e) => {
           navigate(`/${note}`);
-          window.location.reload();
         }}
       >
         <MarkdownComponent content={about} />
