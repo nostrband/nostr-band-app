@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import cl from "./Profile.module.css";
 import NDK from "@nostrband/ndk";
 import { useEffect, useState } from "react";
@@ -71,6 +71,7 @@ const Profile = () => {
   const [limitSentZaps, setLimitSentZaps] = useState(10);
   const [isBottom, setIsBottom] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const location = useLocation();
 
   const handleScroll = () => {
     const windowHeight = window.innerHeight;
@@ -83,6 +84,13 @@ const Profile = () => {
       setIsBottom(false);
     }
   };
+
+  useEffect(() => {
+    if (ndk instanceof NDK) {
+      setTabKey("posts");
+      fetchUser(ndk);
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     if (isBottom) {
@@ -130,28 +138,27 @@ const Profile = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchUser = async () => {
+  const fetchUser = async (ndk) => {
     try {
-      setIsZapLoading(true);
-      const ndk = new NDK({ explicitRelayUrls: ["wss://relay.nostr.band"] });
-      ndk.connect();
-      setNdk(ndk);
-      const user = ndk.getUser({ npub });
-      await user.fetchProfile();
-      const pk = user.hexpubkey();
-      setPubkey(pk);
-      fetchStats(pk);
-      const lastEv = await ndk.fetchEvent({
-        kinds: [1],
-        authors: [pk],
-        limit: 1,
-      });
-      setLastEvent(lastEv);
-      fetchPosts(pk, ndk);
-      // console.log(user.profile);
-      setProfile(user.profile);
-      setNprofile(nip19.nprofileEncode({ pubkey: pk }));
-      setIsZapLoading(false);
+      if (ndk instanceof NDK) {
+        setIsZapLoading(true);
+        const user = ndk.getUser({ npub });
+        await user.fetchProfile();
+        const pk = user.hexpubkey();
+        setPubkey(pk);
+        fetchStats(pk);
+        const lastEv = await ndk.fetchEvent({
+          kinds: [1],
+          authors: [pk],
+          limit: 1,
+        });
+        setLastEvent(lastEv);
+        fetchPosts(pk, ndk);
+        // console.log(user.profile);
+        setProfile(user.profile);
+        setNprofile(nip19.nprofileEncode({ pubkey: pk }));
+        setIsZapLoading(false);
+      }
     } catch (e) {
       console.log(e);
     }
@@ -198,7 +205,10 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    fetchUser();
+    const ndk = new NDK({ explicitRelayUrls: ["wss://relay.nostr.band"] });
+    ndk.connect();
+    setNdk(ndk);
+    fetchUser(ndk);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

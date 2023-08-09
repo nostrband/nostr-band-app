@@ -22,6 +22,7 @@ import {
   copyNpub,
   copyPubkey,
 } from "../../../utils/copy-funtions/copyFuntions";
+import { useNavigate } from "react-router-dom";
 
 const EventItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
   const [imgError, setImgError] = useState(false);
@@ -30,9 +31,11 @@ const EventItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
   const createdDateAt = new Date(createdDate * 1000);
   const [show, setShow] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const navigate = useNavigate();
 
   const npub = pubkey ? nip19.npubEncode(pubkey) : "";
   const nprofile = pubkey ? nip19.nprofileEncode({ pubkey: pubkey }) : "";
+  const noteId = pubkey ? nip19.noteEncode(eventId) : "";
 
   const windowSize = useRef(window.innerWidth);
 
@@ -132,7 +135,7 @@ const EventItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
           </Dropdown.Menu>
         </Dropdown>
       </div>
-      <div>
+      <div style={{ cursor: "pointer" }} onClick={() => navigate(`/${noteId}`)}>
         <MarkdownComponent content={about} />
       </div>
       <div className={cl.postStats}>

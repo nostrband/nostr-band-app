@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Search from "../../components/Search/Search";
 import cl from "./Note.module.css";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import NDK from "@nostrband/ndk";
 import UserIcon from "../../assets/user.png";
@@ -63,6 +63,7 @@ const Note = () => {
   const [providers, setProviders] = useState([]);
   const [limitZaps, setLimitZaps] = useState(10);
   const [countOfZaps, setCountOfZaps] = useState("");
+  const location = useLocation();
 
   const handleScroll = () => {
     const windowHeight = window.innerHeight;
@@ -75,6 +76,11 @@ const Note = () => {
       setIsBottom(false);
     }
   };
+
+  useEffect(() => {
+    fetchNote();
+    setTabKey("replies");
+  }, [location.pathname]);
 
   useEffect(() => {
     if (tabKey === "replies") {

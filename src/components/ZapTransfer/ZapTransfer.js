@@ -7,7 +7,7 @@ import cl from "./ZapTransfer.module.css";
 import { formatAMPM } from "../../utils/formatDate";
 import UserIcon from "../../assets/user.png";
 import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import Skeleton from "react-loading-skeleton";
 
@@ -26,7 +26,6 @@ const ZapTransfer = ({
   const createdAt = new Date(created * 1000);
   const data = formatAMPM(createdAt);
   const senderPk = nip19.npubEncode(senderPubkey);
-  const navigate = useNavigate();
 
   const noteId = eventId ? nip19.noteEncode(eventId) : "";
 
@@ -57,13 +56,7 @@ const ZapTransfer = ({
                 {sender.displayName ? sender.displayName : sender.name}
               </Link>
             ) : (
-              <Link
-                onClick={() => {
-                  navigate(`/${senderPk}`);
-                  window.location.reload();
-                }}
-                className={cl.zapsSenderName}
-              >
+              <Link to={`/${senderPk}`} className={cl.zapsSenderName}>
                 {sender.displayName ? sender.displayName : sender.name}
               </Link>
             )
@@ -115,13 +108,7 @@ const ZapTransfer = ({
           </div>
           {receiver ? (
             mode === "sent" ? (
-              <Link
-                onClick={() => {
-                  navigate(`/${senderPk}`);
-                  window.location.reload();
-                }}
-                className={cl.zapsSenderName}
-              >
+              <Link to={`/${senderPk}`} className={cl.zapsSenderName}>
                 {receiver.displayName ? receiver.displayName : receiver.name}
               </Link>
             ) : (
@@ -137,12 +124,7 @@ const ZapTransfer = ({
       {zappedPost && (
         <p>
           Zapped for: "{zappedPost.slice(0, 25)}...
-          <Link
-            onClick={() => {
-              navigate(`/${noteId}`);
-              window.location.reload();
-            }}
-          >
+          <Link to={`/${noteId}`}>
             <ArrowRight fontWeight={900} />
           </Link>
           "
