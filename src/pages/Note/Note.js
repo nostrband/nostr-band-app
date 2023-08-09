@@ -123,6 +123,8 @@ const Note = () => {
 
   const fetchNote = async () => {
     try {
+      setRootPost(null);
+      setThreadPost(null);
       setIsLoading(true);
       const ndk = new NDK({ explicitRelayUrls: ["wss://relay.nostr.band"] });
       ndk.connect();
