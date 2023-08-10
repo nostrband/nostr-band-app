@@ -23,6 +23,7 @@ import {
   copyNpub,
   copyPubkey,
 } from "../../utils/copy-funtions/copyFuntions";
+import NDK from "@nostrband/ndk";
 
 const PostItem = ({
   name,
@@ -32,6 +33,7 @@ const PostItem = ({
   createdDate,
   eventId,
   thread,
+  ndk,
 }) => {
   const [imgError, setImgError] = useState(false);
   const [stats, setStats] = useState([]);
@@ -41,6 +43,80 @@ const PostItem = ({
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [npubKey, setNpubKey] = useState("");
   const [nprofile, setNprofile] = useState("");
+  const [taggedProfiles, setTaggedProfiles] = useState([]);
+  const [content, setContent] = useState(about);
+
+  function extractNostrStrings(inputString) {
+    const nostrPattern = /nostr:[^\s.]+/g;
+    const matches = inputString.match(nostrPattern);
+
+    if (matches) {
+      return matches.map((match) => match.slice("nostr:".length));
+    } else {
+      return [];
+    }
+  }
+
+  const fetchProfiles = async (pubkeys) => {
+    const profiles = Array.from(
+      await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
+    );
+    setTaggedProfiles(profiles.length ? profiles : pubkeys);
+  };
+
+  if (content) {
+    const links = extractNostrStrings(content);
+    if (links) {
+      const pubkeys = links.map((link) => {
+        if (link.startsWith("npub")) {
+          return nip19.decode(link).data;
+        }
+        return link;
+      });
+      if (ndk instanceof NDK) {
+        fetchProfiles(pubkeys);
+      }
+    }
+  }
+  function replaceNostrLinks(inputText, replacementText, pattern) {
+    const nostrPattern = pattern;
+    return inputText
+      .toString()
+      ?.replace(
+        nostrPattern,
+        `[@${replacementText}](/${pattern.split(":")[1]})`
+      );
+  }
+
+  useEffect(() => {
+    if (taggedProfiles) {
+      taggedProfiles.map((profile) => {
+        if (!profile.toString().startsWith("note")) {
+          const profileContent = JSON.parse(profile.content);
+          const npub = nip19.npubEncode(profile.pubkey);
+          setContent(
+            replaceNostrLinks(
+              content,
+              profileContent?.display_name
+                ? profileContent?.display_name
+                : profileContent?.name,
+              `nostr:${npub}`
+            )
+          );
+        } else {
+          setContent(
+            replaceNostrLinks(
+              content,
+              `${profile.toString().slice(0, 10)}...${profile
+                .toString()
+                .slice(-4)}`,
+              `nostr:${profile}`
+            )
+          );
+        }
+      });
+    }
+  }, [taggedProfiles]);
 
   const navigate = useNavigate();
 
@@ -154,7 +230,7 @@ const PostItem = ({
           navigate(`/${note}`);
         }}
       >
-        <MarkdownComponent content={about} />
+        <MarkdownComponent content={content} />
       </div>
       <div className={cl.postStats}>
         {stats?.zaps?.msats && (
