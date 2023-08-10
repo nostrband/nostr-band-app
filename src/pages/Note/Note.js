@@ -121,13 +121,18 @@ const Note = () => {
     const profiles = Array.from(
       await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
     );
-    setTaggedProfiles(profiles);
+    setTaggedProfiles(profiles.length ? profiles : pubkeys);
   };
 
   if (content) {
     const links = extractNostrStrings(content);
     if (links) {
-      const pubkeys = links.map((link) => nip19.decode(link).data);
+      const pubkeys = links.map((link) => {
+        if (link.startsWith("npub")) {
+          return nip19.decode(link).data;
+        }
+        return link;
+      });
       if (ndk instanceof NDK) {
         fetchProfiles(pubkeys);
       }
@@ -146,17 +151,29 @@ const Note = () => {
   useEffect(() => {
     if (taggedProfiles) {
       taggedProfiles.map((profile) => {
-        const profileContent = JSON.parse(profile.content);
-        const npub = nip19.npubEncode(profile.pubkey);
-        setContent(
-          replaceNostrLinks(
-            content,
-            profileContent?.display_name
-              ? profileContent?.display_name
-              : profileContent?.name,
-            `nostr:${npub}`
-          )
-        );
+        if (!profile.toString().startsWith("note")) {
+          const profileContent = JSON.parse(profile.content);
+          const npub = nip19.npubEncode(profile.pubkey);
+          setContent(
+            replaceNostrLinks(
+              content,
+              profileContent?.display_name
+                ? profileContent?.display_name
+                : profileContent?.name,
+              `nostr:${npub}`
+            )
+          );
+        } else {
+          setContent(
+            replaceNostrLinks(
+              content,
+              `${profile.toString().slice(0, 10)}...${profile
+                .toString()
+                .slice(-4)}`,
+              `nostr:${profile}`
+            )
+          );
+        }
       });
     }
   }, [taggedProfiles]);
