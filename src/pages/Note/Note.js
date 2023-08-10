@@ -108,7 +108,7 @@ const Note = () => {
   }, [isBottom]);
 
   function extractNostrStrings(inputString) {
-    const nostrPattern = /nostr:[^\s.,:())]+/g;
+    const nostrPattern = /nostr:[a-zA-Z0-9]+/;
     const matches = inputString.match(nostrPattern);
 
     if (matches) {
