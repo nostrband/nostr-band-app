@@ -406,6 +406,15 @@ const Profile = () => {
     setLimitSentZaps((prevState) => prevState + 10);
   };
 
+  const zapBtn = async () => {
+    const d = document.createElement("div");
+    d.setAttribute("data-npub", npub);
+    d.setAttribute("data-relays", "wss://relay.nostr.band");
+    window.nostrZap.initTarget(d);
+    d.click();
+    d.remove();
+  };
+
   const sats = stats?.zaps_received?.msats / 1000;
   const sentSats = stats.zaps_sent?.msats / 1000;
 
@@ -500,7 +509,7 @@ const Profile = () => {
                   <BoxArrowUpRight /> Open
                 </Button>
               </a>
-              <Button variant="secondary">
+              <Button variant="secondary" onClick={() => zapBtn()}>
                 <Lightning /> Zap
               </Button>
               <Button variant="secondary">
