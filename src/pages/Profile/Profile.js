@@ -75,10 +75,15 @@ const Profile = () => {
   const [imgError, setImgError] = useState(false);
   const location = useLocation();
   const [width, setWidth] = useState(window.innerWidth);
+  const [isMobile, setIsMobile] = useState(width <= 768);
 
   function handleWindowSizeChange() {
     setWidth(window.innerWidth);
   }
+
+  useEffect(() => {
+    setIsMobile(width <= 768);
+  }, [window.innerWidth]);
   useEffect(() => {
     window.addEventListener("resize", handleWindowSizeChange);
     return () => {
@@ -86,8 +91,6 @@ const Profile = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const isMobile = width <= 768;
 
   const handleScroll = () => {
     const windowHeight = window.innerHeight;
