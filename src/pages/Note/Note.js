@@ -435,6 +435,16 @@ const Note = () => {
 
   const sats = stats?.zaps?.msats / 1000;
 
+  const zapBtn = async () => {
+    const d = document.createElement("div");
+    d.setAttribute("data-npub", npubKey);
+    d.setAttribute("data-note-id", noteId);
+    d.setAttribute("data-relays", "wss://relay.nostr.band");
+    window.nostrZap.initTarget(d);
+    d.click();
+    d.remove();
+  };
+
   return (
     <div className={cl.noteContainer}>
       <Search isLoading={isLoading} />
@@ -594,7 +604,7 @@ const Note = () => {
                   <BoxArrowUpRight /> Open
                 </Button>
               </a>
-              <Button variant="secondary">
+              <Button variant="secondary" onClick={() => zapBtn()}>
                 <Lightning /> Zap
               </Button>
               <Button variant="secondary">
