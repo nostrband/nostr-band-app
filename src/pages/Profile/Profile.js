@@ -35,6 +35,7 @@ import { getZapAmount } from "../../utils/zapFunctions";
 import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
 import UserIcon from "../../assets/user.png";
 import { RWebShare } from "react-web-share";
+import {BrowserView, MobileView} from 'react-device-detect';
 
 const Profile = () => {
   const [pubkey, setPubkey] = useState("");
@@ -74,23 +75,6 @@ const Profile = () => {
   const [isBottom, setIsBottom] = useState(false);
   const [imgError, setImgError] = useState(false);
   const location = useLocation();
-  const [width, setWidth] = useState(window.innerWidth);
-  const [isMobile, setIsMobile] = useState(width <= 768);
-
-  function handleWindowSizeChange() {
-    setWidth(window.innerWidth);
-  }
-
-  useEffect(() => {
-    setIsMobile(width <= 768);
-  }, [window.innerWidth]);
-  useEffect(() => {
-    window.addEventListener("resize", handleWindowSizeChange);
-    return () => {
-      window.removeEventListener("resize", handleWindowSizeChange);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleScroll = () => {
     const windowHeight = window.innerHeight;
@@ -553,8 +537,8 @@ const Profile = () => {
                   >
                     <BoxArrowUpRight /> Open with
                   </Dropdown.Item>
-                  {isMobile ? (
-                    <Dropdown.Item>
+                  <MobileView>
+                  <Dropdown.Item>
                       <RWebShare
                         data={{
                           text: "Hey, here's nostr",
@@ -568,13 +552,13 @@ const Profile = () => {
                         </span>
                       </RWebShare>
                     </Dropdown.Item>
-                  ) : (
-                    <Dropdown.Item
+                  </MobileView>
+                  <BrowserView>
+                  <Dropdown.Item
                       onClick={() => copyLink(`https://new.nostr.band/${npub}`)}
                     >
                       <Share /> Share
-                    </Dropdown.Item>
-                  )}
+                    </Dropdown.Item></BrowserView>
                   <Dropdown.Item href="#/action-3">
                     <FileEarmarkPlus /> Embed
                   </Dropdown.Item>
