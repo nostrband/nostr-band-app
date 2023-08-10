@@ -18,6 +18,7 @@ import {
   LightningFill,
 } from "react-bootstrap-icons";
 import {
+  copyLink,
   copyNprofile,
   copyNpub,
   copyPubkey,
@@ -626,7 +627,9 @@ const Note = () => {
                   >
                     <BoxArrowUpRight /> Open with
                   </Dropdown.Item>
-                  <Dropdown.Item href="#/action-2">
+                  <Dropdown.Item
+                    onClick={() => copyLink(`https://new.nostr.band/${note}`)}
+                  >
                     <Share /> Share
                   </Dropdown.Item>
                   <Dropdown.Item href="#/action-3">
