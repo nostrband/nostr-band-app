@@ -47,7 +47,7 @@ const PostItem = ({
   const [content, setContent] = useState(about);
 
   function extractNostrStrings(inputString) {
-    const nostrPattern = /nostr:[^\s.]+/g;
+    const nostrPattern = /nostr:[^\s.,:]+/g;
     const matches = inputString.match(nostrPattern);
 
     if (matches) {
