@@ -14,7 +14,7 @@ export const copyLink = async (link) => {
   const data = { link };
   try {
     console.log(navigator.canShare);
-    if (navigator.canShare() && navigator.canShare(data)) {
+    if (navigator.canShare && navigator.canShare(data)) {
       await navigator.share(data);
     } else {
       await navigator.clipboard.writeText(link);
