@@ -144,30 +144,40 @@ const Note = () => {
       .toString()
       ?.replace(
         nostrPattern,
-        `[@${replacementText}](/${pattern.split(":")[1]})`
+        `[${replacementText}](/${pattern.split(":")[1]})`
       );
   }
 
   useEffect(() => {
     if (taggedProfiles) {
       taggedProfiles.map((profile) => {
-        if (!profile.toString().startsWith("note")) {
+        if (profile instanceof Object) {
           const profileContent = JSON.parse(profile.content);
           const npub = nip19.npubEncode(profile.pubkey);
           setContent(
             replaceNostrLinks(
               content,
               profileContent?.display_name
-                ? profileContent?.display_name
-                : profileContent?.name,
+                ? `@${profileContent?.display_name}`
+                : `@${profileContent?.name}`,
               `nostr:${npub}`
+            )
+          );
+        } else if (profile.toString().startsWith("note")) {
+          setContent(
+            replaceNostrLinks(
+              content,
+              `${profile.toString().slice(0, 10)}...${profile
+                .toString()
+                .slice(-4)}`,
+              `nostr:${profile}`
             )
           );
         } else {
           setContent(
             replaceNostrLinks(
               content,
-              `${profile.toString().slice(0, 10)}...${profile
+              `${profile.toString().slice(0, 12)}...${profile
                 .toString()
                 .slice(-4)}`,
               `nostr:${profile}`
