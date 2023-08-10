@@ -10,14 +10,13 @@ export const copyPubkey = (pubkey) => {
   navigator.clipboard.writeText(pubkey);
 };
 
-export const copyLink = async (link) => {
-  const data = { link };
+export const copyLink = async (url) => {
+  const data = { url };
   try {
-    console.log(navigator.canShare);
     if (navigator.canShare && navigator.canShare(data)) {
       await navigator.share(data);
     } else {
-      await navigator.clipboard.writeText(link);
+      await navigator.clipboard.writeText(url);
     }
   } catch (err) {
     console.log(err);
