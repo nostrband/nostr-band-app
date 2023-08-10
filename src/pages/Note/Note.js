@@ -440,6 +440,7 @@ const Note = () => {
           about={rootPost.content}
           pubkey={rootPost.pubkey}
           createdDate={rootPost.created_at}
+          ndk={ndk}
         />
       ) : (
         ""
