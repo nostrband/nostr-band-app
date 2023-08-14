@@ -561,7 +561,7 @@ const Profile = () => {
                     Copy contact list naddr
                   </Dropdown.Item>
                   <hr />
-                  <Dropdown.Item href="#/action-1">
+                  <Dropdown.Item href={`/?q=following:${npub}&type=posts`}>
                     View home feed
                   </Dropdown.Item>
                   <Dropdown.Item href="#/action-1">
