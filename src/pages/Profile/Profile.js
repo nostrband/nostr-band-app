@@ -24,12 +24,7 @@ import EventItem from "./EventItem/EventItem";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import ProfileSkeleton from "./ProfileSkeleton/ProfileSkeleton";
-import {
-  copyLink,
-  copyNprofile,
-  copyNpub,
-  copyPubkey,
-} from "../../utils/copy-funtions/copyFuntions";
+import { copyLink, copyUrl } from "../../utils/copy-funtions/copyFuntions";
 import { nip19 } from "nostr-tools";
 import { getZapAmount } from "../../utils/zapFunctions";
 import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
@@ -544,13 +539,13 @@ const Profile = () => {
                     <FileEarmarkPlus /> Embed
                   </Dropdown.Item>
                   <hr />
-                  <Dropdown.Item onClick={() => copyNpub(npub)}>
+                  <Dropdown.Item onClick={() => copyUrl(npub)}>
                     Copy npub
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => copyNprofile(nprofile)}>
+                  <Dropdown.Item onClick={() => copyUrl(nprofile)}>
                     Copy nprofile
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => copyPubkey(pubkey)}>
+                  <Dropdown.Item onClick={() => copyUrl(pubkey)}>
                     Copy pubkey
                   </Dropdown.Item>
                   <Dropdown.Item>Copy contact list naddr</Dropdown.Item>

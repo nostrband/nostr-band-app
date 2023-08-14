@@ -8,11 +8,7 @@ import axios from "axios";
 import { Chat, HandThumbsUp } from "react-bootstrap-icons";
 import { formatAMPM } from "../../utils/formatDate";
 import { nip19 } from "nostr-tools";
-import {
-  copyNprofile,
-  copyNpub,
-  copyPubkey,
-} from "../../utils/copy-funtions/copyFuntions";
+import { copyUrl } from "../../utils/copy-funtions/copyFuntions";
 
 const Reply = ({ author, content, eventId, createdDateAt, mode }) => {
   const authorContent = author ? JSON.parse(author.content) : "";
@@ -103,13 +99,13 @@ const Reply = ({ author, content, eventId, createdDateAt, mode }) => {
             >
               Open
             </Dropdown.Item>
-            <Dropdown.Item onClick={() => copyNpub(npub)}>
+            <Dropdown.Item onClick={() => copyUrl(npub)}>
               Copy npub
             </Dropdown.Item>
-            <Dropdown.Item onClick={() => copyNprofile(nprofile)}>
+            <Dropdown.Item onClick={() => copyUrl(nprofile)}>
               Copy nprofile
             </Dropdown.Item>
-            <Dropdown.Item onClick={() => copyPubkey(pk)}>
+            <Dropdown.Item onClick={() => copyUrl(pk)}>
               Copy pubkey
             </Dropdown.Item>
           </Dropdown.Menu>
