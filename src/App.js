@@ -6,10 +6,13 @@ import { allRoutes } from "./routes";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   return (
     <Container>
+      <ToastContainer />
       <Row className="justify-content-lg-center">
         <Col lg={9}>
           <Header />
