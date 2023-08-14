@@ -70,7 +70,7 @@ const Profile = () => {
   const [limitSentZaps, setLimitSentZaps] = useState(10);
   const [isBottom, setIsBottom] = useState(false);
   const [imgError, setImgError] = useState(false);
-  const [isModal, setIsModal] = useState();
+  const [isModal, setIsModal] = useState(false);
   const [modalContent, setModalContent] = useState("");
   const [profileJson, setProfileJson] = useState("");
   const [contactJson, setContactJson] = useState("");

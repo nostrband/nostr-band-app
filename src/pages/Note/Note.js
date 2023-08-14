@@ -16,6 +16,7 @@ import {
   Tags,
   Reply as ReplyIcon,
   LightningFill,
+  X,
 } from "react-bootstrap-icons";
 import { copyLink, copyUrl } from "../../utils/copy-funtions/copyFuntions";
 import { Button, Dropdown, Tab, Tabs } from "react-bootstrap";
@@ -28,6 +29,7 @@ import PostCard from "../../components/PostCard/PostCard";
 import { getAllTags } from "../../utils/getTags";
 import { getZapAmount } from "../../utils/zapFunctions";
 import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
+import ReactModal from "react-modal";
 
 const Note = () => {
   const [event, setEvent] = useState([]);
@@ -62,6 +64,10 @@ const Note = () => {
   const [countOfZaps, setCountOfZaps] = useState("");
   const [taggedProfiles, setTaggedProfiles] = useState([]);
   const [content, setContent] = useState("");
+  const [isModal, setIsModal] = useState(false);
+  const [modalContent, setModalContent] = useState("");
+  const [contentJson, setContentJson] = useState("");
+
   const location = useLocation();
 
   const handleScroll = () => {
@@ -261,6 +267,20 @@ const Note = () => {
       setCreatedTime(note.created_at);
       const npub = nip19.npubEncode(note.pubkey);
       const nprofile = nip19.nprofileEncode({ pubkey: note.pubkey });
+      setContentJson(
+        JSON.stringify(
+          {
+            pubkey: author.pubkey,
+            content: note.content,
+            id: note.id,
+            created_at: note.created_at,
+            kind: "1",
+            tags: note.tags,
+          },
+          null,
+          2
+        )
+      );
       setNpubKey(npub);
       setNprofile(nprofile);
       setNnadr(
@@ -440,6 +460,10 @@ const Note = () => {
 
   const sats = stats?.zaps?.msats / 1000;
 
+  const closeModal = () => {
+    setIsModal(false);
+  };
+
   const zapBtn = async () => {
     const d = document.createElement("div");
     d.setAttribute("data-npub", npubKey);
@@ -452,6 +476,39 @@ const Note = () => {
 
   return (
     <div className={cl.noteContainer}>
+      <ReactModal
+        bodyOpenClassName={cl.modalBody}
+        ariaHideApp={false}
+        className={cl.modal}
+        contentLabel="Event Json"
+        isOpen={isModal}
+        onRequestClose={closeModal}
+      >
+        <div className={cl.modalHeader}>
+          <h2>Event JSON</h2>
+          <Button
+            variant="link"
+            style={{ fontSize: "2.2rem", color: "black" }}
+            onClick={closeModal}
+          >
+            <X />
+          </Button>
+        </div>
+        {modalContent && (
+          <textarea
+            style={{ width: "100%" }}
+            rows={16}
+            cols={50}
+            value={modalContent}
+            readOnly
+          />
+        )}
+        <div className={cl.modalFooter}>
+          <Button variant="success" onClick={() => copyUrl(modalContent)}>
+            Copy
+          </Button>
+        </div>
+      </ReactModal>
       <Search isLoading={isLoading} />
       {rootPost ? (
         <PostCard
@@ -653,18 +710,14 @@ const Note = () => {
                     Copy contact list naddr
                   </Dropdown.Item>
                   <hr />
-                  <Dropdown.Item href={`/?q=following:${npubKey}&type=posts`}>
-                    View home feed
-                  </Dropdown.Item>
-                  <Dropdown.Item href="#/action-1">
-                    View edit history
-                  </Dropdown.Item>
                   <Dropdown.Item href="#/action-1">View relays</Dropdown.Item>
-                  <Dropdown.Item href="#/action-1">
-                    View profile JSON
-                  </Dropdown.Item>
-                  <Dropdown.Item href="#/action-1">
-                    View contacts JSON
+                  <Dropdown.Item
+                    onClick={() => {
+                      setModalContent(contentJson);
+                      setIsModal(true);
+                    }}
+                  >
+                    View JSON
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
