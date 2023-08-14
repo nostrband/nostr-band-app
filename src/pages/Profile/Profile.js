@@ -44,6 +44,7 @@ const Profile = () => {
   const [isSentZapMoreButton, setIsSentZapMoreButton] = useState(false);
   const [tabKey, setTabKey] = useState("posts");
   const [nprofile, setNprofile] = useState("");
+  const [nnadr, setNnadr] = useState("");
   const [receivedZaps, setReceivedZaps] = useState([]);
   const [amountReceivedZaps, setAmountReceivedZaps] = useState([]);
   const [sentAuthors, setSentAuthors] = useState([]);
@@ -153,6 +154,14 @@ const Profile = () => {
         // console.log(user.profile);
         setProfile(user.profile);
         setNprofile(nip19.nprofileEncode({ pubkey: pk }));
+        setNnadr(
+          nip19.naddrEncode({
+            kind: 3,
+            pubkey: pk,
+            identifier: "",
+            relays: ["wss://relay.nostr.band"],
+          })
+        );
         setIsZapLoading(false);
       }
     } catch (e) {
@@ -548,7 +557,9 @@ const Profile = () => {
                   <Dropdown.Item onClick={() => copyUrl(pubkey)}>
                     Copy pubkey
                   </Dropdown.Item>
-                  <Dropdown.Item>Copy contact list naddr</Dropdown.Item>
+                  <Dropdown.Item onClick={() => copyUrl(nnadr)}>
+                    Copy contact list naddr
+                  </Dropdown.Item>
                   <hr />
                   <Dropdown.Item href="#/action-1">
                     View home feed

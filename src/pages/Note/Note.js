@@ -37,6 +37,7 @@ const Note = () => {
   const [pubkey, setPubkey] = useState("");
   const [npubKey, setNpubKey] = useState("");
   const [nprofile, setNprofile] = useState("");
+  const [nnadr, setNnadr] = useState("");
   const [author, setAuthor] = useState([]);
   const [imgError, setImgError] = useState(false);
   const [createdTime, setCreatedTime] = useState("");
@@ -262,6 +263,14 @@ const Note = () => {
       const nprofile = nip19.nprofileEncode({ pubkey: note.pubkey });
       setNpubKey(npub);
       setNprofile(nprofile);
+      setNnadr(
+        nip19.naddrEncode({
+          kind: 3,
+          pubkey: note.pubkey,
+          identifier: "",
+          relays: ["wss://relay.nostr.band"],
+        })
+      );
       fetchStats();
       fetchReplies(ndk);
       // console.log(JSON.parse(author.content));
@@ -640,7 +649,9 @@ const Note = () => {
                   <Dropdown.Item onClick={() => copyUrl(pubkey)}>
                     Copy pubkey
                   </Dropdown.Item>
-                  <Dropdown.Item>Copy contact list naddr</Dropdown.Item>
+                  <Dropdown.Item onClick={() => copyUrl(nnadr)}>
+                    Copy contact list naddr
+                  </Dropdown.Item>
                   <hr />
                   <Dropdown.Item href="#/action-1">
                     View home feed
