@@ -5,7 +5,7 @@ import NavDropdown from "react-bootstrap/NavDropdown";
 import Form from "react-bootstrap/Form";
 import { Link } from "react-router-dom";
 
-const Header = () => {
+const Header = ({ onLogin }) => {
   return (
     <Navbar expand="lg">
       <Link className="header-logo" to="/">
@@ -52,7 +52,7 @@ const Header = () => {
             <NavDropdown.Item href="#action/3.1">Terms</NavDropdown.Item>
             <NavDropdown.Item href="#action/3.1">Privacy</NavDropdown.Item>
           </NavDropdown>
-          <Nav.Link href="#home">Login</Nav.Link>
+          <Nav.Link onClick={() => onLogin(true)}>Login</Nav.Link>
         </Nav>
       </Navbar.Collapse>
     </Navbar>

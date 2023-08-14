@@ -1,0 +1,44 @@
+.login-modal {
+  position: fixed;
+  top: 7%;
+  left: 50%;
+  width: 60%;
+  height: max-content;
+  transform: translate(-50%, -7%);
+  z-index: 6;
+  padding: 1rem 2.5rem;
+  background-color: white;
+  border: 1px solid rgb(204, 204, 204);
+  border-radius: 16px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.modal-body {
+  margin: 1rem 0;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+.modal-body div {
+  display: flex;
+  justify-content: center;
+}
+.modal-footer {
+  float: right;
+}
+
+@media screen and (max-width: 1000px) {
+  .login-modal {
+    width: 75%;
+  }
+}
+
+@media screen and (max-width: 760px) {
+  .login-modal {
+    width: 98%;
+  }
+}

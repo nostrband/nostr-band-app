@@ -8,14 +8,82 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ReactModal from "react-modal";
+import { Button } from "react-bootstrap";
+import { X } from "react-bootstrap-icons";
+import { useState } from "react";
 
 const App = () => {
+  const [isModal, setIsModal] = useState(false);
+  const closeModal = () => setIsModal(false);
+
   return (
     <Container>
+      <ReactModal
+        isOpen={isModal}
+        onAfterOpen={() => {
+          document.body.style.overflow = "hidden";
+        }}
+        onAfterClose={() => {
+          document.body.style.overflow = "auto";
+        }}
+        onRequestClose={closeModal}
+        ariaHideApp={false}
+        className="login-modal"
+        style={{ overlay: { zIndex: 6 } }}
+      >
+        <div className="modal-header">
+          <h4>Login</h4>
+          <Button
+            variant="link"
+            style={{ fontSize: "1.8rem", color: "black" }}
+            onClick={closeModal}
+          >
+            <X />
+          </Button>
+        </div>
+        <hr />
+        <div className="modal-body">
+          <div>
+            <Button variant="outline-primary">
+              Login with browser extension
+            </Button>
+          </div>
+          <p class="mt-2">
+            Please login using Nostr browser extension. You can try{" "}
+            <a href="https://getalby.com/" target="_blank" _h="1">
+              Alby
+            </a>
+            ,{" "}
+            <a
+              href="https://chrome.google.com/webstore/detail/nos2x/kpgefcfmnafjgpblomihpgmejjdanjjp"
+              target="_blank"
+              _h="1"
+            >
+              nos2x
+            </a>{" "}
+            or{" "}
+            <a
+              href="https://testflight.apple.com/join/ouPWAQAV"
+              target="_blank"
+              _h="1"
+            >
+              Nostore
+            </a>{" "}
+            (for Safari).
+          </p>
+        </div>
+        <hr />
+        <div className="modal-footer">
+          <Button variant="secondary" onClick={closeModal}>
+            Close
+          </Button>
+        </div>
+      </ReactModal>
       <ToastContainer />
       <Row className="justify-content-lg-center">
         <Col lg={9}>
-          <Header />
+          <Header onLogin={setIsModal} />
           <Routes>
             {allRoutes.map((route) => {
               return (
