@@ -17,11 +17,7 @@ import { formatAMPM } from "../../../utils/formatDate";
 import MarkdownComponent from "../../../components/MarkdownComponent/MarkdownComponent";
 import UserIcon from "../../../assets/user.png";
 import { nip19 } from "nostr-tools";
-import {
-  copyNprofile,
-  copyNpub,
-  copyPubkey,
-} from "../../../utils/copy-funtions/copyFuntions";
+import { copyUrl } from "../../../utils/copy-funtions/copyFuntions";
 import { useNavigate } from "react-router-dom";
 
 const EventItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
@@ -120,16 +116,13 @@ const EventItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
             >
               Open
             </Dropdown.Item>
-            <Dropdown.Item href="#/action-2" onClick={() => copyNpub(npub)}>
+            <Dropdown.Item href="#/action-2" onClick={() => copyUrl(npub)}>
               Copy npub
             </Dropdown.Item>
-            <Dropdown.Item
-              href="#/action-3"
-              onClick={() => copyNprofile(nprofile)}
-            >
+            <Dropdown.Item href="#/action-3" onClick={() => copyUrl(nprofile)}>
               Copy nprofile
             </Dropdown.Item>
-            <Dropdown.Item href="#/action-3" onClick={() => copyPubkey(pubkey)}>
+            <Dropdown.Item href="#/action-3" onClick={() => copyUrl(pubkey)}>
               Copy pubkey
             </Dropdown.Item>
           </Dropdown.Menu>

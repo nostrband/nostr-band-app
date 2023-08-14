@@ -14,11 +14,7 @@ import axios from "axios";
 import { nip19 } from "nostr-tools";
 import { Link } from "react-router-dom";
 import UserIcon from "../../assets/user.png";
-import {
-  copyNprofile,
-  copyNpub,
-  copyPubkey,
-} from "../../utils/copy-funtions/copyFuntions";
+import { copyUrl } from "../../utils/copy-funtions/copyFuntions";
 
 const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
   const [imgError, setImgError] = useState(false);
@@ -90,13 +86,13 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
                 >
                   Open
                 </Dropdown.Item>
-                <Dropdown.Item onClick={() => copyNpub(npubKey)}>
+                <Dropdown.Item onClick={() => copyUrl(npubKey)}>
                   Copy npub
                 </Dropdown.Item>
-                <Dropdown.Item onClick={() => copyNprofile(nprofile)}>
+                <Dropdown.Item onClick={() => copyUrl(nprofile)}>
                   Copy nprofile
                 </Dropdown.Item>
-                <Dropdown.Item onClick={() => copyPubkey(pubKey)}>
+                <Dropdown.Item onClick={() => copyUrl(pubKey)}>
                   Copy pubkey
                 </Dropdown.Item>
               </Dropdown.Menu>

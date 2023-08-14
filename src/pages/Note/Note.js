@@ -17,12 +17,7 @@ import {
   Reply as ReplyIcon,
   LightningFill,
 } from "react-bootstrap-icons";
-import {
-  copyLink,
-  copyNprofile,
-  copyNpub,
-  copyPubkey,
-} from "../../utils/copy-funtions/copyFuntions";
+import { copyLink, copyUrl } from "../../utils/copy-funtions/copyFuntions";
 import { Button, Dropdown, Tab, Tabs } from "react-bootstrap";
 import MarkdownComponent from "../../components/MarkdownComponent/MarkdownComponent";
 import { formatAMPM } from "../../utils/formatDate";
@@ -541,13 +536,13 @@ const Note = () => {
                   >
                     Open
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => copyNpub(npubKey)}>
+                  <Dropdown.Item onClick={() => copyUrl(npubKey)}>
                     Copy npub
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => copyNprofile(nprofile)}>
+                  <Dropdown.Item onClick={() => copyUrl(nprofile)}>
                     Copy nprofile
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => copyPubkey(pubkey)}>
+                  <Dropdown.Item onClick={() => copyUrl(pubkey)}>
                     Copy pubkey
                   </Dropdown.Item>
                 </Dropdown.Menu>
@@ -636,13 +631,13 @@ const Note = () => {
                     <FileEarmarkPlus /> Embed
                   </Dropdown.Item>
                   <hr />
-                  <Dropdown.Item onClick={() => copyNpub(npubKey)}>
+                  <Dropdown.Item onClick={() => copyUrl(npubKey)}>
                     Copy npub
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => copyNprofile(nprofile)}>
+                  <Dropdown.Item onClick={() => copyUrl(nprofile)}>
                     Copy nprofile
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => copyPubkey(pubkey)}>
+                  <Dropdown.Item onClick={() => copyUrl(pubkey)}>
                     Copy pubkey
                   </Dropdown.Item>
                   <Dropdown.Item>Copy contact list naddr</Dropdown.Item>
