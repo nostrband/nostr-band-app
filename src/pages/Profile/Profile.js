@@ -14,6 +14,7 @@ import {
   Lightning,
   ChatQuote,
   LightningFill,
+  X,
 } from "react-bootstrap-icons";
 import axios from "axios";
 import { formatAMPM } from "../../utils/formatDate";
@@ -29,6 +30,7 @@ import { nip19 } from "nostr-tools";
 import { getZapAmount } from "../../utils/zapFunctions";
 import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
 import UserIcon from "../../assets/user.png";
+import ReactModal from "react-modal";
 
 const Profile = () => {
   const [pubkey, setPubkey] = useState("");
@@ -68,6 +70,10 @@ const Profile = () => {
   const [limitSentZaps, setLimitSentZaps] = useState(10);
   const [isBottom, setIsBottom] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [isModal, setIsModal] = useState();
+  const [modalContent, setModalContent] = useState("");
+  const [profileJson, setProfileJson] = useState("");
+  const [contactJson, setContactJson] = useState("");
   const location = useLocation();
 
   const handleScroll = () => {
@@ -153,6 +159,20 @@ const Profile = () => {
         fetchPosts(pk, ndk);
         // console.log(user.profile);
         setProfile(user.profile);
+        setProfileJson(JSON.stringify(user.profile, null, 2));
+        const contactJson = await ndk.fetchEvent({ kinds: [3], authors: [pk] });
+        setContactJson(
+          JSON.stringify(
+            {
+              pubkey: contactJson.pubkey,
+              content: contactJson.content,
+              kind: "3",
+              created_at: contactJson.created_at,
+            },
+            null,
+            2
+          )
+        );
         setNprofile(nip19.nprofileEncode({ pubkey: pk }));
         setNnadr(
           nip19.naddrEncode({
@@ -423,8 +443,56 @@ const Profile = () => {
   const sats = stats?.zaps_received?.msats / 1000;
   const sentSats = stats.zaps_sent?.msats / 1000;
 
+  const closeModal = () => {
+    setIsModal(false);
+  };
+
+  const customModal = {
+    content: {
+      top: "50%",
+      left: "50%",
+      width: "50%",
+      height: "max-content",
+      transform: "translate(-50%, -50%)",
+    },
+    overlay: { zIndex: 6 },
+  };
+
   return (
     <div className={cl.profileContainer}>
+      <ReactModal
+        bodyOpenClassName={cl.modalBody}
+        ariaHideApp={false}
+        className={cl.modal}
+        contentLabel="Event Json"
+        isOpen={isModal}
+        onRequestClose={closeModal}
+      >
+        <div className={cl.modalHeader}>
+          <h2>Event JSON</h2>
+          <Button
+            variant="link"
+            style={{ fontSize: "2.2rem", color: "black" }}
+            onClick={closeModal}
+          >
+            <X />
+          </Button>
+        </div>
+        {modalContent && (
+          <textarea
+            style={{ width: "100%" }}
+            rows={16}
+            cols={50}
+            value={modalContent}
+            readOnly
+          />
+        )}
+        <div className={cl.modalFooter}>
+          <Button variant="success" onClick={() => copyUrl(modalContent)}>
+            Copy
+          </Button>
+        </div>
+      </ReactModal>
       <Search isLoading={isZapLoading} />
       <h2>Profile</h2>
       {profile ? (
@@ -568,10 +636,20 @@ const Profile = () => {
                     View edit history
                   </Dropdown.Item>
                   <Dropdown.Item href="#/action-1">View relays</Dropdown.Item>
-                  <Dropdown.Item href="#/action-1">
+                  <Dropdown.Item
+                    onClick={() => {
+                      setModalContent(profileJson);
+                      setIsModal(true);
+                    }}
+                  >
                     View profile JSON
                   </Dropdown.Item>
-                  <Dropdown.Item href="#/action-1">
+                  <Dropdown.Item
+                    onClick={() => {
+                      setModalContent(contactJson);
+                      setIsModal(true);
+                    }}
+                  >
                     View contacts JSON
                   </Dropdown.Item>
                 </Dropdown.Menu>
