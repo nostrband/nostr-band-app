@@ -462,6 +462,7 @@ const Profile = () => {
     <div className={cl.profileContainer}>
       <ReactModal
         bodyOpenClassName={cl.modalBody}
+        style={{ overlay: { zIndex: 6 } }}
         ariaHideApp={false}
         className={cl.modal}
         contentLabel="Event Json"
