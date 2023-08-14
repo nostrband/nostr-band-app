@@ -49,7 +49,7 @@ const App = () => {
               Login with browser extension
             </Button>
           </div>
-          <p class="mt-2">
+          <p className="mt-2">
             Please login using Nostr browser extension. You can try{" "}
             <a href="https://getalby.com/" target="_blank" _h="1">
               Alby

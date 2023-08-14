@@ -480,6 +480,7 @@ const Note = () => {
         bodyOpenClassName={cl.modalBody}
         ariaHideApp={false}
         className={cl.modal}
+        style={{ overlay: { zIndex: 6 } }}
         contentLabel="Event Json"
         isOpen={isModal}
         onRequestClose={closeModal}
