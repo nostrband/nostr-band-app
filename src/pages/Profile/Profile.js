@@ -31,6 +31,7 @@ import { getZapAmount } from "../../utils/zapFunctions";
 import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
 import UserIcon from "../../assets/user.png";
 import ReactModal from "react-modal";
+import EmbedModal from "../../components/EmbedModal/EmbedModal";
 
 const Profile = () => {
   const [pubkey, setPubkey] = useState("");
@@ -74,6 +75,7 @@ const Profile = () => {
   const [modalContent, setModalContent] = useState("");
   const [profileJson, setProfileJson] = useState("");
   const [contactJson, setContactJson] = useState("");
+  const [isEmbedModal, setIsEmbedModal] = useState(false);
   const location = useLocation();
 
   const handleScroll = () => {
@@ -460,6 +462,11 @@ const Profile = () => {
 
   return (
     <div className={cl.profileContainer}>
+      <EmbedModal
+        isModal={isEmbedModal}
+        setIsModal={setIsEmbedModal}
+        str={npub}
+      />
       <ReactModal
         bodyOpenClassName={cl.modalBody}
         style={{ overlay: { zIndex: 6 } }}
@@ -613,7 +620,7 @@ const Profile = () => {
                   >
                     <Share /> Share
                   </Dropdown.Item>
-                  <Dropdown.Item href="#/action-3">
+                  <Dropdown.Item onClick={() => setIsEmbedModal(true)}>
                     <FileEarmarkPlus /> Embed
                   </Dropdown.Item>
                   <hr />
