@@ -123,7 +123,9 @@ const AllResults = () => {
             const postAuthor = postsAuthors.find(
               (author) => author.pubkey === post.pubkey
             );
-            const authorContent = JSON.parse(postAuthor.content);
+            const authorContent = postAuthor
+              ? JSON.parse(postAuthor.content)
+              : {};
 
             return (
               <PostCard
