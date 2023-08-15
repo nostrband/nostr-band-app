@@ -30,6 +30,7 @@ import { getAllTags } from "../../utils/getTags";
 import { getZapAmount } from "../../utils/zapFunctions";
 import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
 import ReactModal from "react-modal";
+import EmbedModal from "../../components/EmbedModal/EmbedModal";
 
 const Note = () => {
   const [event, setEvent] = useState([]);
@@ -67,6 +68,7 @@ const Note = () => {
   const [isModal, setIsModal] = useState(false);
   const [modalContent, setModalContent] = useState("");
   const [contentJson, setContentJson] = useState("");
+  const [isEmbedModal, setIsEmbedModal] = useState(false);
 
   const location = useLocation();
 
@@ -476,6 +478,11 @@ const Note = () => {
 
   return (
     <div className={cl.noteContainer}>
+      <EmbedModal
+        isModal={isEmbedModal}
+        setIsModal={setIsEmbedModal}
+        str={note}
+      />
       <ReactModal
         bodyOpenClassName={cl.modalBody}
         ariaHideApp={false}
@@ -694,7 +701,7 @@ const Note = () => {
                   >
                     <Share /> Share
                   </Dropdown.Item>
-                  <Dropdown.Item href="#/action-3">
+                  <Dropdown.Item onClick={() => setIsEmbedModal(true)}>
                     <FileEarmarkPlus /> Embed
                   </Dropdown.Item>
                   <hr />
