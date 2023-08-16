@@ -29,7 +29,9 @@ const Video = ({ setIsLoading }) => {
     <>
       {videos && videos.length ? (
         videos.map((video) => {
-          const authorContent = JSON.parse(video.author.content);
+          const authorContent = video?.author
+            ? JSON.parse(video?.author?.content)
+            : {};
           return (
             <PostCard
               eventId={video.event.id}

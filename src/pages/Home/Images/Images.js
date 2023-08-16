@@ -29,7 +29,9 @@ const Images = ({ setIsLoading }) => {
     <>
       {images && images.length ? (
         images.map((image) => {
-          const authorContent = JSON.parse(image.author.content);
+          const authorContent = image?.author
+            ? JSON.parse(image.author?.content)
+            : {};
           return (
             <PostCard
               key={image.id}

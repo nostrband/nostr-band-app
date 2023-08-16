@@ -11,7 +11,12 @@ import {
   PlayBtnFill,
   X,
 } from "react-bootstrap-icons";
-import { collectLinksFromStr, defineTypeLink } from "../../../utils/formatLink";
+import {
+  collectLinksFromStr,
+  defineTypeLink,
+  extractNostrStrings,
+  replaceNostrLinks,
+} from "../../../utils/formatLink";
 import { Button, Carousel, Modal } from "react-bootstrap";
 import { formatAMPM } from "../../../utils/formatDate";
 import MarkdownComponent from "../../../components/MarkdownComponent/MarkdownComponent";
@@ -19,8 +24,17 @@ import UserIcon from "../../../assets/user.png";
 import { nip19 } from "nostr-tools";
 import { copyUrl } from "../../../utils/copy-funtions/copyFuntions";
 import { useNavigate } from "react-router-dom";
+import NDK from "@nostrband/ndk";
 
-const EventItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
+const EventItem = ({
+  name,
+  picture,
+  about,
+  pubkey,
+  createdDate,
+  eventId,
+  ndk,
+}) => {
   const [imgError, setImgError] = useState(false);
   const [stats, setStats] = useState([]);
   const [isBannerVisible, setIsBannerVisible] = useState(false);
@@ -28,6 +42,70 @@ const EventItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
   const [show, setShow] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const navigate = useNavigate();
+  const [taggedProfiles, setTaggedProfiles] = useState([]);
+  const [content, setContent] = useState(about);
+
+  const fetchProfiles = async (pubkeys) => {
+    const profiles = Array.from(
+      await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
+    );
+    setTaggedProfiles(profiles.length ? profiles : pubkeys);
+  };
+
+  if (content) {
+    const links = extractNostrStrings(content);
+    if (links) {
+      const pubkeys = links.map((link) => {
+        if (link.startsWith("npub")) {
+          return nip19.decode(link).data;
+        }
+        return link;
+      });
+      if (ndk instanceof NDK) {
+        fetchProfiles(pubkeys);
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (taggedProfiles) {
+      taggedProfiles.map((profile) => {
+        if (profile instanceof Object) {
+          const profileContent = JSON.parse(profile.content);
+          const npub = nip19.npubEncode(profile.pubkey);
+          setContent(
+            replaceNostrLinks(
+              content,
+              profileContent?.display_name
+                ? `@${profileContent?.display_name}`
+                : `@${profileContent?.name}`,
+              `nostr:${npub}`
+            )
+          );
+        } else if (profile.toString().startsWith("note")) {
+          setContent(
+            replaceNostrLinks(
+              content,
+              `${profile.toString().slice(0, 10)}...${profile
+                .toString()
+                .slice(-4)}`,
+              `nostr:${profile}`
+            )
+          );
+        } else {
+          setContent(
+            replaceNostrLinks(
+              content,
+              `${profile.toString().slice(0, 12)}...${profile
+                .toString()
+                .slice(-4)}`,
+              `nostr:${profile}`
+            )
+          );
+        }
+      });
+    }
+  }, [taggedProfiles]);
 
   const npub = pubkey ? nip19.npubEncode(pubkey) : "";
   const nprofile = pubkey ? nip19.nprofileEncode({ pubkey: pubkey }) : "";
@@ -129,7 +207,7 @@ const EventItem = ({ name, picture, about, pubkey, createdDate, eventId }) => {
         </Dropdown>
       </div>
       <div style={{ cursor: "pointer" }} onClick={() => navigate(`/${noteId}`)}>
-        <MarkdownComponent content={about} />
+        <MarkdownComponent content={content} />
       </div>
       <div className={cl.postStats}>
         {stats?.zaps?.msats && (

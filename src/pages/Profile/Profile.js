@@ -699,6 +699,7 @@ const Profile = () => {
                               ? profile.displayName
                               : profile.name
                           }
+                          ndk={ndk}
                         />
                       );
                     })

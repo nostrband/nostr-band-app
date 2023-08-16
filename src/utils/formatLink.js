@@ -74,3 +74,21 @@ export const defineTypeLink = (link) => {
     }
   }
 };
+
+export function extractNostrStrings(inputString) {
+  const nostrPattern = /nostr:[a-zA-Z0-9]+/;
+  const matches = inputString.match(nostrPattern);
+
+  if (matches) {
+    return matches.map((match) => match.slice("nostr:".length));
+  } else {
+    return [];
+  }
+}
+
+export function replaceNostrLinks(inputText, replacementText, pattern) {
+  const nostrPattern = pattern;
+  return inputText
+    .toString()
+    ?.replace(nostrPattern, `[${replacementText}](/${pattern.split(":")[1]})`);
+}
