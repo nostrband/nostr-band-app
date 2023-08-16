@@ -11,7 +11,12 @@ import {
   PlayBtnFill,
   X,
 } from "react-bootstrap-icons";
-import { collectLinksFromStr, defineTypeLink } from "../../utils/formatLink";
+import {
+  collectLinksFromStr,
+  defineTypeLink,
+  extractNostrStrings,
+  replaceNostrLinks,
+} from "../../utils/formatLink";
 import { Button, Carousel, Modal } from "react-bootstrap";
 import { formatAMPM } from "../../utils/formatDate";
 import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
@@ -42,17 +47,6 @@ const PostItem = ({
   const [taggedProfiles, setTaggedProfiles] = useState([]);
   const [content, setContent] = useState(about);
 
-  function extractNostrStrings(inputString) {
-    const nostrPattern = /nostr:[a-zA-Z0-9]+/;
-    const matches = inputString.match(nostrPattern);
-
-    if (matches) {
-      return matches.map((match) => match.slice("nostr:".length));
-    } else {
-      return [];
-    }
-  }
-
   const fetchProfiles = async (pubkeys) => {
     const profiles = Array.from(
       await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
@@ -73,15 +67,6 @@ const PostItem = ({
         fetchProfiles(pubkeys);
       }
     }
-  }
-  function replaceNostrLinks(inputText, replacementText, pattern) {
-    const nostrPattern = pattern;
-    return inputText
-      .toString()
-      ?.replace(
-        nostrPattern,
-        `[@${replacementText}](/${pattern.split(":")[1]})`
-      );
   }
 
   useEffect(() => {
