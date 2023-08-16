@@ -12,10 +12,22 @@ import ReactModal from "react-modal";
 import { Button } from "react-bootstrap";
 import { X } from "react-bootstrap-icons";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 const App = () => {
   const [isModal, setIsModal] = useState(false);
   const closeModal = () => setIsModal(false);
+
+  const loginBtn = async () => {
+    if (window.nostr) {
+      const pubkey = await window.nostr.getPublicKey();
+      localStorage.setItem("login", pubkey);
+      setIsModal(false);
+    } else {
+      toast.error("Browser extension not found!", { autoClose: 3000 });
+      setIsModal(false);
+    }
+  };
 
   return (
     <Container>
@@ -45,7 +57,7 @@ const App = () => {
         <hr />
         <div className="modal-body">
           <div>
-            <Button variant="outline-primary">
+            <Button variant="outline-primary" onClick={loginBtn}>
               Login with browser extension
             </Button>
           </div>
