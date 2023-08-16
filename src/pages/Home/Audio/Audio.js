@@ -28,7 +28,9 @@ const Audio = ({ setIsLoading }) => {
     <>
       {audios && audios.length ? (
         audios.map((image) => {
-          const authorContent = JSON.parse(image.author.content);
+          const authorContent = image.author
+            ? JSON.parse(image?.author?.content)
+            : {};
           return (
             <PostCard
               eventId={image.event.id}
