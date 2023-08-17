@@ -15,8 +15,11 @@ import { nip19 } from "nostr-tools";
 import { Link } from "react-router-dom";
 import UserIcon from "../../assets/user.png";
 import { copyUrl } from "../../utils/copy-funtions/copyFuntions";
+import { getAllTags } from "../../utils/getTags";
+import { useSelector } from "react-redux";
 
 const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
+  const store = useSelector((store) => store.userReducer);
   const [imgError, setImgError] = useState(false);
   const [stats, setStats] = useState({});
   const [npubKey, setNpubKey] = useState("");
@@ -38,6 +41,9 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
     setNprofile(nip19.nprofileEncode({ pubkey: pubKey }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const tagsP = getAllTags(store.contacts?.tags, "p");
+  const followedPubkeys = tagsP.length ? tagsP.map((tag) => tag[1]) : [];
 
   const sats = stats?.zaps_received?.msats / 1000;
 
@@ -177,9 +183,15 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
             <BoxArrowUpRight /> Open
           </Button>
         </a>
-        <Button variant="secondary">
-          <PersonPlus /> Follow
-        </Button>
+        {followedPubkeys.includes(pubKey) ? (
+          <Button variant="secondary">
+            <PersonPlus /> Unfollow
+          </Button>
+        ) : (
+          <Button variant="secondary">
+            <PersonPlus /> Follow
+          </Button>
+        )}
         <Button variant="secondary">
           <BookmarkPlus /> List
         </Button>

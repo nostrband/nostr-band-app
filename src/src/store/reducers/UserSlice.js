@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   isAuth: localStorage.getItem("login") ? true : false,
+  contacts: {},
 };
 
 export const userSlice = createSlice({
@@ -10,6 +11,11 @@ export const userSlice = createSlice({
   reducers: {
     setIsAuth(state, action) {
       state = { ...state, isAuth: action.payload };
+      return state;
+    },
+    setContacts(state, action) {
+      console.log(action.payload);
+      state = { ...state, contacts: action.payload };
       return state;
     },
   },
