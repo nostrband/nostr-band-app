@@ -5,6 +5,7 @@
   "dependencies": {
     "@nostrband/ndk": "^0.7.8",
     "@nostrband/nostr-tools": "^1.14.2",
+    "@reduxjs/toolkit": "^1.9.5",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -19,6 +20,7 @@
     "react-loading-skeleton": "^3.3.1",
     "react-markdown": "^8.0.7",
     "react-modal": "^3.16.1",
+    "react-redux": "^8.1.2",
     "react-router-dom": "^6.13.0",
     "react-scripts": "5.0.1",
     "react-toastify": "^9.1.3",
