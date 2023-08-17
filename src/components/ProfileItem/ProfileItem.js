@@ -42,8 +42,12 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const tagsP = getAllTags(store.contacts?.tags, "p");
-  const followedPubkeys = tagsP.length ? tagsP.map((tag) => tag[1]) : [];
+  const tagsP = Array.isArray(store.contacts.tags)
+    ? getAllTags(store.contacts?.tags, "p")
+    : null;
+  const followedPubkeys = Array.isArray(tagsP)
+    ? tagsP.map((tag) => tag[1])
+    : [];
 
   const sats = stats?.zaps_received?.msats / 1000;
 
