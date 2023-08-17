@@ -13,14 +13,20 @@ import { Button } from "react-bootstrap";
 import { X } from "react-bootstrap-icons";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { useSelector, useDispatch } from "react-redux";
+import { userSlice } from "./src/store/reducers/UserSlice";
 
 const App = () => {
   const [isModal, setIsModal] = useState(false);
   const closeModal = () => setIsModal(false);
 
+  const dispatch = useDispatch();
+  const { setIsAuth } = userSlice.actions;
+
   const loginBtn = async () => {
     if (window.nostr) {
       const pubkey = await window.nostr.getPublicKey();
+      dispatch(setIsAuth(true));
       localStorage.setItem("login", pubkey);
       setIsModal(false);
     } else {

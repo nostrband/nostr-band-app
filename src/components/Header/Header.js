@@ -4,8 +4,19 @@ import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Form from "react-bootstrap/Form";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { userSlice } from "../../src/store/reducers/UserSlice";
 
 const Header = ({ onLogin }) => {
+  const dispatch = useDispatch();
+  const { setIsAuth } = userSlice.actions;
+  const state = useSelector((state) => state.userReducer);
+
+  const logoutBtn = () => {
+    localStorage.removeItem("login");
+    dispatch(setIsAuth(false));
+  };
+
   return (
     <Navbar expand="lg">
       <Link className="header-logo" to="/">
@@ -41,18 +52,36 @@ const Header = ({ onLogin }) => {
             <NavDropdown.Item href="#action/3.1">RSS feeds</NavDropdown.Item>
             <NavDropdown.Item href="#action/3.1">Search bots</NavDropdown.Item>
           </NavDropdown>
-          <NavDropdown title="About " id="basic-nav-dropdown">
-            <Form.Check
-              style={{ marginLeft: "16px", cursor: "pointer" }}
-              type="switch"
-              id="custom-switch"
-              label="Dark mode"
-            />
-            <NavDropdown.Item href="#action/3.1">About</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.1">Terms</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.1">Privacy</NavDropdown.Item>
-          </NavDropdown>
-          <Nav.Link onClick={() => onLogin(true)}>Login</Nav.Link>
+          {!state.isAuth ? (
+            <NavDropdown title="About " id="basic-nav-dropdown">
+              <Form.Check
+                style={{ marginLeft: "16px", cursor: "pointer" }}
+                type="switch"
+                id="custom-switch"
+                label="Dark mode"
+              />
+              <NavDropdown.Item href="#action/3.1">About</NavDropdown.Item>
+              <NavDropdown.Item href="#action/3.1">Terms</NavDropdown.Item>
+              <NavDropdown.Item href="#action/3.1">Privacy</NavDropdown.Item>
+            </NavDropdown>
+          ) : (
+            <NavDropdown title={`${localStorage.getItem("login").slice(0, 8)}`}>
+              <NavDropdown.Item href="#action/3.1">Profile</NavDropdown.Item>
+              <NavDropdown.Item href="#action/3.1">Home feed</NavDropdown.Item>
+              <NavDropdown.Item href="#action/3.1">Posts</NavDropdown.Item>
+              <NavDropdown.Item href="#action/3.1">Following</NavDropdown.Item>
+              <Form.Check
+                style={{ marginLeft: "16px", cursor: "pointer" }}
+                type="switch"
+                id="custom-switch"
+                label="Dark mode"
+              />
+              <NavDropdown.Item onClick={logoutBtn}>Log Out</NavDropdown.Item>
+            </NavDropdown>
+          )}
+          {!state.isAuth && (
+            <Nav.Link onClick={() => onLogin(true)}>Login</Nav.Link>
+          )}
         </Nav>
       </Navbar.Collapse>
     </Navbar>
