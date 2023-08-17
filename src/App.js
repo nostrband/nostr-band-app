@@ -11,17 +11,34 @@ import "react-toastify/dist/ReactToastify.css";
 import ReactModal from "react-modal";
 import { Button } from "react-bootstrap";
 import { X } from "react-bootstrap-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
 import { userSlice } from "./src/store/reducers/UserSlice";
+import NDK from "@nostrband/ndk";
 
 const App = () => {
   const [isModal, setIsModal] = useState(false);
   const closeModal = () => setIsModal(false);
-
+  const stote = useSelector((store) => store.userReducer);
   const dispatch = useDispatch();
-  const { setIsAuth } = userSlice.actions;
+  const { setIsAuth, setContacts } = userSlice.actions;
+
+  const getUser = async (pubkey) => {
+    const ndk = new NDK({ explicitRelayUrls: ["wss://relay.nostr.band"] });
+    ndk.connect();
+    const contacts = Array.from(
+      await ndk.fetchEvents({ kinds: [3], authors: [pubkey] })
+    )[0];
+    dispatch(setContacts(contacts));
+  };
+
+  useEffect(() => {
+    const pubkey = localStorage.getItem("login");
+    if (pubkey) {
+      getUser(pubkey);
+    }
+  }, [stote.isAuth]);
 
   const loginBtn = async () => {
     if (window.nostr) {
