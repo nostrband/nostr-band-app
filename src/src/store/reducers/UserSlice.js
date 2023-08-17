@@ -14,7 +14,6 @@ export const userSlice = createSlice({
       return state;
     },
     setContacts(state, action) {
-      console.log(action.payload);
       state = { ...state, contacts: action.payload };
       return state;
     },
