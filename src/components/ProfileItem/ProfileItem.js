@@ -16,7 +16,10 @@ import { Link } from "react-router-dom";
 import UserIcon from "../../assets/user.png";
 import { copyUrl } from "../../utils/copy-funtions/copyFuntions";
 import { getAllTags } from "../../utils/getTags";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { userSlice } from "../../src/store/reducers/UserSlice";
+import NDK, { NDKEvent, NDKNip07Signer } from "@nostrband/ndk";
+import { toast } from "react-toastify";
 
 const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
   const store = useSelector((store) => store.userReducer);
@@ -28,6 +31,9 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
   const findMailIndex = mail && splitedMail.findIndex((m) => m === "@");
   const mailName = mail && splitedMail.slice(0, findMailIndex).join("");
   const mailAdress = mail && splitedMail.slice(findMailIndex + 1).join("");
+  const { setContacts } = userSlice.actions;
+
+  const dispatch = useDispatch();
 
   const fetchStats = async () => {
     const { data } = await axios.get(
@@ -50,6 +56,53 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
     : [];
 
   const sats = stats?.zaps_received?.msats / 1000;
+
+  const onFollow = async () => {
+    if (localStorage.getItem("login")) {
+      const nip07signer = new NDKNip07Signer();
+      const ndk = new NDK({
+        explicitRelayUrls: ["wss://relay.nostr.band"],
+        signer: nip07signer,
+      });
+      ndk.connect();
+      const ndkEvent = new NDKEvent(ndk);
+
+      try {
+        if (!followedPubkeys.includes(pubKey)) {
+          const msg = {
+            kind: 3,
+            content: "",
+            tags: [...store.contacts.tags, ["p", pubKey]],
+          };
+
+          msg.created_at = Math.floor(new Date().getTime() / 1000);
+          const res = await window.nostr.signEvent(msg);
+          ndkEvent.kind = 3;
+          ndkEvent.tags = [...store.contacts.tags, ["p", pubKey]];
+          ndkEvent.publish();
+          dispatch(setContacts(res));
+        } else {
+          const msg = {
+            kind: 3,
+            content: "",
+            tags: store.contacts.tags.filter((pk) => pk[1] !== pubKey),
+          };
+
+          msg.created_at = Math.floor(new Date().getTime() / 1000);
+          const res = await window.nostr.signEvent(msg);
+          ndkEvent.kind = 3;
+          ndkEvent.tags = store.contacts.tags.filter((pk) => pk[1] !== pubKey);
+          ndkEvent.publish();
+          dispatch(setContacts(res));
+        }
+      } catch (e) {
+        toast.error("Failed to send to Nostr network", { autoClose: 3000 });
+        console.log(e);
+      }
+    } else {
+      toast.error("Please, login to follow", { autoClose: 3000 });
+    }
+  };
 
   return (
     <div className="profile">
@@ -187,15 +240,11 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
             <BoxArrowUpRight /> Open
           </Button>
         </a>
-        {followedPubkeys.includes(pubKey) ? (
-          <Button variant="secondary">
-            <PersonPlus /> Unfollow
-          </Button>
-        ) : (
-          <Button variant="secondary">
-            <PersonPlus /> Follow
-          </Button>
-        )}
+
+        <Button variant="secondary" onClick={onFollow}>
+          <PersonPlus />{" "}
+          {followedPubkeys.includes(pubKey) ? "Unfollow" : "Follow"}
+        </Button>
         <Button variant="secondary">
           <BookmarkPlus /> List
         </Button>
