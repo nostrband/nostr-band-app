@@ -1,6 +1,6 @@
 import { useLocation, useParams } from "react-router-dom";
 import cl from "./Profile.module.css";
-import NDK from "@nostrband/ndk";
+import NDK, { NDKEvent, NDKNip07Signer } from "@nostrband/ndk";
 import { useEffect, useState } from "react";
 import Search from "../../components/Search/Search";
 import {
@@ -32,8 +32,13 @@ import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
 import UserIcon from "../../assets/user.png";
 import ReactModal from "react-modal";
 import EmbedModal from "../../components/EmbedModal/EmbedModal";
+import { useSelector, useDispatch } from "react-redux";
+import { userSlice } from "../../src/store/reducers/UserSlice";
+import { toast } from "react-toastify";
+import { getAllTags } from "../../utils/getTags";
 
 const Profile = () => {
+  const store = useSelector((store) => store.userReducer);
   const [pubkey, setPubkey] = useState("");
   const [lastEvent, setLastEvent] = useState("");
   const [events, setEvents] = useState([]);
@@ -77,6 +82,9 @@ const Profile = () => {
   const [contactJson, setContactJson] = useState("");
   const [isEmbedModal, setIsEmbedModal] = useState(false);
   const location = useLocation();
+  const { setContacts } = userSlice.actions;
+
+  const dispatch = useDispatch();
 
   const handleScroll = () => {
     const windowHeight = window.innerHeight;
@@ -449,15 +457,58 @@ const Profile = () => {
     setIsModal(false);
   };
 
-  const customModal = {
-    content: {
-      top: "50%",
-      left: "50%",
-      width: "50%",
-      height: "max-content",
-      transform: "translate(-50%, -50%)",
-    },
-    overlay: { zIndex: 6 },
+  const tagsP = Array.isArray(store.contacts.tags)
+    ? getAllTags(store.contacts?.tags, "p")
+    : null;
+  const followedPubkeys = Array.isArray(tagsP)
+    ? tagsP.map((tag) => tag[1])
+    : [];
+
+  const onFollow = async () => {
+    if (localStorage.getItem("login")) {
+      const nip07signer = new NDKNip07Signer();
+      const ndk = new NDK({
+        explicitRelayUrls: ["wss://relay.nostr.band"],
+        signer: nip07signer,
+      });
+      ndk.connect();
+      const ndkEvent = new NDKEvent(ndk);
+
+      try {
+        if (!followedPubkeys.includes(pubkey)) {
+          const msg = {
+            kind: 3,
+            content: "",
+            tags: [...store.contacts.tags, ["p", pubkey]],
+          };
+
+          msg.created_at = Math.floor(new Date().getTime() / 1000);
+          const res = await window.nostr.signEvent(msg);
+          ndkEvent.kind = 3;
+          ndkEvent.tags = [...store.contacts.tags, ["p", pubkey]];
+          ndkEvent.publish();
+          dispatch(setContacts(res));
+        } else {
+          const msg = {
+            kind: 3,
+            content: "",
+            tags: store.contacts.tags.filter((pk) => pk[1] !== pubkey),
+          };
+
+          msg.created_at = Math.floor(new Date().getTime() / 1000);
+          const res = await window.nostr.signEvent(msg);
+          ndkEvent.kind = 3;
+          ndkEvent.tags = store.contacts.tags.filter((pk) => pk[1] !== pubkey);
+          ndkEvent.publish();
+          dispatch(setContacts(res));
+        }
+      } catch (e) {
+        toast.error("Failed to send to Nostr network", { autoClose: 3000 });
+        console.log(e);
+      }
+    } else {
+      toast.error("Please, login to follow", { autoClose: 3000 });
+    }
   };
 
   return (
@@ -593,8 +644,9 @@ const Profile = () => {
               <Button variant="secondary" onClick={() => zapBtn()}>
                 <Lightning /> Zap
               </Button>
-              <Button variant="secondary">
-                <PersonPlus /> Follow
+              <Button variant="secondary" onClick={onFollow}>
+                <PersonPlus />{" "}
+                {followedPubkeys.includes(pubkey) ? "Unfollow" : "Follow"}
               </Button>
               <Button variant="secondary">
                 <BookmarkPlus /> List
