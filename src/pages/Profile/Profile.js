@@ -33,7 +33,7 @@ import UserIcon from "../../assets/user.png";
 import ReactModal from "react-modal";
 import EmbedModal from "../../components/EmbedModal/EmbedModal";
 import { useSelector, useDispatch } from "react-redux";
-import { userSlice } from "../../src/store/reducers/UserSlice";
+import { userSlice } from "../../store/reducers/UserSlice";
 import { toast } from "react-toastify";
 import { getAllTags } from "../../utils/getTags.ts";
 

@@ -17,7 +17,7 @@ import UserIcon from "../../assets/user.png";
 import { copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
 import { getAllTags } from "../../utils/getTags.ts";
 import { useSelector, useDispatch } from "react-redux";
-import { userSlice } from "../../src/store/reducers/UserSlice";
+import { userSlice } from "../../store/reducers/UserSlice";
 import NDK, { NDKEvent, NDKNip07Signer } from "@nostrband/ndk";
 import { toast } from "react-toastify";
 

@@ -5,7 +5,7 @@ import NavDropdown from "react-bootstrap/NavDropdown";
 import Form from "react-bootstrap/Form";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { userSlice } from "../../src/store/reducers/UserSlice";
+import { userSlice } from "../../store/reducers/UserSlice";
 
 const Header = ({ onLogin }) => {
   const dispatch = useDispatch();
