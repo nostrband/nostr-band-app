@@ -16,15 +16,16 @@ import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
 import { userSlice } from "./src/store/reducers/UserSlice";
 import NDK from "@nostrband/ndk";
+import React from "react";
 
 const App = () => {
-  const [isModal, setIsModal] = useState(false);
-  const closeModal = () => setIsModal(false);
-  const stote = useSelector((store) => store.userReducer);
+  const [isModal, setIsModal] = useState<boolean>(false);
+  const closeModal = (): void => setIsModal(false);
+  const stote = useSelector((store: any) => store.userReducer);
   const dispatch = useDispatch();
   const { setIsAuth, setContacts } = userSlice.actions;
 
-  const getUser = async (pubkey) => {
+  const getUser = async (pubkey: string): Promise<void> => {
     const ndk = new NDK({ explicitRelayUrls: ["wss://relay.nostr.band"] });
     ndk.connect();
     const contacts = Array.from(
@@ -40,7 +41,7 @@ const App = () => {
     }
   }, [stote.isAuth]);
 
-  const loginBtn = async () => {
+  const loginBtn = async (): Promise<void> => {
     if (window.nostr) {
       const pubkey = await window.nostr.getPublicKey();
       dispatch(setIsAuth(true));
@@ -86,14 +87,13 @@ const App = () => {
           </div>
           <p className="mt-2">
             Please login using Nostr browser extension. You can try{" "}
-            <a href="https://getalby.com/" target="_blank" _h="1">
+            <a href="https://getalby.com/" target="_blank">
               Alby
             </a>
             ,{" "}
             <a
               href="https://chrome.google.com/webstore/detail/nos2x/kpgefcfmnafjgpblomihpgmejjdanjjp"
               target="_blank"
-              _h="1"
             >
               nos2x
             </a>{" "}
@@ -101,7 +101,6 @@ const App = () => {
             <a
               href="https://testflight.apple.com/join/ouPWAQAV"
               target="_blank"
-              _h="1"
             >
               Nostore
             </a>{" "}
