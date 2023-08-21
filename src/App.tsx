@@ -14,7 +14,7 @@ import { X } from "react-bootstrap-icons";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
-import { userSlice } from "./src/store/reducers/UserSlice";
+import { userSlice } from "./store/reducers/UserSlice";
 import NDK from "@nostrband/ndk";
 import React from "react";
 
