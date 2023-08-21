@@ -1,6 +1,7 @@
 import { decode } from "light-bolt11-decoder";
+import { ndkEventType } from "../types/types";
 
-export const getZapAmount = (e) => {
+export const getZapAmount = (e: ndkEventType): number => {
   try {
     for (const t of e.tags) {
       if (t.length >= 2 && t[0] === "bolt11") {

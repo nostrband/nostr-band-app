@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 
-export const copyUrl = (url) => {
+export const copyUrl = (url: string): void => {
   navigator.clipboard.writeText(url);
 
   toast.success("Copied", {
@@ -8,7 +8,7 @@ export const copyUrl = (url) => {
   });
 };
 
-export const copyLink = async (url) => {
+export const copyLink = async (url: string): Promise<void> => {
   const data = { url };
   try {
     if (navigator.canShare && navigator.canShare(data)) {

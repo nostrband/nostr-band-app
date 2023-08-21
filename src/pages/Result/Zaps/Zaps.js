@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import NDK from "@nostrband/ndk";
-import { getZapAmount } from "../../../utils/zapFunctions";
+import { getZapAmount } from "../../../utils/zapFunctions.ts";
 import { useSearchParams } from "react-router-dom";
 import ZapTransfer from "../../../components/ZapTransfer/ZapTransfer";
 import cl from "./Zaps.module.css";

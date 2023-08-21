@@ -16,14 +16,14 @@ import {
   defineTypeLink,
   extractNostrStrings,
   replaceNostrLinks,
-} from "../../utils/formatLink";
+} from "../../utils/formatLink.tsx";
 import { Button, Carousel, Modal } from "react-bootstrap";
-import { formatAMPM } from "../../utils/formatDate";
+import { formatAMPM } from "../../utils/formatDate.ts";
 import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
 import UserIcon from "../../assets/user.png";
 import { Link, useNavigate } from "react-router-dom";
 import { nip19 } from "nostr-tools";
-import { copyUrl } from "../../utils/copy-funtions/copyFuntions";
+import { copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
 import NDK from "@nostrband/ndk";
 
 const PostItem = ({

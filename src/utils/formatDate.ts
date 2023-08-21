@@ -1,4 +1,6 @@
-export function formatAMPM(date) {
+type stringOrNumber = string | number;
+
+export function formatAMPM(date: number): string {
   let agoTime = "";
   const timeNow = Date.now();
 
@@ -18,12 +20,12 @@ export function formatAMPM(date) {
 
   let dateObj = new Date(date);
 
-  let month = dateObj.getMonth() + 1;
-  let day = dateObj.getDate();
+  let month: stringOrNumber = dateObj.getMonth() + 1;
+  let day: stringOrNumber = dateObj.getDate();
   let year = dateObj.getFullYear();
-  let hours = dateObj.getHours();
-  let minutes = dateObj.getMinutes();
-  let seconds = dateObj.getSeconds();
+  let hours: stringOrNumber = dateObj.getHours();
+  let minutes: stringOrNumber = dateObj.getMinutes();
+  let seconds: stringOrNumber = dateObj.getSeconds();
   let ampm = hours >= 12 ? "PM" : "AM";
 
   month = month < 10 ? "0" + month : month;

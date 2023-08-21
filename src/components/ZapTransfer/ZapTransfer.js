@@ -4,7 +4,7 @@ import {
   LightningChargeFill,
 } from "react-bootstrap-icons";
 import cl from "./ZapTransfer.module.css";
-import { formatAMPM } from "../../utils/formatDate";
+import { formatAMPM } from "../../utils/formatDate.ts";
 import UserIcon from "../../assets/user.png";
 import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
 import { Link } from "react-router-dom";

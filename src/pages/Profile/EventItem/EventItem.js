@@ -16,13 +16,13 @@ import {
   defineTypeLink,
   extractNostrStrings,
   replaceNostrLinks,
-} from "../../../utils/formatLink";
+} from "../../../utils/formatLink.tsx";
 import { Button, Carousel, Modal } from "react-bootstrap";
-import { formatAMPM } from "../../../utils/formatDate";
+import { formatAMPM } from "../../../utils/formatDate.ts";
 import MarkdownComponent from "../../../components/MarkdownComponent/MarkdownComponent";
 import UserIcon from "../../../assets/user.png";
 import { nip19 } from "nostr-tools";
-import { copyUrl } from "../../../utils/copy-funtions/copyFuntions";
+import { copyUrl } from "../../../utils/copy-funtions/copyFuntions.ts";
 import { useNavigate } from "react-router-dom";
 import NDK from "@nostrband/ndk";
 
