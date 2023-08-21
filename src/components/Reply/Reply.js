@@ -6,9 +6,9 @@ import { Dropdown } from "react-bootstrap";
 import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
 import axios from "axios";
 import { Chat, HandThumbsUp } from "react-bootstrap-icons";
-import { formatAMPM } from "../../utils/formatDate";
+import { formatAMPM } from "../../utils/formatDate.ts";
 import { nip19 } from "nostr-tools";
-import { copyUrl } from "../../utils/copy-funtions/copyFuntions";
+import { copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
 
 const Reply = ({ author, content, eventId, createdDateAt, mode }) => {
   const authorContent = author ? JSON.parse(author.content) : "";

@@ -1,4 +1,6 @@
-export const strWithLinks = (str) => {
+import React from "react";
+
+export const strWithLinks = (str: string) => {
   const urlRegex =
     /((?:http|ftp|https):\/\/(?:[\w+?.\w+])+(?:[a-zA-Z0-9~!@#$%^&*()_\-=+\\/?.:;',]*)?(?:[-A-Za-z0-9+&@#/%=~_|]))/i;
   return str.split(urlRegex).map((a, index) => {
@@ -18,9 +20,9 @@ export const strWithLinks = (str) => {
   });
 };
 
-export const collectLinksFromStr = (str) => {
+export const collectLinksFromStr = (str: string) => {
   if (typeof str === "string") {
-    const links = [];
+    const links: string[] = [];
     const urlRegex =
       /((?:http|ftp|https):\/\/[\w/\-?=%.]+\.(?:youtube\.com\/watch\?v=|youtu\.be\/)[a-zA-Z0-9_-]{11}|(?:https?|ftp):\/\/[\w/\-?=%.]+\.(?:mp3|mp4|jpeg|jpg|png|webp|mov|ogg|gif))/g;
     str.split(urlRegex).map((a, index) => {
@@ -34,7 +36,7 @@ export const collectLinksFromStr = (str) => {
   return [];
 };
 
-export const defineTypeLink = (link) => {
+export const defineTypeLink = (link: string) => {
   if (typeof link === "string") {
     const u = link.split("?")[0];
     if (u.endsWith(".mov") || u.endsWith(".mp4")) {
@@ -75,7 +77,7 @@ export const defineTypeLink = (link) => {
   }
 };
 
-export function extractNostrStrings(inputString) {
+export function extractNostrStrings(inputString: string) {
   const nostrPattern = /nostr:[a-zA-Z0-9]+/;
   const matches = inputString.match(nostrPattern);
 
@@ -86,7 +88,11 @@ export function extractNostrStrings(inputString) {
   }
 }
 
-export function replaceNostrLinks(inputText, replacementText, pattern) {
+export function replaceNostrLinks(
+  inputText: string,
+  replacementText: string,
+  pattern: string
+): string {
   const nostrPattern = pattern;
   return inputText
     .toString()

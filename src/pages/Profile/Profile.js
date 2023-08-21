@@ -17,7 +17,7 @@ import {
   X,
 } from "react-bootstrap-icons";
 import axios from "axios";
-import { formatAMPM } from "../../utils/formatDate";
+import { formatAMPM } from "../../utils/formatDate.ts";
 import { Button } from "react-bootstrap";
 import Dropdown from "react-bootstrap/Dropdown";
 import MarkdownComponent from "../../components/MarkdownComponent/MarkdownComponent";
@@ -25,9 +25,9 @@ import EventItem from "./EventItem/EventItem";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import ProfileSkeleton from "./ProfileSkeleton/ProfileSkeleton";
-import { copyLink, copyUrl } from "../../utils/copy-funtions/copyFuntions";
+import { copyLink, copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
 import { nip19 } from "nostr-tools";
-import { getZapAmount } from "../../utils/zapFunctions";
+import { getZapAmount } from "../../utils/zapFunctions.ts";
 import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
 import UserIcon from "../../assets/user.png";
 import ReactModal from "react-modal";
@@ -35,7 +35,7 @@ import EmbedModal from "../../components/EmbedModal/EmbedModal";
 import { useSelector, useDispatch } from "react-redux";
 import { userSlice } from "../../src/store/reducers/UserSlice";
 import { toast } from "react-toastify";
-import { getAllTags } from "../../utils/getTags";
+import { getAllTags } from "../../utils/getTags.ts";
 
 const Profile = () => {
   const store = useSelector((store) => store.userReducer);

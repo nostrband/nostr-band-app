@@ -18,16 +18,16 @@ import {
   LightningFill,
   X,
 } from "react-bootstrap-icons";
-import { copyLink, copyUrl } from "../../utils/copy-funtions/copyFuntions";
+import { copyLink, copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
 import { Button, Dropdown, Tab, Tabs } from "react-bootstrap";
 import MarkdownComponent from "../../components/MarkdownComponent/MarkdownComponent";
-import { formatAMPM } from "../../utils/formatDate";
+import { formatAMPM } from "../../utils/formatDate.ts";
 import axios from "axios";
 import NoteSkeleton from "./NoteSkeleton/NoteSkeleton";
 import Reply from "../../components/Reply/Reply";
 import PostCard from "../../components/PostCard/PostCard";
-import { getAllTags } from "../../utils/getTags";
-import { getZapAmount } from "../../utils/zapFunctions";
+import { getAllTags } from "../../utils/getTags.ts";
+import { getZapAmount } from "../../utils/zapFunctions.ts";
 import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
 import ReactModal from "react-modal";
 import EmbedModal from "../../components/EmbedModal/EmbedModal";

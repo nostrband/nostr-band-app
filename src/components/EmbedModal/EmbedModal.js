@@ -5,7 +5,7 @@ import InputGroup from "react-bootstrap/InputGroup";
 import { X } from "react-bootstrap-icons";
 import ReactModal from "react-modal";
 import { Button } from "react-bootstrap";
-import { copyUrl } from "../../utils/copy-funtions/copyFuntions";
+import { copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
 
 const EmbedModal = ({ setIsModal, isModal, str }) => {
   const closeModal = () => setIsModal(false);
