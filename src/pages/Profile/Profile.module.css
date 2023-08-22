@@ -99,17 +99,9 @@
   margin-top: 0.8rem;
 }
 .profileButtons button {
-  margin-top: 0.3rem;
-  font-size: 0.9rem;
-  padding: 6px 12px;
-  background-color: transparent;
-  color: var(--bg-secondary-color);
+  font-size: 0.85rem;
+  padding: 4px 8px;
   margin-right: 0.3rem;
-  align-items: baseline;
-}
-.profileButtons button:hover {
-  background-color: var(--bg-secondary-color);
-  color: white;
 }
 #menu-id a {
   display: flex;

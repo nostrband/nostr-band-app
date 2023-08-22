@@ -36,9 +36,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { userSlice } from "../../store/reducers/UserSlice";
 import { toast } from "react-toastify";
 import { getAllTags } from "../../utils/getTags.ts";
+import { useNostr, dateToUnix } from "nostr-react";
 
 const Profile = () => {
   const store = useSelector((store) => store.userReducer);
+  const { publish } = useNostr();
   const [pubkey, setPubkey] = useState("");
   const [lastEvent, setLastEvent] = useState("");
   const [events, setEvents] = useState([]);
@@ -466,41 +468,29 @@ const Profile = () => {
 
   const onFollow = async () => {
     if (localStorage.getItem("login")) {
-      const nip07signer = new NDKNip07Signer();
-      const ndk = new NDK({
-        explicitRelayUrls: ["wss://relay.nostr.band"],
-        signer: nip07signer,
-      });
-      ndk.connect();
-      const ndkEvent = new NDKEvent(ndk);
-
       try {
         if (!followedPubkeys.includes(pubkey)) {
           const msg = {
-            kind: 3,
             content: "",
+            kind: 3,
             tags: [...store.contacts.tags, ["p", pubkey]],
+            created_at: dateToUnix(),
           };
 
-          msg.created_at = Math.floor(new Date().getTime() / 1000);
-          const res = await window.nostr.signEvent(msg);
-          ndkEvent.kind = 3;
-          ndkEvent.tags = [...store.contacts.tags, ["p", pubkey]];
-          ndkEvent.publish();
-          dispatch(setContacts(res));
+          const event = await window.nostr.signEvent(msg);
+          publish(event);
+          dispatch(setContacts(event));
         } else {
           const msg = {
-            kind: 3,
             content: "",
-            tags: store.contacts.tags.filter((pk) => pk[1] !== pubkey),
+            kind: 3,
+            tags: [...store.contacts.tags.filter((pk) => pk[1] !== pubkey)],
+            created_at: dateToUnix(),
           };
 
-          msg.created_at = Math.floor(new Date().getTime() / 1000);
-          const res = await window.nostr.signEvent(msg);
-          ndkEvent.kind = 3;
-          ndkEvent.tags = store.contacts.tags.filter((pk) => pk[1] !== pubkey);
-          ndkEvent.publish();
-          dispatch(setContacts(res));
+          const event = await window.nostr.signEvent(msg);
+          publish(event);
+          dispatch(setContacts(event));
         }
       } catch (e) {
         toast.error("Failed to send to Nostr network", { autoClose: 3000 });
@@ -637,23 +627,30 @@ const Profile = () => {
             </div>
             <div className={`${cl.profileContentControl} ${cl.profileButtons}`}>
               <a target="_blanc" href={`https://nostrapp.link/#${npub}`}>
-                <Button variant="secondary">
+                <Button variant="outline-primary">
                   <BoxArrowUpRight /> Open
                 </Button>
               </a>
-              <Button variant="secondary" onClick={() => zapBtn()}>
+              <Button variant="outline-warning" onClick={() => zapBtn()}>
                 <Lightning /> Zap
               </Button>
-              <Button variant="secondary" onClick={onFollow}>
+              <Button
+                variant={`${
+                  followedPubkeys.includes(pubkey)
+                    ? "outline-danger"
+                    : "outline-success"
+                }`}
+                onClick={onFollow}
+              >
                 <PersonPlus />{" "}
                 {followedPubkeys.includes(pubkey) ? "Unfollow" : "Follow"}
               </Button>
-              <Button variant="secondary">
+              <Button variant="outline-info">
                 <BookmarkPlus /> List
               </Button>
               <Dropdown>
                 <Dropdown.Toggle
-                  variant="secondary"
+                  variant="outline-secondary"
                   id="dropdown-basic"
                   style={{ alignItems: "center" }}
                 >
