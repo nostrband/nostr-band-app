@@ -17,6 +17,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { userSlice } from "./store/reducers/UserSlice";
 import NDK from "@nostrband/ndk";
 import React from "react";
+import { NostrProvider } from "nostr-react";
+
+const relayUrls = ["wss://relay.nostr.band"];
 
 const App = () => {
   const [isModal, setIsModal] = useState<boolean>(false);
@@ -54,85 +57,87 @@ const App = () => {
   };
 
   return (
-    <Container>
-      <ReactModal
-        isOpen={isModal}
-        onAfterOpen={() => {
-          document.body.style.overflow = "hidden";
-        }}
-        onAfterClose={() => {
-          document.body.style.overflow = "auto";
-        }}
-        onRequestClose={closeModal}
-        ariaHideApp={false}
-        className="login-modal"
-        style={{ overlay: { zIndex: 6 } }}
-      >
-        <div className="modal-header">
-          <h4>Login</h4>
-          <Button
-            variant="link"
-            style={{ fontSize: "1.8rem", color: "black" }}
-            onClick={closeModal}
-          >
-            <X />
-          </Button>
-        </div>
-        <hr />
-        <div className="modal-body">
-          <div>
-            <Button variant="outline-primary" onClick={loginBtn}>
-              Login with browser extension
+    <NostrProvider relayUrls={relayUrls} debug={true}>
+      <Container>
+        <ReactModal
+          isOpen={isModal}
+          onAfterOpen={() => {
+            document.body.style.overflow = "hidden";
+          }}
+          onAfterClose={() => {
+            document.body.style.overflow = "auto";
+          }}
+          onRequestClose={closeModal}
+          ariaHideApp={false}
+          className="login-modal"
+          style={{ overlay: { zIndex: 6 } }}
+        >
+          <div className="modal-header">
+            <h4>Login</h4>
+            <Button
+              variant="link"
+              style={{ fontSize: "1.8rem", color: "black" }}
+              onClick={closeModal}
+            >
+              <X />
             </Button>
           </div>
-          <p className="mt-2">
-            Please login using Nostr browser extension. You can try{" "}
-            <a href="https://getalby.com/" target="_blank">
-              Alby
-            </a>
-            ,{" "}
-            <a
-              href="https://chrome.google.com/webstore/detail/nos2x/kpgefcfmnafjgpblomihpgmejjdanjjp"
-              target="_blank"
-            >
-              nos2x
-            </a>{" "}
-            or{" "}
-            <a
-              href="https://testflight.apple.com/join/ouPWAQAV"
-              target="_blank"
-            >
-              Nostore
-            </a>{" "}
-            (for Safari).
-          </p>
-        </div>
-        <hr />
-        <div className="modal-footer">
-          <Button variant="secondary" onClick={closeModal}>
-            Close
-          </Button>
-        </div>
-      </ReactModal>
-      <ToastContainer />
-      <Row className="justify-content-lg-center">
-        <Col lg={9}>
-          <Header onLogin={setIsModal} />
-          <Routes>
-            {allRoutes.map((route) => {
-              return (
-                <Route
-                  key={route.path}
-                  path={route.path}
-                  element={<route.Component />}
-                />
-              );
-            })}
-          </Routes>
-          <Footer />
-        </Col>
-      </Row>
-    </Container>
+          <hr />
+          <div className="modal-body">
+            <div>
+              <Button variant="outline-primary" onClick={loginBtn}>
+                Login with browser extension
+              </Button>
+            </div>
+            <p className="mt-2">
+              Please login using Nostr browser extension. You can try{" "}
+              <a href="https://getalby.com/" target="_blank">
+                Alby
+              </a>
+              ,{" "}
+              <a
+                href="https://chrome.google.com/webstore/detail/nos2x/kpgefcfmnafjgpblomihpgmejjdanjjp"
+                target="_blank"
+              >
+                nos2x
+              </a>{" "}
+              or{" "}
+              <a
+                href="https://testflight.apple.com/join/ouPWAQAV"
+                target="_blank"
+              >
+                Nostore
+              </a>{" "}
+              (for Safari).
+            </p>
+          </div>
+          <hr />
+          <div className="modal-footer">
+            <Button variant="secondary" onClick={closeModal}>
+              Close
+            </Button>
+          </div>
+        </ReactModal>
+        <ToastContainer />
+        <Row className="justify-content-lg-center">
+          <Col lg={9}>
+            <Header onLogin={setIsModal} />
+            <Routes>
+              {allRoutes.map((route) => {
+                return (
+                  <Route
+                    key={route.path}
+                    path={route.path}
+                    element={<route.Component />}
+                  />
+                );
+              })}
+            </Routes>
+            <Footer />
+          </Col>
+        </Row>
+      </Container>
+    </NostrProvider>
   );
 };
 

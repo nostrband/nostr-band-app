@@ -136,6 +136,11 @@ a {
 .profile-content__control {
   margin-top: 0.65rem;
 }
+.profile-content__control button {
+  font-size: 0.85rem;
+  padding: 4px 8px;
+  margin-right: 0.3rem;
+}
 #profile-buttons button {
   font-size: 0.85rem;
   padding: 4px 8px;

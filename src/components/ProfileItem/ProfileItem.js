@@ -18,11 +18,12 @@ import { copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
 import { getAllTags } from "../../utils/getTags.ts";
 import { useSelector, useDispatch } from "react-redux";
 import { userSlice } from "../../store/reducers/UserSlice";
-import NDK, { NDKEvent, NDKNip07Signer } from "@nostrband/ndk";
 import { toast } from "react-toastify";
+import { useNostr, dateToUnix } from "nostr-react";
 
 const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
   const store = useSelector((store) => store.userReducer);
+  const { publish } = useNostr();
   const [imgError, setImgError] = useState(false);
   const [stats, setStats] = useState({});
   const [npubKey, setNpubKey] = useState("");
@@ -59,41 +60,29 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
 
   const onFollow = async () => {
     if (localStorage.getItem("login")) {
-      const nip07signer = new NDKNip07Signer();
-      const ndk = new NDK({
-        explicitRelayUrls: ["wss://relay.nostr.band"],
-        signer: nip07signer,
-      });
-      ndk.connect();
-      const ndkEvent = new NDKEvent(ndk);
-
       try {
         if (!followedPubkeys.includes(pubKey)) {
           const msg = {
-            kind: 3,
             content: "",
+            kind: 3,
             tags: [...store.contacts.tags, ["p", pubKey]],
+            created_at: dateToUnix(),
           };
 
-          msg.created_at = Math.floor(new Date().getTime() / 1000);
-          const res = await window.nostr.signEvent(msg);
-          ndkEvent.kind = 3;
-          ndkEvent.tags = [...store.contacts.tags, ["p", pubKey]];
-          ndkEvent.publish();
-          dispatch(setContacts(res));
+          const event = await window.nostr.signEvent(msg);
+          publish(event);
+          dispatch(setContacts(event));
         } else {
           const msg = {
-            kind: 3,
             content: "",
-            tags: store.contacts.tags.filter((pk) => pk[1] !== pubKey),
+            kind: 3,
+            tags: [...store.contacts.tags.filter((pk) => pk[1] !== pubKey)],
+            created_at: dateToUnix(),
           };
 
-          msg.created_at = Math.floor(new Date().getTime() / 1000);
-          const res = await window.nostr.signEvent(msg);
-          ndkEvent.kind = 3;
-          ndkEvent.tags = store.contacts.tags.filter((pk) => pk[1] !== pubKey);
-          ndkEvent.publish();
-          dispatch(setContacts(res));
+          const event = await window.nostr.signEvent(msg);
+          publish(event);
+          dispatch(setContacts(event));
         }
       } catch (e) {
         toast.error("Failed to send to Nostr network", { autoClose: 3000 });
@@ -231,21 +220,28 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
         </div>
       </div>
 
-      <div className="profile-content__control" id="profile-buttons">
-        <Button variant="secondary">
+      <div className="profile-content__control">
+        <Button variant="outline-secondary">
           <ZoomIn /> View
         </Button>
         <a target="_blanc" href={`https://nostrapp.link/#${npubKey}`}>
-          <Button variant="secondary">
+          <Button variant="outline-secondary">
             <BoxArrowUpRight /> Open
           </Button>
         </a>
 
-        <Button variant="secondary" onClick={onFollow}>
+        <Button
+          variant={`${
+            followedPubkeys.includes(pubKey)
+              ? "outline-danger"
+              : "outline-success"
+          }`}
+          onClick={onFollow}
+        >
           <PersonPlus />{" "}
           {followedPubkeys.includes(pubKey) ? "Unfollow" : "Follow"}
         </Button>
-        <Button variant="secondary">
+        <Button variant="outline-secondary">
           <BookmarkPlus /> List
         </Button>
       </div>
