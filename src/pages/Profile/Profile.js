@@ -627,25 +627,25 @@ const Profile = () => {
             </div>
             <div className={`${cl.profileContentControl} ${cl.profileButtons}`}>
               <a target="_blanc" href={`https://nostrapp.link/#${npub}`}>
-                <Button variant="outline-primary">
+                <Button variant="outline-secondary">
                   <BoxArrowUpRight /> Open
                 </Button>
               </a>
-              <Button variant="outline-warning" onClick={() => zapBtn()}>
+              <Button variant="outline-secondary" onClick={() => zapBtn()}>
                 <Lightning /> Zap
               </Button>
               <Button
                 variant={`${
                   followedPubkeys.includes(pubkey)
-                    ? "outline-danger"
-                    : "outline-success"
+                    ? "outline-success"
+                    : "outline-secondary"
                 }`}
                 onClick={onFollow}
               >
                 <PersonPlus />{" "}
-                {followedPubkeys.includes(pubkey) ? "Unfollow" : "Follow"}
+                {followedPubkeys.includes(pubkey) ? "Followed" : "Follow"}
               </Button>
-              <Button variant="outline-info">
+              <Button variant="outline-secondary">
                 <BookmarkPlus /> List
               </Button>
               <Dropdown>

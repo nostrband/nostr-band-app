@@ -233,13 +233,13 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
         <Button
           variant={`${
             followedPubkeys.includes(pubKey)
-              ? "outline-danger"
-              : "outline-success"
+              ? "outline-success"
+              : "outline-secondary"
           }`}
           onClick={onFollow}
         >
           <PersonPlus />{" "}
-          {followedPubkeys.includes(pubKey) ? "Unfollow" : "Follow"}
+          {followedPubkeys.includes(pubKey) ? "Followed" : "Follow"}
         </Button>
         <Button variant="outline-secondary">
           <BookmarkPlus /> List

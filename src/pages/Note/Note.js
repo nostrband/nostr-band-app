@@ -670,14 +670,14 @@ const Note = () => {
             </div>
             <div className={`${cl.profileContentControl} ${cl.profileButtons}`}>
               <a target="_blanc" href={`https://nostrapp.link/#${npubKey}`}>
-                <Button variant="outline-primary">
+                <Button variant="outline-secondary">
                   <BoxArrowUpRight /> Open
                 </Button>
               </a>
-              <Button variant="outline-warning" onClick={() => zapBtn()}>
+              <Button variant="outline-secondary" onClick={() => zapBtn()}>
                 <Lightning /> Zap
               </Button>
-              <Button variant="outline-info">
+              <Button variant="outline-secondary">
                 <Tags /> Label
               </Button>
               <Dropdown>
