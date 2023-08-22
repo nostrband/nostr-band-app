@@ -5,7 +5,11 @@ import { Button } from "react-bootstrap";
 import { Search as SearchIcon } from "react-bootstrap-icons";
 import Spinner from "react-bootstrap/Spinner";
 import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  useNavigate,
+  useSearchParams,
+  createSearchParams,
+} from "react-router-dom";
 
 const Search = ({ isLoading }) => {
   const navigate = useNavigate();
@@ -19,24 +23,22 @@ const Search = ({ isLoading }) => {
 
   const searchHandleByEnter = (e) => {
     if (e.key === "Enter") {
-      searchParams.set("q", inputValue);
-      if (selectValue) {
-        searchParams.set("type", selectValue);
-      } else {
-        searchParams.delete("type");
-      }
-      setSearchParams(searchParams);
+      navigate({
+        pathname: "/",
+        search: selectValue
+          ? createSearchParams({ q: inputValue, type: selectValue }).toString()
+          : createSearchParams({ q: inputValue }).toString(),
+      });
     }
   };
 
   const searchHandle = (e) => {
-    searchParams.set("q", inputValue);
-    if (selectValue) {
-      searchParams.set("type", selectValue);
-    } else {
-      searchParams.delete("type");
-    }
-    setSearchParams(searchParams);
+    navigate({
+      pathname: "/",
+      search: selectValue
+        ? createSearchParams({ q: inputValue, type: selectValue }).toString()
+        : createSearchParams({ q: inputValue }).toString(),
+    });
   };
 
   return (
