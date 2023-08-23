@@ -3,7 +3,8 @@ import {
   configureStore,
   getDefaultMiddleware,
 } from "@reduxjs/toolkit";
-import userReducer from "./reducers/UserSlice";
+//@ts-ignore
+import userReducer from "./reducers/UserSlice.ts";
 
 const customizedMiddleware = getDefaultMiddleware({
   serializableCheck: false,
@@ -20,3 +21,7 @@ export const setupStore = () => {
     middleware: customizedMiddleware,
   });
 };
+
+export type RootState = ReturnType<typeof rootReducer>;
+export type AppStore = ReturnType<typeof setupStore>;
+export type AppDispatch = AppStore["dispatch"];

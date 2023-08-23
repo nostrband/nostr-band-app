@@ -32,14 +32,14 @@ import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
 import UserIcon from "../../assets/user.png";
 import ReactModal from "react-modal";
 import EmbedModal from "../../components/EmbedModal/EmbedModal.tsx";
-import { useSelector, useDispatch } from "react-redux";
-import { userSlice } from "../../store/reducers/UserSlice";
+import { userSlice } from "../../store/reducers/UserSlice.ts";
 import { toast } from "react-toastify";
 import { getAllTags } from "../../utils/getTags.ts";
 import { useNostr, dateToUnix } from "nostr-react";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux.ts";
 
 const Profile = () => {
-  const store = useSelector((store) => store.userReducer);
+  const store = useAppSelector((store) => store.userReducer);
   const { publish } = useNostr();
   const [pubkey, setPubkey] = useState("");
   const [lastEvent, setLastEvent] = useState("");
@@ -86,7 +86,7 @@ const Profile = () => {
   const location = useLocation();
   const { setContacts } = userSlice.actions;
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const handleScroll = () => {
     const windowHeight = window.innerHeight;

@@ -16,10 +16,10 @@ type ModalType = {
 
 const EmbedModal = ({ setIsModal, isModal, str }) => {
   const closeModal = () => setIsModal(false);
-  const [embedValue] = useState(
+  const [embedValue] = useState<string>(
     `<div id="nostr-embed-${str}"></div><script>  !(function () {    const n=document.createElement('script');n.type='text/javascript';n.async=!0;n.src='https://cdn.jsdelivr.net/gh/nostrband/nostr-embed@0.1.16/dist/nostr-embed.js';    n.onload=function () {      nostrEmbed.init(        '${str}',        '#nostr-embed-${str}',        '',        {showZaps: true, showFollowing: true}      );    };const a=document.getElementsByTagName('script')[0];a.parentNode.insertBefore(n, a);  })();</script>`
   );
-  const [frameEmbedValue] = useState(`https://nostr.band/${str}?embed`);
+  const [frameEmbedValue] = useState<string>(`https://nostr.band/${str}?embed`);
 
   return (
     <ReactModal

@@ -6,7 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter } from "react-router-dom";
 import "react-loading-skeleton/dist/skeleton.css";
 import { Provider } from "react-redux";
-import { setupStore } from "./store/store";
+import { setupStore } from "./store/store.ts";
 
 const store = setupStore();
 
