@@ -219,6 +219,7 @@ const Note = () => {
       ndk.connect();
       setNdk(ndk);
       const note = await ndk.fetchEvent({ ids: [noteId] });
+
       const tagsE = getAllTags(note.tags, "e");
       const rootId = note.tags.find((r) => r[0] === "e");
       if (rootId) {
@@ -236,7 +237,9 @@ const Note = () => {
           authors: [rootPost.pubkey],
         });
         setRootPost(rootPost);
-        const authorContent = JSON.parse(rootPostAuthor.content);
+        const authorContent = rootPostAuthor
+          ? JSON.parse(rootPostAuthor.content)
+          : {};
         setRootPostAuthor(authorContent);
       }
 
@@ -249,22 +252,24 @@ const Note = () => {
               kinds: [0],
               authors: [threadPost.pubkey],
             });
-            const authorContent = JSON.parse(threadPostAuthor.content);
+            const authorContent = threadPostAuthor
+              ? JSON.parse(threadPostAuthor.content)
+              : {};
+            console.log(authorContent);
             setThreadPost(threadPost);
             setThreadPostAuthor(authorContent);
           }
         }
       }
 
-      // console.log(note);
-
       setEvent(note);
-      setContent(note.content);
+      setContent(note ? note.content : {});
       const author = await ndk.fetchEvent({
         kinds: [0],
         authors: [note.pubkey],
       });
-      setAuthor(JSON.parse(author.content));
+      console.log(author);
+      setAuthor(JSON.parse(author ? author.content : {}));
       setPubkey(author.pubkey);
       setCreatedTime(note.created_at);
       const npub = nip19.npubEncode(note.pubkey);
@@ -273,7 +278,7 @@ const Note = () => {
         JSON.stringify(
           {
             pubkey: author.pubkey,
-            content: note.content,
+            content: note ? note.content : {},
             id: note.id,
             created_at: note.created_at,
             kind: "1",
@@ -518,7 +523,7 @@ const Note = () => {
         </div>
       </ReactModal>
       <Search isLoading={isLoading} />
-      {rootPost ? (
+      {rootPost && rootPostAuthor ? (
         <PostCard
           name={
             rootPostAuthor.display_name
@@ -559,7 +564,7 @@ const Note = () => {
       {event ? (
         <>
           <div className={cl.note}>
-            {rootPost && (
+            {rootPost && threadPostAuthor && (
               <p className={cl.replyTo}>
                 Replying to{" "}
                 {threadPostAuthor
