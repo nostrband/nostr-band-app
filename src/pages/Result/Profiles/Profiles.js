@@ -4,7 +4,7 @@ import NDK from "@nostrband/ndk";
 import Search from "../../../components/Search/Search";
 import { useSearchParams } from "react-router-dom";
 import ProfileItem from "../../../components/ProfileItem/ProfileItem";
-import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
+import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
 
 const Profiles = () => {
   const [searchParams] = useSearchParams();

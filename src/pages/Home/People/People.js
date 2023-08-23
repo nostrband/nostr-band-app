@@ -2,7 +2,7 @@ import "./People.css";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ProfileItem from "../../../components/ProfileItem/ProfileItem";
-import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
+import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
 
 const People = ({ setIsLoading }) => {
   const [profiles, setProfiles] = useState([]);

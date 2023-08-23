@@ -2,7 +2,7 @@ import axios from "axios";
 import "./Images.module.css";
 import { useEffect, useState } from "react";
 import PostCard from "../../../components/PostCard/PostCard";
-import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
+import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
 
 const Images = ({ setIsLoading }) => {
   const [images, setImages] = useState([]);

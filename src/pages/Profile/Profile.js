@@ -31,7 +31,7 @@ import { getZapAmount } from "../../utils/zapFunctions.ts";
 import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
 import UserIcon from "../../assets/user.png";
 import ReactModal from "react-modal";
-import EmbedModal from "../../components/EmbedModal/EmbedModal";
+import EmbedModal from "../../components/EmbedModal/EmbedModal.tsx";
 import { useSelector, useDispatch } from "react-redux";
 import { userSlice } from "../../store/reducers/UserSlice";
 import { toast } from "react-toastify";

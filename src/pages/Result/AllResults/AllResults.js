@@ -5,7 +5,7 @@ import ProfileItem from "../../../components/ProfileItem/ProfileItem";
 import PostCard from "../../../components/PostCard/PostCard";
 import NDK from "@nostrband/ndk";
 import { Link, useSearchParams } from "react-router-dom";
-import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
+import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
 
 const AllResults = () => {
   const [searchParams] = useSearchParams();
