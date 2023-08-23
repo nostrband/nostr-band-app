@@ -5,7 +5,14 @@ import InputGroup from "react-bootstrap/InputGroup";
 import { X } from "react-bootstrap-icons";
 import ReactModal from "react-modal";
 import { Button } from "react-bootstrap";
+//@ts-ignore
 import { copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
+
+type ModalType = {
+  setIsModal: (a: boolean) => void;
+  isModal: boolean;
+  str: string;
+};
 
 const EmbedModal = ({ setIsModal, isModal, str }) => {
   const closeModal = () => setIsModal(false);
@@ -62,22 +69,14 @@ const EmbedModal = ({ setIsModal, isModal, str }) => {
           </p>
           <p>
             For more options or a preview, click{" "}
-            <a
-              href={`https://embed.nostr.band/?q=${str}`}
-              id="embed-link"
-              _h="1"
-            >
+            <a href={`https://embed.nostr.band/?q=${str}`} id="embed-link">
               here
             </a>
             .
           </p>
           <p>
             The embed widget is open-source, you can help{" "}
-            <a
-              href="https://github.com/nostrband/nostr-embed"
-              target="_blank"
-              _h="1"
-            >
+            <a href="https://github.com/nostrband/nostr-embed" target="_blank">
               improve
             </a>{" "}
             it.

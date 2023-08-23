@@ -30,7 +30,7 @@ import { getAllTags } from "../../utils/getTags.ts";
 import { getZapAmount } from "../../utils/zapFunctions.ts";
 import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
 import ReactModal from "react-modal";
-import EmbedModal from "../../components/EmbedModal/EmbedModal";
+import EmbedModal from "../../components/EmbedModal/EmbedModal.tsx";
 
 const Note = () => {
   const [event, setEvent] = useState([]);

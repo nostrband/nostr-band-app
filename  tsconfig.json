@@ -5,7 +5,8 @@
     "removeComments": true,
     "preserveConstEnums": true,
     "outFile": "../../built/local/tsc.js",
-    "sourceMap": true
+    "sourceMap": true,
+    "jsx": "react-jsx"
   },
   "include": ["src/**/*"],
   "exclude": ["**/*.spec.ts"]

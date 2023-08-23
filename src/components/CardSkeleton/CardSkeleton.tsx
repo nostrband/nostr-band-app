@@ -1,8 +1,14 @@
 import Skeleton from "react-loading-skeleton";
 import "./CardSkeleton.css";
-import { useRef } from "react";
+import { FC, useRef } from "react";
+import React from "react";
 
-const CardSkeleton = ({ cards, mode }) => {
+type CardProps = {
+  cards: number;
+  mode: string;
+};
+
+const CardSkeleton: FC<CardProps> = ({ cards, mode }) => {
   const windowSize = useRef(window.innerWidth);
 
   return Array(cards)
