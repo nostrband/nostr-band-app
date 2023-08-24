@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
-import PostCard from "../../../components/PostCard/PostCard";
+import PostCard from "../../../components/PostCard/PostCard.tsx";
 
 const Posts = ({ setIsLoading }) => {
   const [posts, setPosts] = useState([]);

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
-import PostCard from "../../../components/PostCard/PostCard";
+import PostCard from "../../../components/PostCard/PostCard.tsx";
 
 const Audio = ({ setIsLoading }) => {
   const [audios, setAudios] = useState([]);
