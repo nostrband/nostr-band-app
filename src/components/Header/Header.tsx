@@ -4,13 +4,21 @@ import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Form from "react-bootstrap/Form";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { userSlice } from "../../store/reducers/UserSlice";
+import { useDispatch } from "react-redux";
+//@ts-ignore
+import { userSlice } from "../../store/reducers/UserSlice.ts";
+import React, { FC } from "react";
+//@ts-ignore
+import { useAppSelector } from "../../hooks/redux.ts";
 
-const Header = ({ onLogin }) => {
+type headerType = {
+  onLogin: (a: boolean) => void;
+};
+
+const Header: FC<headerType> = ({ onLogin }) => {
   const dispatch = useDispatch();
   const { setIsAuth } = userSlice.actions;
-  const state = useSelector((state) => state.userReducer);
+  const state = useAppSelector((state) => state.userReducer);
 
   const logoutBtn = () => {
     localStorage.removeItem("login");
@@ -65,7 +73,9 @@ const Header = ({ onLogin }) => {
               <NavDropdown.Item href="#action/3.1">Privacy</NavDropdown.Item>
             </NavDropdown>
           ) : (
-            <NavDropdown title={`${localStorage.getItem("login").slice(0, 8)}`}>
+            <NavDropdown
+              title={`${localStorage.getItem("login")!.slice(0, 8)}`}
+            >
               <NavDropdown.Item href="#action/3.1">Profile</NavDropdown.Item>
               <NavDropdown.Item href="#action/3.1">Home feed</NavDropdown.Item>
               <NavDropdown.Item href="#action/3.1">Posts</NavDropdown.Item>

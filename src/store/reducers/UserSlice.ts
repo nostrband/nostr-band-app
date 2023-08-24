@@ -1,6 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { profileType } from "../../types/types";
 
-const initialState = {
+interface IUserState {
+  isAuth: boolean;
+  contacts: profileType[] | {};
+}
+
+const initialState: IUserState = {
   isAuth: localStorage.getItem("login") ? true : false,
   contacts: {},
 };

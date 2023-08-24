@@ -1,7 +1,9 @@
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
-import Footer from "./components/Footer/Footer";
-import Header from "./components/Header/Header";
+//@ts-ignore
+import Footer from "./components/Footer/Footer.tsx";
+//@ts-ignore
+import Header from "./components/Header/Header.tsx";
 import { allRoutes } from "./routes";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -13,19 +15,21 @@ import { Button } from "react-bootstrap";
 import { X } from "react-bootstrap-icons";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useSelector, useDispatch } from "react-redux";
-import { userSlice } from "./store/reducers/UserSlice";
+//@ts-ignore
+import { userSlice } from "./store/reducers/UserSlice.ts";
 import NDK from "@nostrband/ndk";
 import React from "react";
 import { NostrProvider } from "nostr-react";
+//@ts-ignore
+import { useAppDispatch, useAppSelector } from "./hooks/redux.ts";
 
 const relayUrls = ["wss://relay.nostr.band"];
 
 const App = () => {
   const [isModal, setIsModal] = useState<boolean>(false);
   const closeModal = (): void => setIsModal(false);
-  const stote = useSelector((store: any) => store.userReducer);
-  const dispatch = useDispatch();
+  const stote = useAppSelector((store: any) => store.userReducer);
+  const dispatch = useAppDispatch();
   const { setIsAuth, setContacts } = userSlice.actions;
 
   const getUser = async (pubkey: string): Promise<void> => {

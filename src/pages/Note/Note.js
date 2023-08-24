@@ -20,7 +20,7 @@ import {
 } from "react-bootstrap-icons";
 import { copyLink, copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
 import { Button, Dropdown, Tab, Tabs } from "react-bootstrap";
-import MarkdownComponent from "../../components/MarkdownComponent/MarkdownComponent";
+import MarkdownComponent from "../../components/MarkdownComponent/MarkdownComponent.tsx";
 import { formatAMPM } from "../../utils/formatDate.ts";
 import axios from "axios";
 import NoteSkeleton from "./NoteSkeleton/NoteSkeleton";

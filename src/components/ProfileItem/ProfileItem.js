@@ -16,13 +16,15 @@ import { Link } from "react-router-dom";
 import UserIcon from "../../assets/user.png";
 import { copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
 import { getAllTags } from "../../utils/getTags.ts";
-import { useSelector, useDispatch } from "react-redux";
-import { userSlice } from "../../store/reducers/UserSlice";
+//@ts-ignore
+import { userSlice } from "../../store/reducers/UserSlice.ts";
 import { toast } from "react-toastify";
 import { useNostr, dateToUnix } from "nostr-react";
+//@ts-ignore
+import { useAppDispatch, useAppSelector } from "../../hooks/redux.ts";
 
 const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
-  const store = useSelector((store) => store.userReducer);
+  const store = useAppSelector((store) => store.userReducer);
   const { publish } = useNostr();
   const [imgError, setImgError] = useState(false);
   const [stats, setStats] = useState({});
@@ -34,7 +36,7 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
   const mailAdress = mail && splitedMail.slice(findMailIndex + 1).join("");
   const { setContacts } = userSlice.actions;
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const fetchStats = async () => {
     const { data } = await axios.get(
