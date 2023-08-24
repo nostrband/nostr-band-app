@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import cl from "./AllResults.module.css";
 import Search from "../../../components/Search/Search";
 import ProfileItem from "../../../components/ProfileItem/ProfileItem";
-import PostCard from "../../../components/PostCard/PostCard";
+import PostCard from "../../../components/PostCard/PostCard.tsx";
 import NDK from "@nostrband/ndk";
 import { Link, useSearchParams } from "react-router-dom";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";

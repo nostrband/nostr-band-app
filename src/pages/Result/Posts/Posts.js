@@ -3,7 +3,7 @@ import cl from "./Posts.module.css";
 import NDK from "@nostrband/ndk";
 import Search from "../../../components/Search/Search";
 import { useSearchParams } from "react-router-dom";
-import PostCard from "../../../components/PostCard/PostCard";
+import PostCard from "../../../components/PostCard/PostCard.tsx";
 
 const Posts = () => {
   const [searchParams] = useSearchParams();

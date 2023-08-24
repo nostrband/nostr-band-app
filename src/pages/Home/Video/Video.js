@@ -2,7 +2,7 @@ import axios from "axios";
 import "./Video.module.css";
 import { useEffect, useState } from "react";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
-import PostCard from "../../../components/PostCard/PostCard";
+import PostCard from "../../../components/PostCard/PostCard.tsx";
 
 const Video = ({ setIsLoading }) => {
   const [videos, setVideos] = useState([]);

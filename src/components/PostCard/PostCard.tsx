@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, FC } from "react";
 import cl from "./PostCard.module.css";
 import Dropdown from "react-bootstrap/Dropdown";
 import axios from "axios";
@@ -16,17 +16,34 @@ import {
   defineTypeLink,
   extractNostrStrings,
   replaceNostrLinks,
+  //@ts-ignore
 } from "../../utils/formatLink.tsx";
 import { Button, Carousel, Modal } from "react-bootstrap";
+//@ts-ignore
 import { formatAMPM } from "../../utils/formatDate.ts";
+//@ts-ignore
 import MarkdownComponent from "../MarkdownComponent/MarkdownComponent.tsx";
 import UserIcon from "../../assets/user.png";
 import { Link, useNavigate } from "react-router-dom";
 import { nip19 } from "nostr-tools";
+//@ts-ignore
 import { copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
-import NDK from "@nostrband/ndk";
+import NDK, { NDKEvent } from "@nostrband/ndk";
+import { ndkEventType, profileType, statsType } from "../../types/types";
+import React from "react";
 
-const PostItem = ({
+type postItemType = {
+  name: string;
+  picture: string;
+  about: string;
+  pubkey: string;
+  createdDate: number;
+  eventId: string;
+  ndk: NDK;
+  thread: string;
+};
+
+const PostItem: FC<postItemType> = ({
   name,
   picture,
   about,
@@ -37,20 +54,23 @@ const PostItem = ({
   ndk,
 }) => {
   const [imgError, setImgError] = useState(false);
-  const [stats, setStats] = useState([]);
+  const [stats, setStats] = useState<statsType>({});
   const [isBannerVisible, setIsBannerVisible] = useState(false);
   const createdDateAt = new Date(createdDate * 1000);
   const [show, setShow] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [npubKey, setNpubKey] = useState("");
   const [nprofile, setNprofile] = useState("");
-  const [taggedProfiles, setTaggedProfiles] = useState([]);
+  const [taggedProfiles, setTaggedProfiles] = useState<NDKEvent[] | string[]>(
+    []
+  );
   const [content, setContent] = useState(about);
 
-  const fetchProfiles = async (pubkeys) => {
-    const profiles = Array.from(
+  const fetchProfiles = async (pubkeys: string[]) => {
+    const profiles: NDKEvent[] = Array.from(
       await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
     );
+
     setTaggedProfiles(profiles.length ? profiles : pubkeys);
   };
 
@@ -64,14 +84,16 @@ const PostItem = ({
         return link;
       });
       if (ndk instanceof NDK) {
-        fetchProfiles(pubkeys);
+        if (pubkeys.length > 0) {
+          fetchProfiles(pubkeys as string[]);
+        }
       }
     }
   }
 
   useEffect(() => {
     if (taggedProfiles) {
-      taggedProfiles.map((profile) => {
+      taggedProfiles.map((profile: NDKEvent | string) => {
         if (profile instanceof Object) {
           const profileContent = JSON.parse(profile.content);
           const npub = nip19.npubEncode(profile.pubkey);
@@ -122,6 +144,7 @@ const PostItem = ({
       const { data } = await axios.get(
         `${process.env.REACT_APP_API_URL}/stats/event/${eventId}`
       );
+
       setStats(data.stats[eventId]);
     } catch (e) {
       console.log(e);
@@ -131,16 +154,17 @@ const PostItem = ({
   const isSameType = () =>
     contents.every((obj) => obj.type === contents[0].type);
 
-  const handleSelect = (selectedIndex) => {
+  const handleSelect = (selectedIndex: number) => {
     setCarouselIndex(selectedIndex);
   };
 
-  let contents = "";
+  let contents: { type: string; url: string }[] = [];
   if (about) {
     const links = collectLinksFromStr(about);
+
     contents = links
       .map((link) => {
-        const links = [];
+        const links: { type: string; url: string }[] = [];
         const obj = defineTypeLink(link);
         if (obj) {
           if (obj.type !== "NotMedia" && obj.type) {
@@ -161,7 +185,7 @@ const PostItem = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const sats = stats?.zaps?.msats / 1000;
+  const sats = stats.zaps?.msats ? stats.zaps.msats / 1000 : null;
 
   return (
     <div className={cl.post}>
@@ -221,10 +245,10 @@ const PostItem = ({
           navigate(`/${note}`);
         }}
       >
-        <MarkdownComponent content={content} />
+        <MarkdownComponent content={content} mode={""} />
       </div>
       <div className={cl.postStats}>
-        {stats?.zaps?.msats && (
+        {sats && (
           <div className={cl.postState}>
             <Lightning />
             <span>
@@ -264,7 +288,7 @@ const PostItem = ({
         )}
 
         <div className={cl.postState}>
-          <span>{formatAMPM(createdDateAt)}</span>
+          <span>{formatAMPM(createdDateAt.getTime())}</span>
         </div>
       </div>
       <div className={cl.btnLink}>
@@ -314,7 +338,6 @@ const PostItem = ({
                     title="youtube"
                     id="ytplayer"
                     className="youtube-fram"
-                    type="text/html"
                     width="640"
                     height="360"
                     src={content.url}
@@ -366,7 +389,7 @@ const PostItem = ({
                             >
                               <div className={cl.carouselItemWrapper}>
                                 <X
-                                  onClick={(e) => handleClose(e)}
+                                  onClick={() => handleClose()}
                                   className={cl.modalClose}
                                 />
                                 <img

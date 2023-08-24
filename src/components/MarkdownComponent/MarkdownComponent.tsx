@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import cl from "./MarkdownComponent.module.css";
 import { FC, useState } from "react";
 import React from "react";
-import { ReactMarkdownProps } from "react-markdown/lib/complex-types";
 
 interface markdownType {
   content: string;

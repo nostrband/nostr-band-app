@@ -1,7 +1,7 @@
 import axios from "axios";
 import "./Images.module.css";
 import { useEffect, useState } from "react";
-import PostCard from "../../../components/PostCard/PostCard";
+import PostCard from "../../../components/PostCard/PostCard.tsx";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
 
 const Images = ({ setIsLoading }) => {

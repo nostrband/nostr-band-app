@@ -25,7 +25,7 @@ import { formatAMPM } from "../../utils/formatDate.ts";
 import axios from "axios";
 import NoteSkeleton from "./NoteSkeleton/NoteSkeleton";
 import Reply from "../../components/Reply/Reply";
-import PostCard from "../../components/PostCard/PostCard";
+import PostCard from "../../components/PostCard/PostCard.tsx";
 import { getAllTags } from "../../utils/getTags.ts";
 import { getZapAmount } from "../../utils/zapFunctions.ts";
 import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
