@@ -6,7 +6,7 @@ import {
 import cl from "./ZapTransfer.module.css";
 import { formatAMPM } from "../../utils/formatDate.ts";
 import UserIcon from "../../assets/user.png";
-import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
+import MarkdownComponent from "../MarkdownComponent/MarkdownComponent.tsx";
 import { Link } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import Skeleton from "react-loading-skeleton";

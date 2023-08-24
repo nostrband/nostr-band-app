@@ -3,7 +3,7 @@ import cl from "./Reply.module.css";
 import UserIcon from "../../assets/user.png";
 import { Link, useNavigate } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
-import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
+import MarkdownComponent from "../MarkdownComponent/MarkdownComponent.tsx";
 import axios from "axios";
 import { Chat, HandThumbsUp } from "react-bootstrap-icons";
 import { formatAMPM } from "../../utils/formatDate.ts";

@@ -2,10 +2,22 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Link } from "react-router-dom";
 import cl from "./MarkdownComponent.module.css";
-import { useState } from "react";
+import { FC, useState } from "react";
+import React from "react";
+import { ReactMarkdownProps } from "react-markdown/lib/complex-types";
 
-const MarkdownComponent = ({ content, mode }) => {
-  const [isFullContent, setIsFullContent] = useState(false);
+interface markdownType {
+  content: string;
+  mode: string;
+}
+
+type linkType = {
+  children: string[];
+  href: string;
+};
+
+const MarkdownComponent: FC<markdownType> = ({ content, mode }) => {
+  const [isFullContent, setIsFullContent] = useState<boolean>(false);
 
   if (content) {
     const MAX_CONTENT_LENGTH = 300;
@@ -14,7 +26,7 @@ const MarkdownComponent = ({ content, mode }) => {
       ? content
       : content.slice(0, MAX_CONTENT_LENGTH) + "...";
 
-    const renderLink = ({ children, href }) => {
+    const renderLink = ({ children, href }: linkType) => {
       return (
         <Link to={href} onClick={(e) => e.stopPropagation()}>
           {children[0]
@@ -29,6 +41,7 @@ const MarkdownComponent = ({ content, mode }) => {
         <ReactMarkdown
           className={cl.postAbout}
           remarkPlugins={[remarkGfm]}
+          //@ts-ignore
           components={{ a: renderLink }}
         >
           {mode === "post"

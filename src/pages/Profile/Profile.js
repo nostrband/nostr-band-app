@@ -20,7 +20,7 @@ import axios from "axios";
 import { formatAMPM } from "../../utils/formatDate.ts";
 import { Button } from "react-bootstrap";
 import Dropdown from "react-bootstrap/Dropdown";
-import MarkdownComponent from "../../components/MarkdownComponent/MarkdownComponent";
+import MarkdownComponent from "../../components/MarkdownComponent/MarkdownComponent.tsx";
 import EventItem from "./EventItem/EventItem";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
