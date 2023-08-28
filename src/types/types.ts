@@ -24,6 +24,7 @@ export type profileType =
       lud16?: string | undefined;
       nip05?: string | undefined;
       tags?: tagType;
+      image?: string;
     }
   | undefined;
 

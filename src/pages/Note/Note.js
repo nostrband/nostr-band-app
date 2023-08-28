@@ -28,7 +28,7 @@ import Reply from "../../components/Reply/Reply.tsx";
 import PostCard from "../../components/PostCard/PostCard.tsx";
 import { getAllTags } from "../../utils/getTags.ts";
 import { getZapAmount } from "../../utils/zapFunctions.ts";
-import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
+import ZapTransfer from "../../components/ZapTransfer/ZapTransfer.tsx";
 import ReactModal from "react-modal";
 import EmbedModal from "../../components/EmbedModal/EmbedModal.tsx";
 
