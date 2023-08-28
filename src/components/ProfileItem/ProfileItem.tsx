@@ -9,12 +9,14 @@ import {
   BookmarkPlus,
 } from "react-bootstrap-icons";
 import { Button } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import axios from "axios";
 import { nip19 } from "nostr-tools";
 import { Link } from "react-router-dom";
 import UserIcon from "../../assets/user.png";
+//@ts-ignore
 import { copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
+//@ts-ignore
 import { getAllTags } from "../../utils/getTags.ts";
 //@ts-ignore
 import { userSlice } from "../../store/reducers/UserSlice.ts";
@@ -22,18 +24,42 @@ import { toast } from "react-toastify";
 import { useNostr, dateToUnix } from "nostr-react";
 //@ts-ignore
 import { useAppDispatch, useAppSelector } from "../../hooks/redux.ts";
+import { statsType } from "../../types/types";
+import React from "react";
 
-const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
+type profileItemTypes = {
+  img: string;
+  name: string;
+  bio: string;
+  pubKey: string;
+  mail: string;
+  newFollowersCount: number;
+};
+
+const ProfileItem: FC<profileItemTypes> = ({
+  img,
+  name,
+  bio,
+  pubKey,
+  mail,
+  newFollowersCount,
+}) => {
   const store = useAppSelector((store) => store.userReducer);
   const { publish } = useNostr();
   const [imgError, setImgError] = useState(false);
-  const [stats, setStats] = useState({});
+  const [stats, setStats] = useState<statsType>({});
   const [npubKey, setNpubKey] = useState("");
   const [nprofile, setNprofile] = useState("");
   const splitedMail = mail && mail.split("");
-  const findMailIndex = mail && splitedMail.findIndex((m) => m === "@");
-  const mailName = mail && splitedMail.slice(0, findMailIndex).join("");
-  const mailAdress = mail && splitedMail.slice(findMailIndex + 1).join("");
+  const findMailIndex = splitedMail && splitedMail.findIndex((m) => m === "@");
+  const mailName =
+    splitedMail && findMailIndex
+      ? splitedMail.slice(0, findMailIndex).join("")
+      : "";
+  const mailAdress =
+    splitedMail && findMailIndex
+      ? splitedMail.slice(findMailIndex + 1).join("")
+      : "";
   const { setContacts } = userSlice.actions;
 
   const dispatch = useAppDispatch();
@@ -42,6 +68,7 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
     const { data } = await axios.get(
       `${process.env.REACT_APP_API_URL}/stats/profile/${pubKey}`
     );
+
     setStats(data.stats[pubKey]);
   };
   useEffect(() => {
@@ -51,14 +78,17 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const tagsP = Array.isArray(store.contacts.tags)
-    ? getAllTags(store.contacts?.tags, "p")
-    : null;
+  const tagsP = store.contacts
+    ? Array.isArray(store.contacts.tags)
+      ? getAllTags(store.contacts.tags, "p")
+      : null
+    : "";
   const followedPubkeys = Array.isArray(tagsP)
     ? tagsP.map((tag) => tag[1])
     : [];
 
-  const sats = stats?.zaps_received?.msats / 1000;
+  const sats =
+    stats?.zaps_received?.msats && stats?.zaps_received?.msats / 1000;
 
   const onFollow = async () => {
     if (localStorage.getItem("login")) {
@@ -67,22 +97,30 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
           const msg = {
             content: "",
             kind: 3,
-            tags: [...store.contacts.tags, ["p", pubKey]],
+            tags: store.contacts?.tags
+              ? [...store.contacts.tags, ["p", pubKey]]
+              : [["p", pubKey]],
             created_at: dateToUnix(),
           };
 
-          const event = await window.nostr.signEvent(msg);
+          //@ts-ignore
+          const event = await window.nostr!.signEvent(msg);
+          //@ts-ignore
           publish(event);
           dispatch(setContacts(event));
         } else {
           const msg = {
             content: "",
             kind: 3,
-            tags: [...store.contacts.tags.filter((pk) => pk[1] !== pubKey)],
+            tags: store.contacts?.tags && [
+              ...store.contacts.tags.filter((pk) => pk[1] !== pubKey),
+            ],
             created_at: dateToUnix(),
           };
 
-          const event = await window.nostr.signEvent(msg);
+          //@ts-ignore
+          const event = await window.nostr!.signEvent(msg);
+          //@ts-ignore
           publish(event);
           dispatch(setContacts(event));
         }
@@ -124,11 +162,7 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
 
         <div className="profile-info__hero">
           <div className="profile-info__hero-header">
-            <Link
-              to={`/${npubKey}`}
-              href="http://localhost:3000/"
-              className="profile-info__hero-name"
-            >
+            <Link to={`/${npubKey}`} className="profile-info__hero-name">
               {name}
             </Link>
             <Dropdown id="profile-dropdown" className="profile-dropdown">
@@ -183,7 +217,7 @@ const ProfileItem = ({ img, name, bio, pubKey, mail, newFollowersCount }) => {
             </a>
           </div>
           <div className="profile-info__hero-sats">
-            {stats?.zaps_received?.msats && (
+            {sats && (
               <p>
                 <span>
                   {Number(sats) > 1000000

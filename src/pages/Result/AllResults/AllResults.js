@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import cl from "./AllResults.module.css";
 import Search from "../../../components/Search/Search";
-import ProfileItem from "../../../components/ProfileItem/ProfileItem";
+import ProfileItem from "../../../components/ProfileItem/ProfileItem.tsx";
 import PostCard from "../../../components/PostCard/PostCard.tsx";
 import NDK from "@nostrband/ndk";
 import { Link, useSearchParams } from "react-router-dom";

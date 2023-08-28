@@ -3,7 +3,7 @@ import { profileType } from "../../types/types";
 
 interface IUserState {
   isAuth: boolean;
-  contacts: profileType[] | {};
+  contacts: profileType;
 }
 
 const initialState: IUserState = {

@@ -3,7 +3,7 @@ import cl from "./Profiles.module.css";
 import NDK from "@nostrband/ndk";
 import Search from "../../../components/Search/Search";
 import { useSearchParams } from "react-router-dom";
-import ProfileItem from "../../../components/ProfileItem/ProfileItem";
+import ProfileItem from "../../../components/ProfileItem/ProfileItem.tsx";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
 
 const Profiles = () => {
