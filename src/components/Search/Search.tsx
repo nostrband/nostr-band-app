@@ -4,16 +4,21 @@ import InputGroup from "react-bootstrap/InputGroup";
 import { Button } from "react-bootstrap";
 import { Search as SearchIcon } from "react-bootstrap-icons";
 import Spinner from "react-bootstrap/Spinner";
-import { useState } from "react";
+import { FC, useState } from "react";
 import {
   useNavigate,
   useSearchParams,
   createSearchParams,
 } from "react-router-dom";
+import React from "react";
 
-const Search = ({ isLoading }) => {
+type searchTypes = {
+  isLoading: boolean;
+};
+
+const Search: FC<searchTypes> = ({ isLoading }) => {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [inputValue, setInputValue] = useState(
     searchParams.get("q") ? searchParams.get("q") : ""
   );
@@ -21,23 +26,32 @@ const Search = ({ isLoading }) => {
     searchParams.get("type") ? searchParams.get("type") : ""
   );
 
-  const searchHandleByEnter = (e) => {
+  const searchHandleByEnter = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       navigate({
         pathname: "/",
-        search: selectValue
-          ? createSearchParams({ q: inputValue, type: selectValue }).toString()
-          : createSearchParams({ q: inputValue }).toString(),
+        search:
+          selectValue && inputValue
+            ? createSearchParams({
+                q: inputValue,
+                type: selectValue,
+              }).toString()
+            : inputValue
+            ? createSearchParams({ q: inputValue }).toString()
+            : "",
       });
     }
   };
 
-  const searchHandle = (e) => {
+  const searchHandle = () => {
     navigate({
       pathname: "/",
-      search: selectValue
-        ? createSearchParams({ q: inputValue, type: selectValue }).toString()
-        : createSearchParams({ q: inputValue }).toString(),
+      search:
+        selectValue && inputValue
+          ? createSearchParams({ q: inputValue, type: selectValue }).toString()
+          : inputValue
+          ? createSearchParams({ q: inputValue }).toString()
+          : "",
     });
   };
 
@@ -45,7 +59,7 @@ const Search = ({ isLoading }) => {
     <>
       <InputGroup className="mb-3" id="search-input">
         <Form.Control
-          value={inputValue}
+          value={inputValue ? inputValue : ""}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="Keyword, hashtag, pubkey or post ID"
           aria-label="Recipient's username"
@@ -61,7 +75,7 @@ const Search = ({ isLoading }) => {
         <div id="dropdown-basic">
           <Form.Select
             onChange={(e) => setSelectValue(e.currentTarget.value)}
-            value={selectValue}
+            value={selectValue ? selectValue : ""}
           >
             <option value="">All</option>
             <option value="posts">Posts</option>

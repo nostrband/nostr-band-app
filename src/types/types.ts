@@ -13,6 +13,7 @@ export type profileType =
       content?: string;
       npub?: string;
       name?: string | undefined;
+      pubkey?: string;
       username?: string | undefined;
       display_name?: string | undefined;
       picture?: string | undefined;

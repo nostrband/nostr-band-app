@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Search from "../../components/Search/Search";
+import Search from "../../components/Search/Search.tsx";
 import cl from "./Note.module.css";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
@@ -24,7 +24,7 @@ import MarkdownComponent from "../../components/MarkdownComponent/MarkdownCompon
 import { formatAMPM } from "../../utils/formatDate.ts";
 import axios from "axios";
 import NoteSkeleton from "./NoteSkeleton/NoteSkeleton";
-import Reply from "../../components/Reply/Reply";
+import Reply from "../../components/Reply/Reply.tsx";
 import PostCard from "../../components/PostCard/PostCard.tsx";
 import { getAllTags } from "../../utils/getTags.ts";
 import { getZapAmount } from "../../utils/zapFunctions.ts";
