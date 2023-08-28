@@ -1,10 +1,18 @@
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import axios from "axios";
+//@ts-ignore
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
+//@ts-ignore
 import PostCard from "../../../components/PostCard/PostCard.tsx";
+import { nostrApiType } from "../../../types/types.js";
+import React from "react";
 
-const Posts = ({ setIsLoading }) => {
-  const [posts, setPosts] = useState([]);
+type postsTypes = {
+  setIsLoading: (a: boolean) => void;
+};
+
+const Posts: FC<postsTypes> = ({ setIsLoading }) => {
+  const [posts, setPosts] = useState<nostrApiType[]>([]);
 
   const fetchPosts = async () => {
     try {
@@ -44,7 +52,7 @@ const Posts = ({ setIsLoading }) => {
               pubkey={post.pubkey}
               eventId={post.event.id}
               createdDate={post.event.created_at}
-              // banner={postContent.banner}
+              thread={""}
             />
           );
         })

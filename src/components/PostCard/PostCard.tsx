@@ -39,7 +39,7 @@ type postItemType = {
   pubkey: string;
   createdDate: number;
   eventId: string;
-  ndk: NDK;
+  ndk?: NDK;
   thread: string;
 };
 
@@ -67,11 +67,13 @@ const PostItem: FC<postItemType> = ({
   const [content, setContent] = useState(about);
 
   const fetchProfiles = async (pubkeys: string[]) => {
-    const profiles: NDKEvent[] = Array.from(
-      await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
-    );
+    if (ndk) {
+      const profiles: NDKEvent[] = Array.from(
+        await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
+      );
 
-    setTaggedProfiles(profiles.length ? profiles : pubkeys);
+      setTaggedProfiles(profiles.length ? profiles : pubkeys);
+    }
   };
 
   if (content) {

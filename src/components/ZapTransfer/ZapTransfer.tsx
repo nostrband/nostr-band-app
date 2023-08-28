@@ -4,14 +4,32 @@ import {
   LightningChargeFill,
 } from "react-bootstrap-icons";
 import cl from "./ZapTransfer.module.css";
+//@ts-ignore
 import { formatAMPM } from "../../utils/formatDate.ts";
 import UserIcon from "../../assets/user.png";
+//@ts-ignore
 import MarkdownComponent from "../MarkdownComponent/MarkdownComponent.tsx";
 import { Link } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import Skeleton from "react-loading-skeleton";
+import { FC } from "react";
+import { profileType } from "../../types/types";
+import React from "react";
 
-const ZapTransfer = ({
+type zapTypes = {
+  sender: profileType;
+  receiver: profileType;
+  amount: number;
+  created: number;
+  comment: string;
+  zappedPost: string;
+  provider: profileType;
+  senderPubkey: string;
+  eventId: string;
+  mode: string;
+};
+
+const ZapTransfer: FC<zapTypes> = ({
   sender,
   receiver,
   amount,
@@ -24,12 +42,16 @@ const ZapTransfer = ({
   mode,
 }) => {
   const createdAt = new Date(created * 1000);
-  const data = formatAMPM(createdAt);
+  const data = formatAMPM(createdAt.getTime());
   const senderPk = nip19.npubEncode(senderPubkey);
 
   const noteId = eventId ? nip19.noteEncode(eventId) : "";
 
-  const senderImage = mode === "sent" ? sender.image : sender.picture;
+  const senderImage = sender
+    ? mode === "sent"
+      ? sender.image
+      : sender.picture
+    : "";
 
   return (
     <div className={cl.zap}>
@@ -52,12 +74,12 @@ const ZapTransfer = ({
           )}
           {sender ? (
             mode === "sent" ? (
-              <Link className={cl.zapsSenderName}>
-                {sender.displayName ? sender.displayName : sender.name}
+              <Link className={cl.zapsSenderName} to={`/${senderPk}`}>
+                {sender.display_name ? sender.display_name : sender.name}
               </Link>
             ) : (
               <Link to={`/${senderPk}`} className={cl.zapsSenderName}>
-                {sender.displayName ? sender.displayName : sender.name}
+                {sender.display_name ? sender.display_name : sender.name}
               </Link>
             )
           ) : (
@@ -86,34 +108,38 @@ const ZapTransfer = ({
         </div>
         <div className={`${cl.zapSenderAbout} ${cl.rightSender}`}>
           <div className={cl.zapSenderImage}>
-            {receiver.image ? (
-              <img
-                src={receiver.image}
-                alt="avatar"
-                onError={({ currentTarget }) =>
-                  (currentTarget.srcset = UserIcon)
-                }
-              />
-            ) : receiver.picture ? (
-              <img
-                src={receiver.picture}
-                alt="avatar"
-                onError={({ currentTarget }) =>
-                  (currentTarget.srcset = UserIcon)
-                }
-              />
+            {receiver ? (
+              receiver.image ? (
+                <img
+                  src={receiver.image}
+                  alt="avatar"
+                  onError={({ currentTarget }) =>
+                    (currentTarget.srcset = UserIcon)
+                  }
+                />
+              ) : receiver.picture ? (
+                <img
+                  src={receiver.picture}
+                  alt="avatar"
+                  onError={({ currentTarget }) =>
+                    (currentTarget.srcset = UserIcon)
+                  }
+                />
+              ) : (
+                <img src={UserIcon} alt="avatar" />
+              )
             ) : (
-              <img src={UserIcon} alt="avatar" />
+              ""
             )}
           </div>
           {receiver ? (
             mode === "sent" ? (
               <Link to={`/${senderPk}`} className={cl.zapsSenderName}>
-                {receiver.displayName ? receiver.displayName : receiver.name}
+                {receiver.display_name ? receiver.display_name : receiver.name}
               </Link>
             ) : (
-              <Link className={cl.zapsSenderName}>
-                {receiver.displayName ? receiver.displayName : receiver.name}
+              <Link className={cl.zapsSenderName} to={`/${senderPk}`}>
+                {receiver.display_name ? receiver.display_name : receiver.name}
               </Link>
             )
           ) : (
@@ -130,7 +156,7 @@ const ZapTransfer = ({
           "
         </p>
       )}
-      {comment && <MarkdownComponent content={comment} />}
+      {comment && <MarkdownComponent content={comment} mode="" />}
       <div className={cl.createdTime}>
         {created ? (
           data
@@ -138,9 +164,11 @@ const ZapTransfer = ({
           <Skeleton width={100} style={{ marginRight: "5px" }} />
         )}{" "}
         {provider && "to"}&nbsp;
-        <Link>
-          {provider.displayName ? provider.displayName : provider.name}
-        </Link>
+        {provider && (
+          <Link to={""}>
+            {provider.display_name ? provider.display_name : provider.name}
+          </Link>
+        )}
       </div>
     </div>
   );

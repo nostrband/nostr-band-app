@@ -1,5 +1,5 @@
 import RouteSwitcher from "./components/RouteSwitcher/RouteSwitcher.tsx";
-import Home from "./pages/Home/Home";
+import Home from "./pages/Home/Home.tsx";
 
 export const allRoutes = [
   {

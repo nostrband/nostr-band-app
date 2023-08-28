@@ -28,7 +28,7 @@ import ProfileSkeleton from "./ProfileSkeleton/ProfileSkeleton";
 import { copyLink, copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
 import { nip19 } from "nostr-tools";
 import { getZapAmount } from "../../utils/zapFunctions.ts";
-import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
+import ZapTransfer from "../../components/ZapTransfer/ZapTransfer.tsx";
 import UserIcon from "../../assets/user.png";
 import ReactModal from "react-modal";
 import EmbedModal from "../../components/EmbedModal/EmbedModal.tsx";

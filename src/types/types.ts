@@ -24,6 +24,7 @@ export type profileType =
       lud16?: string | undefined;
       nip05?: string | undefined;
       tags?: tagType;
+      image?: string;
     }
   | undefined;
 
@@ -72,5 +73,44 @@ export type statsType = {
     target_event_count?: number;
     target_pubkey_count?: number;
     zapper_count?: number;
+  };
+};
+
+export type nostrApiType = {
+  id: string;
+  pubkey: string;
+  relays: string[];
+  author: {
+    content: string;
+    created_at: number;
+    id: string;
+    kind: number;
+    pubkey: string;
+    sig: string;
+    tags: tagType;
+  };
+  event: {
+    content: string;
+    created_at: number;
+    id: string;
+    kind: number;
+    pubkey: string;
+    sig: string;
+    tags: tagType;
+  };
+};
+
+export type nostrPeopleType = {
+  new_followers_count: number;
+  pubkey: string;
+  relays: string[];
+  profile: {
+    content: string;
+    created_at: number;
+    id: string;
+    kind: number;
+    pubkey: string;
+    sig: string;
+    tags: tagType;
   };
 };

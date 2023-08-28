@@ -1,11 +1,19 @@
 import axios from "axios";
 import "./Images.module.css";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
+//@ts-ignore
 import PostCard from "../../../components/PostCard/PostCard.tsx";
+//@ts-ignore
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
+import { nostrApiType } from "../../../types/types";
+import React from "react";
 
-const Images = ({ setIsLoading }) => {
-  const [images, setImages] = useState([]);
+type imagesTypes = {
+  setIsLoading: (a: boolean) => void;
+};
+
+const Images: FC<imagesTypes> = ({ setIsLoading }) => {
+  const [images, setImages] = useState<nostrApiType[]>([]);
   const fetchImages = async () => {
     try {
       setIsLoading(true);
@@ -45,6 +53,7 @@ const Images = ({ setIsLoading }) => {
               pubkey={image.pubkey}
               about={image.event.content}
               createdDate={image.event.created_at}
+              thread={""}
             />
           );
         })
