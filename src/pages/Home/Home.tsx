@@ -1,17 +1,24 @@
 import "./Home.css";
+//@ts-ignore
 import Search from "../../components/Search/Search.tsx";
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
-import People from "./People/People";
+//@ts-ignore
+import People from "./People/People.tsx";
 import { Link, useSearchParams } from "react-router-dom";
-import Posts from "./Posts/Posts";
-import Images from "./Images/Images";
-import Video from "./Video/Video";
-import Audio from "./Audio/Audio";
+//@ts-ignore
+import Posts from "./Posts/Posts.tsx";
+//@ts-ignore
+import Images from "./Images/Images.tsx";
+//@ts-ignore
+import Video from "./Video/Video.tsx";
+//@ts-ignore
+import Audio from "./Audio/Audio.tsx";
 import Result from "../Result/Result";
+import React from "react";
 
 const Home = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchParams] = useSearchParams();
   const [trendingQuery, setTrendingQuery] = useState(
     searchParams.get("trending") ? searchParams.get("trending") : "people"

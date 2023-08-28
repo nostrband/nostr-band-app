@@ -75,3 +75,42 @@ export type statsType = {
     zapper_count?: number;
   };
 };
+
+export type nostrApiType = {
+  id: string;
+  pubkey: string;
+  relays: string[];
+  author: {
+    content: string;
+    created_at: number;
+    id: string;
+    kind: number;
+    pubkey: string;
+    sig: string;
+    tags: tagType;
+  };
+  event: {
+    content: string;
+    created_at: number;
+    id: string;
+    kind: number;
+    pubkey: string;
+    sig: string;
+    tags: tagType;
+  };
+};
+
+export type nostrPeopleType = {
+  new_followers_count: number;
+  pubkey: string;
+  relays: string[];
+  profile: {
+    content: string;
+    created_at: number;
+    id: string;
+    kind: number;
+    pubkey: string;
+    sig: string;
+    tags: tagType;
+  };
+};

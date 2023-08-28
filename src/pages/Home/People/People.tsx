@@ -1,17 +1,25 @@
 import "./People.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, FC } from "react";
 import axios from "axios";
+//@ts-ignore
 import ProfileItem from "../../../components/ProfileItem/ProfileItem.tsx";
+//@ts-ignore
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
+import { nostrPeopleType } from "../../../types/types";
 
-const People = ({ setIsLoading }) => {
-  const [profiles, setProfiles] = useState([]);
+type peopleTypes = {
+  setIsLoading: (a: boolean) => void;
+};
+
+const People: FC<peopleTypes> = ({ setIsLoading }) => {
+  const [profiles, setProfiles] = useState<nostrPeopleType[]>([]);
   const fetchProfiles = async () => {
     try {
       setIsLoading(true);
       const { data } = await axios.get(
         `${process.env.REACT_APP_API_URL}/trending/profiles`
       );
+
       setProfiles(data.profiles);
     } catch (e) {
       console.error(e?.response?.data?.error);
@@ -43,14 +51,13 @@ const People = ({ setIsLoading }) => {
                   : profileContent.name
               }
               bio={profileContent.about}
-              twitter={profileContent.username}
               mail={profileContent.nip05}
               newFollowersCount={profile.new_followers_count}
             />
           );
         })
       ) : (
-        <CardSkeleton cards={8} />
+        <CardSkeleton cards={8} mode={""} />
       )}
     </>
   );

@@ -1,11 +1,19 @@
 import axios from "axios";
 import "./Video.module.css";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
+//@ts-ignore
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
+//@ts-ignore
 import PostCard from "../../../components/PostCard/PostCard.tsx";
+import { nostrApiType } from "../../../types/types";
+import React from "react";
 
-const Video = ({ setIsLoading }) => {
-  const [videos, setVideos] = useState([]);
+type videoType = {
+  setIsLoading: (a: boolean) => void;
+};
+
+const Video: FC<videoType> = ({ setIsLoading }) => {
+  const [videos, setVideos] = useState<nostrApiType[]>([]);
   const fetchVideos = async () => {
     try {
       setIsLoading(true);
@@ -45,6 +53,7 @@ const Video = ({ setIsLoading }) => {
               pubkey={video.pubkey}
               about={video.event.content}
               createdDate={video.event.created_at}
+              thread={""}
             />
           );
         })
