@@ -2,7 +2,7 @@ import { useLocation, useParams } from "react-router-dom";
 import cl from "./Profile.module.css";
 import NDK, { NDKEvent, NDKNip07Signer } from "@nostrband/ndk";
 import { useEffect, useState } from "react";
-import Search from "../../components/Search/Search";
+import Search from "../../components/Search/Search.tsx";
 import {
   Key,
   TextCenter,

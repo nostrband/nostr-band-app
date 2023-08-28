@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import cl from "./AllResults.module.css";
-import Search from "../../../components/Search/Search";
+import Search from "../../../components/Search/Search.tsx";
 import ProfileItem from "../../../components/ProfileItem/ProfileItem.tsx";
 import PostCard from "../../../components/PostCard/PostCard.tsx";
 import NDK from "@nostrband/ndk";

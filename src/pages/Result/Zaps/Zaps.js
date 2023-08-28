@@ -4,7 +4,7 @@ import { getZapAmount } from "../../../utils/zapFunctions.ts";
 import { useSearchParams } from "react-router-dom";
 import ZapTransfer from "../../../components/ZapTransfer/ZapTransfer";
 import cl from "./Zaps.module.css";
-import Search from "../../../components/Search/Search";
+import Search from "../../../components/Search/Search.tsx";
 
 const Zaps = () => {
   const [ndk, setNdk] = useState(null);

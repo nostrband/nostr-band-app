@@ -1,5 +1,5 @@
 import "./Home.css";
-import Search from "../../components/Search/Search";
+import Search from "../../components/Search/Search.tsx";
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import People from "./People/People";

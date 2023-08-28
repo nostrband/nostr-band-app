@@ -1,43 +1,45 @@
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import cl from "./Reply.module.css";
 import UserIcon from "../../assets/user.png";
 import { Link, useNavigate } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
+//@ts-ignore
 import MarkdownComponent from "../MarkdownComponent/MarkdownComponent.tsx";
 import axios from "axios";
 import { Chat, HandThumbsUp } from "react-bootstrap-icons";
+//@ts-ignore
 import { formatAMPM } from "../../utils/formatDate.ts";
 import { nip19 } from "nostr-tools";
+//@ts-ignore
 import { copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
+//@ts-ignore
+import { profileType, statsType } from "../../types/types.ts";
+import React from "react";
 
-const Reply = ({ author, content, eventId, createdDateAt, mode }) => {
-  const authorContent = author ? JSON.parse(author.content) : "";
-  const [imgError, setImgError] = useState(false);
-  const [stats, setStats] = useState([]);
+type replyTypes = {
+  author: profileType;
+  content: string;
+  eventId: string;
+  createdDateAt: number;
+  mode: string;
+};
+
+const Reply: FC<replyTypes> = ({
+  author,
+  content,
+  eventId,
+  createdDateAt,
+  mode,
+}) => {
+  const authorContent = author?.content ? JSON.parse(author.content) : "";
+  const [imgError, setImgError] = useState<boolean>(false);
+  const [stats, setStats] = useState<statsType>({});
   const navigate = useNavigate();
   const noteId = nip19.noteEncode(eventId);
-  const pk = author ? author?.pubkey : "";
+  const pk = author?.pubkey ? author?.pubkey : "";
   const nprofile = pk ? nip19.nprofileEncode({ pubkey: pk }) : "";
   const npub = pk ? nip19.npubEncode(pk) : "";
-  const [agoTime, setAgoTime] = useState("");
-  const timeNow = Date.now();
-
-  useEffect(() => {
-    if (timeNow - createdDateAt * 1000 <= 86400000) {
-      const time = new Date(timeNow - createdDateAt * 1000);
-      if (time.getHours()) {
-        const hs = time.getHours();
-        setAgoTime(`${hs} ${hs > 1 ? "hours" : "hour"} ago`);
-      } else if (time.getMinutes()) {
-        const minutes = time.getMinutes();
-        setAgoTime(`${minutes} ${minutes > 1 ? "minutes" : "minute"} ago`);
-      } else {
-        const secs = time.getSeconds();
-        setAgoTime(`${secs} ${secs > 5 ? "seconds ago" : "right now"}`);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const agoTime = formatAMPM(createdDateAt * 1000);
 
   useEffect(() => {
     if (eventId) {
@@ -46,7 +48,7 @@ const Reply = ({ author, content, eventId, createdDateAt, mode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchStats = async () => {
+  const fetchStats = async (): Promise<void> => {
     try {
       const { data } = await axios.get(
         `${process.env.REACT_APP_API_URL}/stats/event/${eventId}`
@@ -117,7 +119,7 @@ const Reply = ({ author, content, eventId, createdDateAt, mode }) => {
           navigate(`/${noteId}`);
         }}
       >
-        <MarkdownComponent content={content} />
+        <MarkdownComponent content={content} mode="" />
       </div>
       <div className={cl.postStats}>
         {stats.reply_count && (
