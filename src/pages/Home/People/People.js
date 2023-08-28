@@ -1,7 +1,7 @@
 import "./People.css";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import ProfileItem from "../../../components/ProfileItem/ProfileItem";
+import ProfileItem from "../../../components/ProfileItem/ProfileItem.tsx";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
 
 const People = ({ setIsLoading }) => {

@@ -29,7 +29,7 @@ import { nip19 } from "nostr-tools";
 //@ts-ignore
 import { copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
 import NDK, { NDKEvent } from "@nostrband/ndk";
-import { ndkEventType, profileType, statsType } from "../../types/types";
+import { statsType } from "../../types/types";
 import React from "react";
 
 type postItemType = {
