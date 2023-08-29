@@ -16,15 +16,31 @@ import {
   defineTypeLink,
   extractNostrStrings,
   replaceNostrLinks,
+  //@ts-ignore
 } from "../../../utils/formatLink.tsx";
 import { Button, Carousel, Modal } from "react-bootstrap";
+//@ts-ignore
 import { formatAMPM } from "../../../utils/formatDate.ts";
+//@ts-ignore
 import MarkdownComponent from "../../../components/MarkdownComponent/MarkdownComponent.tsx";
 import UserIcon from "../../../assets/user.png";
 import { nip19 } from "nostr-tools";
+//@ts-ignore
 import { copyUrl } from "../../../utils/copy-funtions/copyFuntions.ts";
 import { useNavigate } from "react-router-dom";
-import NDK from "@nostrband/ndk";
+import NDK, { NDKEvent } from "@nostrband/ndk";
+import React from "react";
+import { statsType } from "../../../types/types";
+
+type eventItemTypes = {
+  name: string;
+  picture: string;
+  about: string;
+  pubkey: string;
+  createdDate: number;
+  eventId: string;
+  ndk: NDK;
+};
 
 const EventItem = ({
   name,
@@ -36,20 +52,24 @@ const EventItem = ({
   ndk,
 }) => {
   const [imgError, setImgError] = useState(false);
-  const [stats, setStats] = useState([]);
+  const [stats, setStats] = useState<statsType>();
   const [isBannerVisible, setIsBannerVisible] = useState(false);
   const createdDateAt = new Date(createdDate * 1000);
   const [show, setShow] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const navigate = useNavigate();
-  const [taggedProfiles, setTaggedProfiles] = useState([]);
+  const [taggedProfiles, setTaggedProfiles] = useState<(NDKEvent | string)[]>(
+    []
+  );
   const [content, setContent] = useState(about);
 
-  const fetchProfiles = async (pubkeys) => {
-    const profiles = Array.from(
-      await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
-    );
-    setTaggedProfiles(profiles.length ? profiles : pubkeys);
+  const fetchProfiles = async (pubkeys: string[]) => {
+    if (ndk instanceof NDK) {
+      const profiles = Array.from(
+        await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
+      );
+      setTaggedProfiles(profiles?.length ? profiles : pubkeys);
+    }
   };
 
   if (content) {
@@ -57,7 +77,7 @@ const EventItem = ({
     if (links) {
       const pubkeys = links.map((link) => {
         if (link.startsWith("npub")) {
-          return nip19.decode(link).data;
+          return nip19.decode(link).data.toString();
         }
         return link;
       });
@@ -127,19 +147,24 @@ const EventItem = ({
     }
   };
 
-  const isSameType = () =>
+  type contentType = {
+    type: string;
+    url: string;
+  };
+
+  const isSameType = (contents: contentType[]) =>
     contents.every((obj) => obj.type === contents[0].type);
 
-  const handleSelect = (selectedIndex) => {
+  const handleSelect = (selectedIndex: number) => {
     setCarouselIndex(selectedIndex);
   };
 
-  let contents = "";
+  let contents: contentType[] = [];
   if (about) {
     const links = collectLinksFromStr(about);
     contents = links
       .map((link) => {
-        const links = [];
+        const links: contentType[] = [];
         const obj = defineTypeLink(link);
         if (obj) {
           if (obj.type !== "NotMedia" && obj.type) {
@@ -156,7 +181,7 @@ const EventItem = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const sats = stats?.zaps?.msats / 1000;
+  const sats = stats?.zaps?.msats ? stats?.zaps?.msats / 1000 : null;
 
   return (
     <div className={cl.post}>
@@ -207,10 +232,10 @@ const EventItem = ({
         </Dropdown>
       </div>
       <div style={{ cursor: "pointer" }} onClick={() => navigate(`/${noteId}`)}>
-        <MarkdownComponent content={content} />
+        <MarkdownComponent content={content} mode={""} />
       </div>
       <div className={cl.postStats}>
-        {stats?.zaps?.msats && (
+        {sats && (
           <div className={cl.postState}>
             <Lightning />
             <span>
@@ -222,13 +247,13 @@ const EventItem = ({
             </span>
           </div>
         )}
-        {stats.reply_count && (
+        {stats?.reply_count && (
           <div className={cl.postState}>
             <Chat />
             <span>{stats.reply_count}</span>
           </div>
         )}
-        {stats.repost_count && (
+        {stats?.repost_count && (
           <div className={cl.postState}>
             <ArrowRepeat />
             <span>
@@ -238,7 +263,7 @@ const EventItem = ({
             </span>
           </div>
         )}
-        {stats.reaction_count && (
+        {stats?.reaction_count && (
           <div className={cl.postState}>
             <HandThumbsUp />
             <span>
@@ -250,7 +275,7 @@ const EventItem = ({
         )}
 
         <div className={cl.postState}>
-          <span>{formatAMPM(createdDateAt)}</span>
+          <span>{formatAMPM(createdDateAt.getTime())}</span>
         </div>
       </div>
       <div className={cl.btnLink}>
@@ -261,7 +286,7 @@ const EventItem = ({
             </Button>
           ) : (
             <Button onClick={() => setIsBannerVisible(true)} variant="light">
-              {isSameType() ? (
+              {isSameType(contents) ? (
                 contents[0].type === "PictureType" ? (
                   <>
                     Show <ImageFill />
@@ -300,7 +325,6 @@ const EventItem = ({
                     title="youtube"
                     id="ytplayer"
                     className="youtube-fram"
-                    type="text/html"
                     width="640"
                     height="360"
                     src={content.url}
@@ -352,7 +376,7 @@ const EventItem = ({
                             >
                               <div className={cl.carouselItemWrapper}>
                                 <X
-                                  onClick={(e) => handleClose(e)}
+                                  onClick={() => handleClose()}
                                   className={cl.modalClose}
                                 />
                                 <img
