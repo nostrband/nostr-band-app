@@ -1,19 +1,22 @@
 import { useEffect, useState } from "react";
 import cl from "./Posts.module.css";
-import NDK from "@nostrband/ndk";
+import NDK, { NDKEvent } from "@nostrband/ndk";
+//@ts-ignore
 import Search from "../../../components/Search/Search.tsx";
 import { useSearchParams } from "react-router-dom";
+//@ts-ignore
 import PostCard from "../../../components/PostCard/PostCard.tsx";
+import React from "react";
 
 const Posts = () => {
   const [searchParams] = useSearchParams();
-  const [ndk, setNdk] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [posts, setPosts] = useState([]);
-  const [postsAuthors, setPostsAuthors] = useState([]);
-  const [postsCount, setPostsCount] = useState(0);
-  const [limitPosts, setLimitPosts] = useState(10);
-  const [isBottom, setIsBottom] = useState(false);
+  const [ndk, setNdk] = useState<NDK>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [posts, setPosts] = useState<NDKEvent[]>([]);
+  const [postsAuthors, setPostsAuthors] = useState<NDKEvent[]>([]);
+  const [postsCount, setPostsCount] = useState<number>(0);
+  const [limitPosts, setLimitPosts] = useState<number>(10);
+  const [isBottom, setIsBottom] = useState<boolean>(false);
 
   const handleScroll = () => {
     const windowHeight = window.innerHeight;
@@ -67,9 +70,10 @@ const Posts = () => {
     if (ndk instanceof NDK) {
       const postsCount = await ndk.fetchCount({
         kinds: [1],
+        //@ts-ignore
         search: searchParams.get("q"),
       });
-      setPostsCount(postsCount?.count);
+      setPostsCount(postsCount?.count ? postsCount.count : 0);
     }
   };
 
@@ -86,6 +90,7 @@ const Posts = () => {
         const posts = Array.from(
           await ndk.fetchEvents({
             kinds: [1],
+            //@ts-ignore
             search: searchParams.get("q"),
             limit: limitPosts,
           })
@@ -135,7 +140,8 @@ const Posts = () => {
                 about={post.content}
                 pubkey={post.pubkey}
                 eventId={post.id}
-                createdDate={post.created_at}
+                createdDate={post.created_at ? post.created_at : 0}
+                thread={""}
               />
             );
           })

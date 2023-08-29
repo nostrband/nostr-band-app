@@ -1,22 +1,26 @@
 import { useState, useEffect } from "react";
-import NDK from "@nostrband/ndk";
+import NDK, { NDKEvent } from "@nostrband/ndk";
+//@ts-ignore
 import { getZapAmount } from "../../../utils/zapFunctions.ts";
 import { useSearchParams } from "react-router-dom";
+//@ts-ignore
 import ZapTransfer from "../../../components/ZapTransfer/ZapTransfer.tsx";
 import cl from "./Zaps.module.css";
+//@ts-ignore
 import Search from "../../../components/Search/Search.tsx";
+import React from "react";
 
 const Zaps = () => {
-  const [ndk, setNdk] = useState(null);
+  const [ndk, setNdk] = useState<NDK>();
   const [searchParams] = useSearchParams();
-  const [receivedZaps, setReceivedZaps] = useState([]);
-  const [amountReceivedZaps, setAmountReceivedZaps] = useState([]);
-  const [sentAuthors, setSentAuthors] = useState([]);
-  const [createdTimes, setCreatedTimes] = useState([]);
-  const [sendersComments, setSendersComments] = useState([]);
-  const [zappedPosts, setZappedPosts] = useState([]);
-  const [providers, setProviders] = useState([]);
-  const [receiverAuthors, setReceiverAuthors] = useState([]);
+  const [receivedZaps, setReceivedZaps] = useState<NDKEvent[]>([]);
+  const [amountReceivedZaps, setAmountReceivedZaps] = useState<number[]>([]);
+  const [sentAuthors, setSentAuthors] = useState<NDKEvent[]>([]);
+  const [createdTimes, setCreatedTimes] = useState<number[]>([]);
+  const [sendersComments, setSendersComments] = useState<any[]>([]);
+  const [zappedPosts, setZappedPosts] = useState<NDKEvent[]>([]);
+  const [providers, setProviders] = useState<NDKEvent[]>([]);
+  const [receiverAuthors, setReceiverAuthors] = useState<NDKEvent[]>([]);
   const [zapsCount, setZapsCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [limitZaps, setLimitZaps] = useState(10);
@@ -76,9 +80,10 @@ const Zaps = () => {
     if (ndk instanceof NDK) {
       const zapsCount = await ndk.fetchCount({
         kinds: [9735],
+        //@ts-ignore
         search: searchParams.get("q"),
       });
-      setZapsCount(zapsCount.count);
+      setZapsCount(zapsCount?.count ? zapsCount.count : 0);
     }
   };
 
@@ -89,6 +94,7 @@ const Zaps = () => {
         const zaps = Array.from(
           await ndk.fetchEvents({
             kinds: [9735],
+            //@ts-ignore
             search: searchParams.get("q"),
             limit: limitZaps,
           })
@@ -111,7 +117,7 @@ const Zaps = () => {
 
         const postsIds = zaps.map((zap) => {
           return zap.tags.find((item) => item[0] === "e")
-            ? zap.tags.find((item) => item[0] === "e")[1]
+            ? zap.tags.find((item) => item[0] === "e")![1]
             : "";
         });
         const zappedPosts = Array.from(
@@ -121,7 +127,7 @@ const Zaps = () => {
 
         const sendersPubkeys = zaps.map((zap) => {
           const cleanJSON = zap.tags
-            .find((item) => item[0] === "description")[1]
+            .find((item) => item[0] === "description")![1]
             .replace(/[^\x20-\x7E]/g, "");
           return JSON.parse(cleanJSON).pubkey;
         });
@@ -129,14 +135,14 @@ const Zaps = () => {
 
         const sendersComments = zaps.map((zap) => {
           const cleanJSON = zap.tags
-            .find((item) => item[0] === "description")[1]
+            .find((item) => item[0] === "description")![1]
             .replace(/[^\x20-\x7E]/g, "");
           return JSON.parse(cleanJSON).content;
         });
         setSendersComments(sendersComments);
 
         const createdTimes = zaps.map((zap) => {
-          return zap.created_at;
+          return zap.created_at ? zap.created_at : 0;
         });
         setCreatedTimes(createdTimes);
 
@@ -154,7 +160,7 @@ const Zaps = () => {
         setSentAuthors(senders);
 
         const receiversPubkeys = zaps.map((zap) => {
-          return zap.tags.find((item) => item[0] === "p")[1];
+          return zap.tags.find((item) => item[0] === "p")![1];
         });
 
         const receiversArr = Array.from(
@@ -190,7 +196,7 @@ const Zaps = () => {
       {receivedZaps.length && createdTimes.length
         ? receivedZaps.map((author, index) => {
             const cleanJSON = author.tags
-              .find((item) => item[0] === "description")[1]
+              .find((item) => item[0] === "description")![1]
               .replace(/[^\x20-\x7E]/g, "");
             const pk = JSON.parse(cleanJSON).pubkey;
             const sender = sentAuthors.find((item) => {
@@ -200,7 +206,7 @@ const Zaps = () => {
 
             const zappedPost = zappedPosts.find((item) => {
               const e = author.tags.find((item) => item[0] === "e")
-                ? author.tags.find((item) => item[0] === "e")[1]
+                ? author.tags.find((item) => item[0] === "e")![1]
                 : "";
               return item.id === e;
             });
@@ -210,7 +216,7 @@ const Zaps = () => {
             );
             const provider = pr ? JSON.parse(pr.content) : "";
 
-            const pkey = author.tags.find((item) => item[0] === "p")[1];
+            const pkey = author.tags.find((item) => item[0] === "p")![1];
 
             const receiver = receiverAuthors.find(
               (item) => item.pubkey === pkey
@@ -232,6 +238,7 @@ const Zaps = () => {
                 provider={provider}
                 eventId={zappedPost ? zappedPost?.id : ""}
                 senderPubkey={pk}
+                mode={""}
               />
             );
           })

@@ -4,7 +4,8 @@ import "./App.css";
 import Footer from "./components/Footer/Footer.tsx";
 //@ts-ignore
 import Header from "./components/Header/Header.tsx";
-import { allRoutes } from "./routes";
+//@ts-ignore
+import { allRoutes } from "./routes.tsx";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
