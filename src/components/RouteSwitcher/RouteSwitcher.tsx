@@ -1,7 +1,8 @@
 import { useParams } from "react-router-dom";
 //@ts-ignore
 import Note from "../../pages/Note/Note.tsx";
-import Profile from "../../pages/Profile/Profile";
+//@ts-ignore
+import Profile from "../../pages/Profile/Profile.tsx";
 import React from "react";
 
 const RouteSwitcher = () => {
