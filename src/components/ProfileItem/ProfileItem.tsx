@@ -50,7 +50,7 @@ const ProfileItem: FC<profileItemTypes> = ({
   const [stats, setStats] = useState<statsType>({});
   const [npubKey, setNpubKey] = useState("");
   const [nprofile, setNprofile] = useState("");
-  const splitedMail = mail && mail.split("");
+  const splitedMail = mail ? mail.toString().split("") : [];
   const findMailIndex = splitedMail && splitedMail.findIndex((m) => m === "@");
   const mailName =
     splitedMail && findMailIndex
