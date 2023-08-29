@@ -1,16 +1,11 @@
 import { useEffect, useState } from "react";
 import cl from "./AllResults.module.css";
-//@ts-ignore
-import Search from "../../../components/Search/Search.tsx";
-//@ts-ignore
-import ProfileItem from "../../../components/ProfileItem/ProfileItem.tsx";
-//@ts-ignore
-import PostCard from "../../../components/PostCard/PostCard.tsx";
+import Search from "../../../components/Search/Search";
+import ProfileItem from "../../../components/ProfileItem/ProfileItem";
+import PostCard from "../../../components/PostCard/PostCard";
 import NDK, { NDKEvent } from "@nostrband/ndk";
 import { Link, useSearchParams } from "react-router-dom";
-//@ts-ignore
-import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
-import React from "react";
+import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 
 const AllResults = () => {
   const [searchParams] = useSearchParams();
@@ -63,7 +58,7 @@ const AllResults = () => {
     }
   };
 
-  const getPosts = async (ndk) => {
+  const getPosts = async (ndk: NDK) => {
     try {
       if (ndk instanceof NDK) {
         const posts = Array.from(
@@ -122,7 +117,7 @@ const AllResults = () => {
           "No profiles"
         )
       ) : (
-        <CardSkeleton cards={3} mode={""} />
+        <CardSkeleton cards={3} />
       )}
       {profilesCount >= 4 && (
         <Link to={`/?q=${searchParams.get("q")}&type=profiles`}>

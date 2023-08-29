@@ -3,13 +3,15 @@ import { ndkEventType } from "../types/types";
 
 export const getZapAmount = (e: ndkEventType): number => {
   try {
-    for (const t of e.tags) {
-      if (t.length >= 2 && t[0] === "bolt11") {
-        const b = decode(t[1]);
-        for (const s of b.sections) {
-          if (s.name === "amount") return parseInt(s.value);
+    if (e.tags) {
+      for (const t of e.tags) {
+        if (t.length >= 2 && t[0] === "bolt11") {
+          const b = decode(t[1]);
+          for (const s of b.sections) {
+            if (s.name === "amount") return parseInt(s.value);
+          }
+          break;
         }
-        break;
       }
     }
   } catch (er) {

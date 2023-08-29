@@ -1,11 +1,8 @@
 import { FC, useEffect, useState } from "react";
 import axios from "axios";
-//@ts-ignore
-import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
-//@ts-ignore
-import PostCard from "../../../components/PostCard/PostCard.tsx";
+import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
+import PostCard from "../../../components/PostCard/PostCard";
 import { nostrApiType } from "../../../types/types.js";
-import React from "react";
 
 type postsTypes = {
   setIsLoading: (a: boolean) => void;
@@ -23,7 +20,7 @@ const Posts: FC<postsTypes> = ({ setIsLoading }) => {
       setPosts(data.notes);
       // console.log(data);
     } catch (e) {
-      console.log(e?.response?.data?.error);
+      console.log(e);
     } finally {
       setIsLoading(false);
     }
@@ -57,7 +54,7 @@ const Posts: FC<postsTypes> = ({ setIsLoading }) => {
           );
         })
       ) : (
-        <CardSkeleton cards={8} mode="posts" />
+        <CardSkeleton cards={8} />
       )}
     </>
   );

@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
 import cl from "./Posts.module.css";
 import NDK, { NDKEvent } from "@nostrband/ndk";
-//@ts-ignore
-import Search from "../../../components/Search/Search.tsx";
+import Search from "../../../components/Search/Search";
 import { useSearchParams } from "react-router-dom";
-//@ts-ignore
-import PostCard from "../../../components/PostCard/PostCard.tsx";
-import React from "react";
+import PostCard from "../../../components/PostCard/PostCard";
 
 const Posts = () => {
   const [searchParams] = useSearchParams();
@@ -62,11 +59,13 @@ const Posts = () => {
   }, []);
 
   useEffect(() => {
-    getPosts(ndk);
+    if (ndk instanceof NDK) {
+      getPosts(ndk);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limitPosts]);
 
-  const fetchPostsCount = async (ndk) => {
+  const fetchPostsCount = async (ndk: NDK) => {
     if (ndk instanceof NDK) {
       const postsCount = await ndk.fetchCount({
         kinds: [1],
@@ -78,12 +77,14 @@ const Posts = () => {
   };
 
   useEffect(() => {
-    getPosts(ndk);
-    fetchPostsCount(ndk);
+    if (ndk instanceof NDK) {
+      getPosts(ndk);
+      fetchPostsCount(ndk);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("q")]);
 
-  const getPosts = async (ndk) => {
+  const getPosts = async (ndk: NDK) => {
     try {
       if (ndk instanceof NDK) {
         setIsLoading(true);

@@ -2,28 +2,27 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Link } from "react-router-dom";
 import cl from "./MarkdownComponent.module.css";
-import { FC, useState } from "react";
-import React from "react";
+import { useState } from "react";
 
-interface markdownType {
+type MarkdownType = {
   content: string;
-  mode: string;
-}
+  mode?: string;
+};
 
 type linkType = {
   children: string[];
   href: string;
 };
 
-const MarkdownComponent: FC<markdownType> = ({ content, mode }) => {
+const MarkdownComponent = (props: MarkdownType) => {
   const [isFullContent, setIsFullContent] = useState<boolean>(false);
 
-  if (content) {
+  if (props.content) {
     const MAX_CONTENT_LENGTH = 300;
 
     const fullContent = isFullContent
-      ? content
-      : content.slice(0, MAX_CONTENT_LENGTH) + "...";
+      ? props.content
+      : props.content.slice(0, MAX_CONTENT_LENGTH) + "...";
 
     const renderLink = ({ children, href }: linkType) => {
       return (
@@ -43,13 +42,13 @@ const MarkdownComponent: FC<markdownType> = ({ content, mode }) => {
           //@ts-ignore
           components={{ a: renderLink }}
         >
-          {mode === "post"
-            ? content
-            : content.length <= MAX_CONTENT_LENGTH
-            ? content
+          {props.mode === "post"
+            ? props.content
+            : props.content.length <= MAX_CONTENT_LENGTH
+            ? props.content
             : fullContent}
         </ReactMarkdown>
-        {content.length > MAX_CONTENT_LENGTH && mode !== "post" && (
+        {props.content.length > MAX_CONTENT_LENGTH && props.mode !== "post" && (
           <button
             className={cl.postMoreBtn}
             onClick={(e) => {
@@ -63,7 +62,7 @@ const MarkdownComponent: FC<markdownType> = ({ content, mode }) => {
       </>
     );
   } else {
-    return "";
+    return <></>;
   }
 };
 

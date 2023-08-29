@@ -1,14 +1,11 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-//@ts-ignore
-import App from "./App.tsx";
+import App from "./App";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter } from "react-router-dom";
 import "react-loading-skeleton/dist/skeleton.css";
 import { Provider } from "react-redux";
-//@ts-ignore
-import { setupStore } from "./store/store.ts";
+import { setupStore } from "./store/store";
 
 const store = setupStore();
 

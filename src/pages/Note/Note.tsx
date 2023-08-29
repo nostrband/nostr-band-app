@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
-//@ts-ignore
-import Search from "../../components/Search/Search.tsx";
+import { useEffect, useState } from "react";
+import Search from "../../components/Search/Search";
 import cl from "./Note.module.css";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
-import NDK, { NDKEvent } from "@nostrband/ndk";
+import NDK, { NDKEvent, NDKTag } from "@nostrband/ndk";
 import UserIcon from "../../assets/user.png";
 import {
   ArrowRepeat,
@@ -19,28 +18,19 @@ import {
   LightningFill,
   X,
 } from "react-bootstrap-icons";
-//@ts-ignore
-import { copyLink, copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
+import { copyLink, copyUrl } from "../../utils/copy-funtions/copyFuntions";
 import { Button, Dropdown, Tab, Tabs } from "react-bootstrap";
-//@ts-ignore
-import MarkdownComponent from "../../components/MarkdownComponent/MarkdownComponent.tsx";
-//@ts-ignore
-import { formatAMPM } from "../../utils/formatDate.ts";
+import MarkdownComponent from "../../components/MarkdownComponent/MarkdownComponent";
+import { formatAMPM } from "../../utils/formatDate";
 import axios from "axios";
 import NoteSkeleton from "./NoteSkeleton/NoteSkeleton";
-//@ts-ignore
-import Reply from "../../components/Reply/Reply.tsx";
-//@ts-ignore
-import PostCard from "../../components/PostCard/PostCard.tsx";
-//@ts-ignore
-import { getAllTags } from "../../utils/getTags.ts";
-//@ts-ignore
-import { getZapAmount } from "../../utils/zapFunctions.ts";
-//@ts-ignore
-import ZapTransfer from "../../components/ZapTransfer/ZapTransfer.tsx";
+import Reply from "../../components/Reply/Reply";
+import PostCard from "../../components/PostCard/PostCard";
+import { getAllTags } from "../../utils/getTags";
+import { getZapAmount } from "../../utils/zapFunctions";
+import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
 import ReactModal from "react-modal";
-//@ts-ignore
-import EmbedModal from "../../components/EmbedModal/EmbedModal.tsx";
+import EmbedModal from "../../components/EmbedModal/EmbedModal";
 import { profileType, statsType } from "../../types/types.js";
 
 const Note = () => {
@@ -124,7 +114,7 @@ const Note = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isBottom]);
 
-  function extractNostrStrings(inputString) {
+  function extractNostrStrings(inputString: string) {
     const nostrPattern = /nostr:[a-zA-Z0-9]+/;
     const matches = inputString.match(nostrPattern);
 
@@ -149,7 +139,7 @@ const Note = () => {
     if (links) {
       const pubkeys: string[] = links.map((link: string) => {
         if (link.startsWith("npub")) {
-          return nip19.decode(link).data;
+          return nip19.decode(link).data.toString();
         }
         return link;
       });
@@ -243,7 +233,7 @@ const Note = () => {
       const tagsE = note?.tags ? getAllTags(note.tags, "e") : [];
       const rootId = note?.tags && note.tags.find((r) => r[0] === "e");
       if (rootId) {
-        note.tags.map((n) => {
+        note?.tags.map((n) => {
           if (!rootId.includes("mention")) {
             return n;
           } else if (rootId.includes("root")) {
@@ -375,7 +365,7 @@ const Note = () => {
         const replies: NDKEvent[] = repliesArr.map((reply) => {
           const tagsE = getAllTags(reply.tags, "e");
 
-          const eTag = tagsE.find((r) => r[0] === "e");
+          const eTag = tagsE.find((r: NDKTag) => r[0] === "e");
           if (eTag && !eTag.includes("mention") && tagsE.length === 1) {
             return reply;
           } else if (eTag && eTag.includes("root")) {
@@ -400,7 +390,7 @@ const Note = () => {
     }
   };
 
-  const fetchZaps = async (eventId) => {
+  const fetchZaps = async (eventId: string) => {
     try {
       if (ndk instanceof NDK) {
         const zaps = Array.from(
@@ -512,7 +502,7 @@ const Note = () => {
       <EmbedModal
         isModal={isEmbedModal}
         setIsModal={setIsEmbedModal}
-        str={note}
+        str={note ? note : ""}
       />
       <ReactModal
         bodyOpenClassName={cl.modalBody}

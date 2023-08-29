@@ -1,12 +1,11 @@
 import cl from "./EmbedModal.module.css";
-import React, { useState } from "react";
+import { FC, useState } from "react";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import { X } from "react-bootstrap-icons";
 import ReactModal from "react-modal";
 import { Button } from "react-bootstrap";
-//@ts-ignore
-import { copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
+import { copyUrl } from "../../utils/copy-funtions/copyFuntions";
 
 type ModalType = {
   setIsModal: (a: boolean) => void;
@@ -14,7 +13,7 @@ type ModalType = {
   str: string;
 };
 
-const EmbedModal = ({ setIsModal, isModal, str }) => {
+const EmbedModal: FC<ModalType> = ({ setIsModal, isModal, str }) => {
   const closeModal = () => setIsModal(false);
   const [embedValue] = useState<string>(
     `<div id="nostr-embed-${str}"></div><script>  !(function () {    const n=document.createElement('script');n.type='text/javascript';n.async=!0;n.src='https://cdn.jsdelivr.net/gh/nostrband/nostr-embed@0.1.16/dist/nostr-embed.js';    n.onload=function () {      nostrEmbed.init(        '${str}',        '#nostr-embed-${str}',        '',        {showZaps: true, showFollowing: true}      );    };const a=document.getElementsByTagName('script')[0];a.parentNode.insertBefore(n, a);  })();</script>`

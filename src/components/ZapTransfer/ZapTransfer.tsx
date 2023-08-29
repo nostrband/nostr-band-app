@@ -4,17 +4,14 @@ import {
   LightningChargeFill,
 } from "react-bootstrap-icons";
 import cl from "./ZapTransfer.module.css";
-//@ts-ignore
-import { formatAMPM } from "../../utils/formatDate.ts";
+import { formatAMPM } from "../../utils/formatDate";
 import UserIcon from "../../assets/user.png";
-//@ts-ignore
-import MarkdownComponent from "../MarkdownComponent/MarkdownComponent.tsx";
+import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
 import { Link } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import Skeleton from "react-loading-skeleton";
 import { FC } from "react";
 import { profileType } from "../../types/types";
-import React from "react";
 
 type zapTypes = {
   sender: profileType;

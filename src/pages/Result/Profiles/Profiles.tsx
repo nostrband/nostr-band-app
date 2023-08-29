@@ -1,14 +1,10 @@
 import { useEffect, useState } from "react";
 import cl from "./Profiles.module.css";
 import NDK, { NDKEvent } from "@nostrband/ndk";
-//@ts-ignore
-import Search from "../../../components/Search/Search.tsx";
+import Search from "../../../components/Search/Search";
 import { useSearchParams } from "react-router-dom";
-//@ts-ignore
-import ProfileItem from "../../../components/ProfileItem/ProfileItem.tsx";
-//@ts-ignore
-import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
-import React from "react";
+import ProfileItem from "../../../components/ProfileItem/ProfileItem";
+import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 
 const Profiles = () => {
   const [searchParams] = useSearchParams();
@@ -82,7 +78,9 @@ const Profiles = () => {
   };
 
   useEffect(() => {
-    getProfiles(ndk, profilesIds);
+    if (ndk instanceof NDK) {
+      getProfiles(ndk, profilesIds);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limitProfiles]);
 
@@ -93,11 +91,11 @@ const Profiles = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("q")]);
 
-  function compareByKeys(a, b, ids) {
+  function compareByKeys(a: NDKEvent, b: NDKEvent, ids: string | any[]) {
     return ids.indexOf(a.id) - ids.indexOf(b.id);
   }
 
-  const getProfiles = async (ndk, ids) => {
+  const getProfiles = async (ndk: NDK, ids: string[]) => {
     if (ndk instanceof NDK) {
       setIsLoadingProfiles(true);
       const profiles = Array.from(
@@ -144,7 +142,7 @@ const Profiles = () => {
           "No profiles"
         )
       ) : (
-        <CardSkeleton cards={8} mode={""} />
+        <CardSkeleton cards={8} />
       )}
       {isLoadingProfiles && <p>Loading...</p>}
       <p>

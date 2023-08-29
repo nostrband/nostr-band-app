@@ -1,12 +1,9 @@
 import axios from "axios";
 import "./Video.module.css";
 import { FC, useEffect, useState } from "react";
-//@ts-ignore
-import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
-//@ts-ignore
-import PostCard from "../../../components/PostCard/PostCard.tsx";
+import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
+import PostCard from "../../../components/PostCard/PostCard";
 import { nostrApiType } from "../../../types/types";
-import React from "react";
 
 type videoType = {
   setIsLoading: (a: boolean) => void;
@@ -22,7 +19,7 @@ const Video: FC<videoType> = ({ setIsLoading }) => {
       );
       setVideos(data.videos);
     } catch (e) {
-      console.log(e?.response?.data?.error);
+      console.log(e);
     } finally {
       setIsLoading(false);
     }
@@ -58,7 +55,7 @@ const Video: FC<videoType> = ({ setIsLoading }) => {
           );
         })
       ) : (
-        <CardSkeleton cards={8} mode="posts" />
+        <CardSkeleton cards={8} />
       )}
     </>
   );

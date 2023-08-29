@@ -1,11 +1,8 @@
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
-//@ts-ignore
-import Footer from "./components/Footer/Footer.tsx";
-//@ts-ignore
-import Header from "./components/Header/Header.tsx";
-//@ts-ignore
-import { allRoutes } from "./routes.tsx";
+import Footer from "./components/Footer/Footer";
+import Header from "./components/Header/Header";
+import { allRoutes } from "./routes";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -16,13 +13,11 @@ import { Button } from "react-bootstrap";
 import { X } from "react-bootstrap-icons";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-//@ts-ignore
-import { userSlice } from "./store/reducers/UserSlice.ts";
+import { userSlice } from "./store/reducers/UserSlice";
 import NDK from "@nostrband/ndk";
-import React from "react";
 import { NostrProvider } from "nostr-react";
-//@ts-ignore
-import { useAppDispatch, useAppSelector } from "./hooks/redux.ts";
+import { useAppDispatch, useAppSelector } from "./hooks/redux";
+import Home from "./pages/Home/Home";
 
 const relayUrls = ["wss://relay.nostr.band"];
 
@@ -129,12 +124,14 @@ const App = () => {
             <Header onLogin={setIsModal} />
             <Routes>
               {allRoutes.map((route) => {
-                return (
+                return route ? (
                   <Route
                     key={route.path}
                     path={route.path}
                     element={<route.Component />}
                   />
+                ) : (
+                  <Route path={"/"} element={<Home />} />
                 );
               })}
             </Routes>

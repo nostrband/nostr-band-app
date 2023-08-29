@@ -1,5 +1,3 @@
-import React from "react";
-
 export const strWithLinks = (str: string) => {
   const urlRegex =
     /((?:http|ftp|https):\/\/(?:[\w+?.\w+])+(?:[a-zA-Z0-9~!@#$%^&*()_\-=+\\/?.:;',]*)?(?:[-A-Za-z0-9+&@#/%=~_|]))/i;

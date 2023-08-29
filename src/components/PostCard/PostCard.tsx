@@ -16,21 +16,16 @@ import {
   defineTypeLink,
   extractNostrStrings,
   replaceNostrLinks,
-  //@ts-ignore
-} from "../../utils/formatLink.tsx";
+} from "../../utils/formatLink";
 import { Button, Carousel, Modal } from "react-bootstrap";
-//@ts-ignore
-import { formatAMPM } from "../../utils/formatDate.ts";
-//@ts-ignore
-import MarkdownComponent from "../MarkdownComponent/MarkdownComponent.tsx";
+import { formatAMPM } from "../../utils/formatDate";
+import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
 import UserIcon from "../../assets/user.png";
 import { Link, useNavigate } from "react-router-dom";
 import { nip19 } from "nostr-tools";
-//@ts-ignore
-import { copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
+import { copyUrl } from "../../utils/copy-funtions/copyFuntions";
 import NDK, { NDKEvent } from "@nostrband/ndk";
 import { statsType } from "../../types/types";
-import React from "react";
 
 type postItemType = {
   name: string;
@@ -61,7 +56,7 @@ const PostItem: FC<postItemType> = ({
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [npubKey, setNpubKey] = useState("");
   const [nprofile, setNprofile] = useState("");
-  const [taggedProfiles, setTaggedProfiles] = useState<NDKEvent[] | string[]>(
+  const [taggedProfiles, setTaggedProfiles] = useState<(NDKEvent | string)[]>(
     []
   );
   const [content, setContent] = useState(about);
@@ -79,7 +74,7 @@ const PostItem: FC<postItemType> = ({
   if (content) {
     const links = extractNostrStrings(content);
     if (links) {
-      const pubkeys = links.map((link) => {
+      const pubkeys = links.map((link: string) => {
         if (link.startsWith("npub")) {
           return nip19.decode(link).data;
         }
@@ -95,8 +90,8 @@ const PostItem: FC<postItemType> = ({
 
   useEffect(() => {
     if (taggedProfiles) {
-      taggedProfiles.map((profile: NDKEvent | string) => {
-        if (profile instanceof Object) {
+      taggedProfiles.map((profile) => {
+        if (profile instanceof NDKEvent) {
           const profileContent = JSON.parse(profile.content);
           const npub = nip19.npubEncode(profile.pubkey);
           setContent(
@@ -165,7 +160,7 @@ const PostItem: FC<postItemType> = ({
     const links = collectLinksFromStr(about);
 
     contents = links
-      .map((link) => {
+      .map((link: string) => {
         const links: { type: string; url: string }[] = [];
         const obj = defineTypeLink(link);
         if (obj) {

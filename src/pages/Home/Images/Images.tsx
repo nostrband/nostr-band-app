@@ -22,7 +22,7 @@ const Images: FC<imagesTypes> = ({ setIsLoading }) => {
       );
       setImages(data.images);
     } catch (e) {
-      console.log(e?.response?.data?.error);
+      console.log(e);
     } finally {
       setIsLoading(false);
     }
@@ -58,7 +58,7 @@ const Images: FC<imagesTypes> = ({ setIsLoading }) => {
           );
         })
       ) : (
-        <CardSkeleton cards={8} mode="posts" />
+        <CardSkeleton cards={8} />
       )}
     </>
   );
