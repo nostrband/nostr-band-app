@@ -2,8 +2,7 @@ import { useLocation, useParams } from "react-router-dom";
 import cl from "./Profile.module.css";
 import NDK, { NDKEvent, NDKUserProfile } from "@nostrband/ndk";
 import { useEffect, useState } from "react";
-//@ts-ignore
-import Search from "../../components/Search/Search.tsx";
+import Search from "../../components/Search/Search";
 import {
   Key,
   TextCenter,
@@ -18,39 +17,27 @@ import {
   X,
 } from "react-bootstrap-icons";
 import axios from "axios";
-//@ts-ignore
-import { formatAMPM } from "../../utils/formatDate.ts";
+import { formatAMPM } from "../../utils/formatDate";
 import { Button } from "react-bootstrap";
 import Dropdown from "react-bootstrap/Dropdown";
-//@ts-ignore
-import MarkdownComponent from "../../components/MarkdownComponent/MarkdownComponent.tsx";
-//@ts-ignore
-import EventItem from "./EventItem/EventItem.tsx";
+import MarkdownComponent from "../../components/MarkdownComponent/MarkdownComponent";
+import EventItem from "./EventItem/EventItem";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-//@ts-ignore
-import ProfileSkeleton from "./ProfileSkeleton/ProfileSkeleton.tsx";
-//@ts-ignore
-import { copyLink, copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
+import ProfileSkeleton from "./ProfileSkeleton/ProfileSkeleton";
+import { copyLink, copyUrl } from "../../utils/copy-funtions/copyFuntions";
 import { nip19 } from "nostr-tools";
-//@ts-ignore
-import { getZapAmount } from "../../utils/zapFunctions.ts";
-//@ts-ignore
-import ZapTransfer from "../../components/ZapTransfer/ZapTransfer.tsx";
+import { getZapAmount } from "../../utils/zapFunctions";
+import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
 import UserIcon from "../../assets/user.png";
 import ReactModal from "react-modal";
-//@ts-ignore
-import EmbedModal from "../../components/EmbedModal/EmbedModal.tsx";
-//@ts-ignore
-import { userSlice } from "../../store/reducers/UserSlice.ts";
+import EmbedModal from "../../components/EmbedModal/EmbedModal";
+import { userSlice } from "../../store/reducers/UserSlice";
 import { toast } from "react-toastify";
-//@ts-ignore
-import { getAllTags } from "../../utils/getTags.ts";
+import { getAllTags } from "../../utils/getTags";
 import { useNostr, dateToUnix } from "nostr-react";
-//@ts-ignore
-import { useAppDispatch, useAppSelector } from "../../hooks/redux.ts";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { statsType } from "../../types/types";
-import React from "react";
 
 const Profile = () => {
   const store = useAppSelector((store) => store.userReducer);
@@ -62,7 +49,7 @@ const Profile = () => {
   const { router } = useParams();
   const npub = router;
   const [stats, setStats] = useState<statsType>({});
-  const [ndk, setNdk] = useState({});
+  const [ndk, setNdk] = useState<NDK>();
   const [isPostMoreButton, setIsPostMoreButton] = useState(false);
   const [isZapMoreButton, setIsZapMoreButton] = useState(false);
   const [isSentZapMoreButton, setIsSentZapMoreButton] = useState(false);
@@ -167,7 +154,7 @@ const Profile = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchUser = async (ndk) => {
+  const fetchUser = async (ndk: NDK) => {
     try {
       if (ndk instanceof NDK) {
         setIsZapLoading(true);
@@ -217,7 +204,7 @@ const Profile = () => {
     }
   };
 
-  const fetchPosts = async (pk, ndk) => {
+  const fetchPosts = async (pk: string, ndk: NDK) => {
     if (ndk instanceof NDK) {
       try {
         setIsZapLoading(true);
@@ -446,7 +433,7 @@ const Profile = () => {
   }, [limitSentZaps]);
 
   useEffect(() => {
-    if (tabKey === "posts") {
+    if (tabKey === "posts" && ndk instanceof NDK) {
       fetchPosts(pubkey, ndk);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -538,7 +525,7 @@ const Profile = () => {
       <EmbedModal
         isModal={isEmbedModal}
         setIsModal={setIsEmbedModal}
-        str={npub}
+        str={npub ? npub : ""}
       />
       <ReactModal
         bodyOpenClassName={cl.modalBody}
@@ -773,17 +760,19 @@ const Profile = () => {
                       return (
                         <EventItem
                           key={event.id}
-                          createdDate={event.created_at}
+                          createdDate={event.created_at ? event.created_at : 0}
                           about={event.content}
                           pubkey={event.pubkey}
                           eventId={event.id}
-                          picture={profile.image}
+                          picture={profile.image ? profile.image : ""}
                           name={
                             profile.displayName
                               ? profile.displayName
                               : profile.name
+                              ? profile.name
+                              : ""
                           }
-                          ndk={ndk}
+                          ndk={ndk && ndk}
                         />
                       );
                     })

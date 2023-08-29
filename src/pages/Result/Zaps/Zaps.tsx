@@ -1,14 +1,10 @@
 import { useState, useEffect } from "react";
 import NDK, { NDKEvent } from "@nostrband/ndk";
-//@ts-ignore
-import { getZapAmount } from "../../../utils/zapFunctions.ts";
+import { getZapAmount } from "../../../utils/zapFunctions";
 import { useSearchParams } from "react-router-dom";
-//@ts-ignore
-import ZapTransfer from "../../../components/ZapTransfer/ZapTransfer.tsx";
+import ZapTransfer from "../../../components/ZapTransfer/ZapTransfer";
 import cl from "./Zaps.module.css";
-//@ts-ignore
-import Search from "../../../components/Search/Search.tsx";
-import React from "react";
+import Search from "../../../components/Search/Search";
 
 const Zaps = () => {
   const [ndk, setNdk] = useState<NDK>();
@@ -48,7 +44,9 @@ const Zaps = () => {
   }, [isBottom]);
 
   useEffect(() => {
-    getZaps(ndk);
+    if (ndk instanceof NDK) {
+      getZaps(ndk);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limitZaps]);
 
@@ -71,12 +69,14 @@ const Zaps = () => {
   }, []);
 
   useEffect(() => {
-    getZaps(ndk);
-    fetchZapsCount(ndk);
+    if (ndk instanceof NDK) {
+      getZaps(ndk);
+      fetchZapsCount(ndk);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("q")]);
 
-  const fetchZapsCount = async (ndk) => {
+  const fetchZapsCount = async (ndk: NDK) => {
     if (ndk instanceof NDK) {
       const zapsCount = await ndk.fetchCount({
         kinds: [9735],
@@ -87,7 +87,7 @@ const Zaps = () => {
     }
   };
 
-  const getZaps = async (ndk) => {
+  const getZaps = async (ndk: NDK) => {
     if (ndk instanceof NDK) {
       try {
         setIsLoading(true);

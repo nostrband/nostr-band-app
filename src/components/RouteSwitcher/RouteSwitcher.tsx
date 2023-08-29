@@ -1,9 +1,6 @@
 import { useParams } from "react-router-dom";
-//@ts-ignore
-import Note from "../../pages/Note/Note.tsx";
-//@ts-ignore
-import Profile from "../../pages/Profile/Profile.tsx";
-import React from "react";
+import Note from "../../pages/Note/Note";
+import Profile from "../../pages/Profile/Profile";
 
 const RouteSwitcher = () => {
   const { router } = useParams();
@@ -13,6 +10,8 @@ const RouteSwitcher = () => {
     } else if (router.slice(0, 4) === "npub") {
       return <Profile />;
     }
+    return <div>Not Found</div>;
   }
+  return null;
 };
 export default RouteSwitcher;

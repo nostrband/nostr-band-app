@@ -1,7 +1,5 @@
-//@ts-ignore
-import RouteSwitcher from "./components/RouteSwitcher/RouteSwitcher.tsx";
-//@ts-ignore
-import Home from "./pages/Home/Home.tsx";
+import RouteSwitcher from "./components/RouteSwitcher/RouteSwitcher";
+import Home from "./pages/Home/Home";
 
 export const allRoutes = [
   {

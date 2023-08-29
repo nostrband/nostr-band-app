@@ -1,10 +1,7 @@
 import axios from "axios";
 import { FC, useEffect, useState } from "react";
-//@ts-ignore
-import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
-//@ts-ignore
-import PostCard from "../../../components/PostCard/PostCard.tsx";
-import React from "react";
+import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
+import PostCard from "../../../components/PostCard/PostCard";
 import { nostrApiType } from "../../../types/types.js";
 
 type audioTypes = {
@@ -22,7 +19,7 @@ const Audio: FC<audioTypes> = ({ setIsLoading }) => {
 
       setAudios(data.audios);
     } catch (e) {
-      console.log(e?.response?.data?.error);
+      console.log(e);
     } finally {
       setIsLoading(false);
     }
@@ -58,7 +55,7 @@ const Audio: FC<audioTypes> = ({ setIsLoading }) => {
           );
         })
       ) : (
-        <CardSkeleton cards={8} mode="posts" />
+        <CardSkeleton cards={8} />
       )}
     </>
   );

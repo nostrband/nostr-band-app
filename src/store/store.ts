@@ -3,8 +3,7 @@ import {
   configureStore,
   getDefaultMiddleware,
 } from "@reduxjs/toolkit";
-//@ts-ignore
-import userReducer from "./reducers/UserSlice.ts";
+import userReducer from "./reducers/UserSlice";
 
 const customizedMiddleware = getDefaultMiddleware({
   serializableCheck: false,

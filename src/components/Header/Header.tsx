@@ -5,11 +5,9 @@ import NavDropdown from "react-bootstrap/NavDropdown";
 import Form from "react-bootstrap/Form";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-//@ts-ignore
-import { userSlice } from "../../store/reducers/UserSlice.ts";
-import React, { FC } from "react";
-//@ts-ignore
-import { useAppSelector } from "../../hooks/redux.ts";
+import { userSlice } from "../../store/reducers/UserSlice";
+import { FC } from "react";
+import { useAppSelector } from "../../hooks/redux";
 
 type headerType = {
   onLogin: (a: boolean) => void;

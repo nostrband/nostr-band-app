@@ -1,10 +1,8 @@
 import "./People.css";
-import React, { useState, useEffect, FC } from "react";
+import { useState, useEffect, FC } from "react";
 import axios from "axios";
-//@ts-ignore
-import ProfileItem from "../../../components/ProfileItem/ProfileItem.tsx";
-//@ts-ignore
-import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
+import ProfileItem from "../../../components/ProfileItem/ProfileItem";
+import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 import { nostrPeopleType } from "../../../types/types";
 
 type peopleTypes = {
@@ -22,7 +20,7 @@ const People: FC<peopleTypes> = ({ setIsLoading }) => {
 
       setProfiles(data.profiles);
     } catch (e) {
-      console.error(e?.response?.data?.error);
+      console.error(e);
     } finally {
       setIsLoading(false);
     }
@@ -57,7 +55,7 @@ const People: FC<peopleTypes> = ({ setIsLoading }) => {
           );
         })
       ) : (
-        <CardSkeleton cards={8} mode={""} />
+        <CardSkeleton cards={8} />
       )}
     </>
   );

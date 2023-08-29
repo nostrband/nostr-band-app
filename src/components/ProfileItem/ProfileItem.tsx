@@ -14,18 +14,13 @@ import axios from "axios";
 import { nip19 } from "nostr-tools";
 import { Link } from "react-router-dom";
 import UserIcon from "../../assets/user.png";
-//@ts-ignore
-import { copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
-//@ts-ignore
-import { getAllTags } from "../../utils/getTags.ts";
-//@ts-ignore
-import { userSlice } from "../../store/reducers/UserSlice.ts";
+import { copyUrl } from "../../utils/copy-funtions/copyFuntions";
+import { getAllTags } from "../../utils/getTags";
+import { userSlice } from "../../store/reducers/UserSlice";
 import { toast } from "react-toastify";
 import { useNostr, dateToUnix } from "nostr-react";
-//@ts-ignore
-import { useAppDispatch, useAppSelector } from "../../hooks/redux.ts";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { statsType } from "../../types/types";
-import React from "react";
 
 type profileItemTypes = {
   img: string;

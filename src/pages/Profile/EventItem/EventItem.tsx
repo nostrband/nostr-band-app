@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, FC } from "react";
 import cl from "./EventItem.module.css";
 import Dropdown from "react-bootstrap/Dropdown";
 import axios from "axios";
@@ -16,20 +16,15 @@ import {
   defineTypeLink,
   extractNostrStrings,
   replaceNostrLinks,
-  //@ts-ignore
-} from "../../../utils/formatLink.tsx";
+} from "../../../utils/formatLink";
 import { Button, Carousel, Modal } from "react-bootstrap";
-//@ts-ignore
-import { formatAMPM } from "../../../utils/formatDate.ts";
-//@ts-ignore
-import MarkdownComponent from "../../../components/MarkdownComponent/MarkdownComponent.tsx";
+import { formatAMPM } from "../../../utils/formatDate";
+import MarkdownComponent from "../../../components/MarkdownComponent/MarkdownComponent";
 import UserIcon from "../../../assets/user.png";
 import { nip19 } from "nostr-tools";
-//@ts-ignore
-import { copyUrl } from "../../../utils/copy-funtions/copyFuntions.ts";
+import { copyUrl } from "../../../utils/copy-funtions/copyFuntions";
 import { useNavigate } from "react-router-dom";
 import NDK, { NDKEvent } from "@nostrband/ndk";
-import React from "react";
 import { statsType } from "../../../types/types";
 
 type eventItemTypes = {
@@ -39,10 +34,10 @@ type eventItemTypes = {
   pubkey: string;
   createdDate: number;
   eventId: string;
-  ndk: NDK;
+  ndk?: NDK;
 };
 
-const EventItem = ({
+const EventItem: FC<eventItemTypes> = ({
   name,
   picture,
   about,

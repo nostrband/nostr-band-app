@@ -3,17 +3,13 @@ import cl from "./Reply.module.css";
 import UserIcon from "../../assets/user.png";
 import { Link, useNavigate } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
-//@ts-ignore
-import MarkdownComponent from "../MarkdownComponent/MarkdownComponent.tsx";
+import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
 import axios from "axios";
 import { Chat, HandThumbsUp } from "react-bootstrap-icons";
-//@ts-ignore
-import { formatAMPM } from "../../utils/formatDate.ts";
+import { formatAMPM } from "../../utils/formatDate";
 import { nip19 } from "nostr-tools";
-//@ts-ignore
-import { copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
-//@ts-ignore
-import { profileType, statsType } from "../../types/types.ts";
+import { copyUrl } from "../../utils/copy-funtions/copyFuntions";
+import { profileType, statsType } from "../../types/types";
 import React from "react";
 
 type replyTypes = {
