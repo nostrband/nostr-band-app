@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
 import cl from "./Profiles.module.css";
-import NDK from "@nostrband/ndk";
+import NDK, { NDKEvent } from "@nostrband/ndk";
+//@ts-ignore
 import Search from "../../../components/Search/Search.tsx";
 import { useSearchParams } from "react-router-dom";
+//@ts-ignore
 import ProfileItem from "../../../components/ProfileItem/ProfileItem.tsx";
+//@ts-ignore
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
+import React from "react";
 
 const Profiles = () => {
   const [searchParams] = useSearchParams();
-  const [profiles, setProfiles] = useState([]);
+  const [profiles, setProfiles] = useState<NDKEvent[]>([]);
   const [profilesCount, setProfilesCount] = useState(0);
-  const [ndk, setNdk] = useState(null);
-  const [isLoadingProfiles, setIsLoadingProfiles] = useState();
-  const [profilesIds, setProfilesIds] = useState([]);
+  const [ndk, setNdk] = useState<NDK>();
+  const [isLoadingProfiles, setIsLoadingProfiles] = useState<boolean>(false);
+  const [profilesIds, setProfilesIds] = useState<string[]>([]);
   const [limitProfiles, setLimitProfiles] = useState(10);
   const [isBottom, setIsBottom] = useState(false);
 
@@ -58,20 +62,22 @@ const Profiles = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchProfilesIds = async (ndk) => {
+  const fetchProfilesIds = async (ndk: NDK) => {
     if (ndk instanceof NDK) {
       const profilesIds = await ndk.fetchTop({
         kinds: [0],
+        //@ts-ignore
         search: searchParams.get("q"),
         limit: 200,
       });
-      setProfilesIds(profilesIds.ids);
-      getProfiles(ndk, profilesIds.ids);
+      setProfilesIds(profilesIds?.ids ? profilesIds.ids : []);
+      getProfiles(ndk, profilesIds?.ids ? profilesIds.ids : []);
       const profilesCount = await ndk.fetchCount({
         kinds: [0],
+        //@ts-ignore
         search: searchParams.get("q"),
       });
-      setProfilesCount(profilesCount.count);
+      setProfilesCount(profilesCount?.count ? profilesCount.count : 0);
     }
   };
 
@@ -81,7 +87,9 @@ const Profiles = () => {
   }, [limitProfiles]);
 
   useEffect(() => {
-    fetchProfilesIds(ndk);
+    if (ndk instanceof NDK) {
+      fetchProfilesIds(ndk);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("q")]);
 
@@ -127,6 +135,7 @@ const Profiles = () => {
                   }
                   key={profile.id}
                   mail={profileContent.nip05}
+                  newFollowersCount={0}
                 />
               );
             })}
@@ -135,7 +144,7 @@ const Profiles = () => {
           "No profiles"
         )
       ) : (
-        <CardSkeleton cards={8} />
+        <CardSkeleton cards={8} mode={""} />
       )}
       {isLoadingProfiles && <p>Loading...</p>}
       <p>

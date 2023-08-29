@@ -1,20 +1,25 @@
 import { useEffect, useState } from "react";
 import cl from "./AllResults.module.css";
+//@ts-ignore
 import Search from "../../../components/Search/Search.tsx";
+//@ts-ignore
 import ProfileItem from "../../../components/ProfileItem/ProfileItem.tsx";
+//@ts-ignore
 import PostCard from "../../../components/PostCard/PostCard.tsx";
-import NDK from "@nostrband/ndk";
+import NDK, { NDKEvent } from "@nostrband/ndk";
 import { Link, useSearchParams } from "react-router-dom";
+//@ts-ignore
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
+import React from "react";
 
 const AllResults = () => {
   const [searchParams] = useSearchParams();
-  const [profiles, setProfiles] = useState([]);
-  const [profilesCount, setProfilesCount] = useState(0);
-  const [ndk, setNdk] = useState(null);
-  const [isLoadingProfiles, setIsLoadingProfiles] = useState();
-  const [posts, setPosts] = useState([]);
-  const [postsAuthors, setPostsAuthors] = useState([]);
+  const [profiles, setProfiles] = useState<NDKEvent[]>([]);
+  const [profilesCount, setProfilesCount] = useState<number>(0);
+  const [ndk, setNdk] = useState<NDK>();
+  const [isLoadingProfiles, setIsLoadingProfiles] = useState<boolean>(false);
+  const [posts, setPosts] = useState<NDKEvent[]>([]);
+  const [postsAuthors, setPostsAuthors] = useState<NDKEvent[]>([]);
   const [postsCount, setPostsCount] = useState(0);
 
   useEffect(() => {
@@ -27,28 +32,33 @@ const AllResults = () => {
   }, []);
 
   useEffect(() => {
-    getProfiles(ndk);
-    getPosts(ndk);
+    if (ndk instanceof NDK) {
+      getProfiles(ndk);
+      getPosts(ndk);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("q")]);
 
-  const getProfiles = async (ndk) => {
+  const getProfiles = async (ndk: NDK) => {
     if (ndk instanceof NDK) {
       setIsLoadingProfiles(true);
       const topProfilesIds = await ndk.fetchTop({
         kinds: [0],
+        //@ts-ignore
         search: searchParams.get("q"),
         limit: 3,
       });
       const topProfiles = Array.from(
+        //@ts-ignore
         await ndk.fetchEvents({ kinds: [0], ids: topProfilesIds.ids })
       );
       setProfiles(topProfiles);
       const profilesCount = await ndk.fetchCount({
         kinds: [0],
+        //@ts-ignore
         search: searchParams.get("q"),
       });
-      setProfilesCount(profilesCount.count);
+      setProfilesCount(profilesCount?.count ? profilesCount.count : 0);
       setIsLoadingProfiles(false);
     }
   };
@@ -59,6 +69,7 @@ const AllResults = () => {
         const posts = Array.from(
           await ndk.fetchEvents({
             kinds: [1],
+            //@ts-ignore
             search: searchParams.get("q"),
             limit: 10,
           })
@@ -71,9 +82,10 @@ const AllResults = () => {
         setPostsAuthors(postsAuthors);
         const postsCount = await ndk.fetchCount({
           kinds: [1],
+          //@ts-ignore
           search: searchParams.get("q"),
         });
-        setPostsCount(postsCount?.count);
+        setPostsCount(postsCount?.count ? postsCount.count : 0);
       }
     } catch (e) {
       console.log(e);
@@ -101,6 +113,7 @@ const AllResults = () => {
                   }
                   key={profile.id}
                   mail={profileContent.nip05}
+                  newFollowersCount={0}
                 />
               );
             })}
@@ -109,7 +122,7 @@ const AllResults = () => {
           "No profiles"
         )
       ) : (
-        <CardSkeleton cards={3} />
+        <CardSkeleton cards={3} mode={""} />
       )}
       {profilesCount >= 4 && (
         <Link to={`/?q=${searchParams.get("q")}&type=profiles`}>
@@ -139,7 +152,8 @@ const AllResults = () => {
                 about={post.content}
                 pubkey={post.pubkey}
                 eventId={post.id}
-                createdDate={post.created_at}
+                createdDate={post.created_at ? post.created_at : 0}
+                thread={""}
               />
             );
           })}

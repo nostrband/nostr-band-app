@@ -1,10 +1,13 @@
-import { useState, useEffect } from "react";
-import cl from "./Result.module.css";
 import { useSearchParams } from "react-router-dom";
-import Profiles from "./Profiles/Profiles";
-import AllResults from "./AllResults/AllResults";
-import Zaps from "./Zaps/Zaps";
-import Posts from "./Posts/Posts";
+//@ts-ignore
+import Profiles from "./Profiles/Profiles.tsx";
+//@ts-ignore
+import AllResults from "./AllResults/AllResults.tsx";
+//@ts-ignore
+import Zaps from "./Zaps/Zaps.tsx";
+//@ts-ignore
+import Posts from "./Posts/Posts.tsx";
+import React from "react";
 
 const Result = () => {
   const [searchParams] = useSearchParams();

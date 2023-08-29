@@ -14,7 +14,8 @@ import Images from "./Images/Images.tsx";
 import Video from "./Video/Video.tsx";
 //@ts-ignore
 import Audio from "./Audio/Audio.tsx";
-import Result from "../Result/Result";
+//@ts-ignore
+import Result from "../Result/Result.tsx";
 import React from "react";
 
 const Home = () => {
