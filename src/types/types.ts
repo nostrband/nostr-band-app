@@ -1,4 +1,6 @@
-export type tagType = Array<[string, string]> | [];
+import { NDKTag } from "@nostrband/ndk";
+
+export type tagType = NDKTag[];
 export type ndkEventType = {
   content?: string;
   created_at?: number;

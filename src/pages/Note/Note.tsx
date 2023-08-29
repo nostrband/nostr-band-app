@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
+//@ts-ignore
 import Search from "../../components/Search/Search.tsx";
 import cl from "./Note.module.css";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
-import NDK from "@nostrband/ndk";
+import NDK, { NDKEvent } from "@nostrband/ndk";
 import UserIcon from "../../assets/user.png";
 import {
   ArrowRepeat,
@@ -18,52 +19,64 @@ import {
   LightningFill,
   X,
 } from "react-bootstrap-icons";
+//@ts-ignore
 import { copyLink, copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
 import { Button, Dropdown, Tab, Tabs } from "react-bootstrap";
+//@ts-ignore
 import MarkdownComponent from "../../components/MarkdownComponent/MarkdownComponent.tsx";
+//@ts-ignore
 import { formatAMPM } from "../../utils/formatDate.ts";
 import axios from "axios";
 import NoteSkeleton from "./NoteSkeleton/NoteSkeleton";
+//@ts-ignore
 import Reply from "../../components/Reply/Reply.tsx";
+//@ts-ignore
 import PostCard from "../../components/PostCard/PostCard.tsx";
+//@ts-ignore
 import { getAllTags } from "../../utils/getTags.ts";
+//@ts-ignore
 import { getZapAmount } from "../../utils/zapFunctions.ts";
+//@ts-ignore
 import ZapTransfer from "../../components/ZapTransfer/ZapTransfer.tsx";
 import ReactModal from "react-modal";
+//@ts-ignore
 import EmbedModal from "../../components/EmbedModal/EmbedModal.tsx";
+import { profileType, statsType } from "../../types/types.js";
 
 const Note = () => {
-  const [event, setEvent] = useState([]);
+  const [event, setEvent] = useState<NDKEvent | null>(null);
   const [tabKey, setTabKey] = useState("replies");
   const [isLoading, setIsLoading] = useState(false);
-  const [ndk, setNdk] = useState({});
+  const [ndk, setNdk] = useState<NDK>();
   const [pubkey, setPubkey] = useState("");
   const [npubKey, setNpubKey] = useState("");
   const [nprofile, setNprofile] = useState("");
   const [nnadr, setNnadr] = useState("");
-  const [author, setAuthor] = useState([]);
+  const [author, setAuthor] = useState<profileType>({});
   const [imgError, setImgError] = useState(false);
-  const [createdTime, setCreatedTime] = useState("");
-  const [repliesCount, setRepliesCount] = useState("");
-  const [stats, setStats] = useState([]);
-  const [authors, setAuthors] = useState([]);
-  const [replies, setReplies] = useState([]);
-  const [rootPost, setRootPost] = useState(null);
-  const [rootPostAuthor, setRootPostAuthor] = useState(null);
-  const [threadPost, setThreadPost] = useState(null);
-  const [threadPostAuthor, setThreadPostAuthor] = useState(null);
+  const [createdTime, setCreatedTime] = useState(0);
+  const [repliesCount, setRepliesCount] = useState(0);
+  const [stats, setStats] = useState<statsType>({});
+  const [authors, setAuthors] = useState<NDKEvent[]>([]);
+  const [replies, setReplies] = useState<NDKEvent[]>([]);
+  const [rootPost, setRootPost] = useState<NDKEvent | null>(null);
+  const [rootPostAuthor, setRootPostAuthor] = useState<profileType>();
+  const [threadPost, setThreadPost] = useState<NDKEvent | null>(null);
+  const [threadPostAuthor, setThreadPostAuthor] = useState<profileType>();
   const [limitReplies, setLimitReplies] = useState(100);
   const [isBottom, setIsBottom] = useState(false);
-  const [receivedZaps, setReceivedZaps] = useState([]);
-  const [amountReceivedZaps, setAmountReceivedZaps] = useState([]);
-  const [sentAuthors, setSentAuthors] = useState([]);
-  const [createdTimes, setCreatedTimes] = useState([]);
-  const [sendersComments, setSendersComments] = useState([]);
-  const [zappedPosts, setZappedPosts] = useState([]);
-  const [providers, setProviders] = useState([]);
+  const [receivedZaps, setReceivedZaps] = useState<NDKEvent[]>([]);
+  const [amountReceivedZaps, setAmountReceivedZaps] = useState<number[]>([]);
+  const [sentAuthors, setSentAuthors] = useState<NDKEvent[]>([]);
+  const [createdTimes, setCreatedTimes] = useState<number[]>([]);
+  const [sendersComments, setSendersComments] = useState<string[]>([]);
+  const [zappedPosts, setZappedPosts] = useState<NDKEvent[]>([]);
+  const [providers, setProviders] = useState<NDKEvent[]>([]);
   const [limitZaps, setLimitZaps] = useState(10);
-  const [countOfZaps, setCountOfZaps] = useState("");
-  const [taggedProfiles, setTaggedProfiles] = useState([]);
+  const [countOfZaps, setCountOfZaps] = useState(0);
+  const [taggedProfiles, setTaggedProfiles] = useState<(NDKEvent | string)[]>(
+    []
+  );
   const [content, setContent] = useState("");
   const [isModal, setIsModal] = useState(false);
   const [modalContent, setModalContent] = useState("");
@@ -104,7 +117,7 @@ const Note = () => {
         }
       } else if (tabKey === "zaps") {
         if (countOfZaps - receivedZaps.length > 0) {
-          getMoreZaps(pubkey);
+          getMoreZaps();
         }
       }
     }
@@ -122,17 +135,19 @@ const Note = () => {
     }
   }
 
-  const fetchProfiles = async (pubkeys) => {
-    const profiles = Array.from(
-      await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
-    );
-    setTaggedProfiles(profiles.length ? profiles : pubkeys);
+  const fetchProfiles = async (pubkeys: string[]) => {
+    if (ndk instanceof NDK) {
+      const profiles = Array.from(
+        await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
+      );
+      setTaggedProfiles(profiles.length ? profiles : pubkeys);
+    }
   };
 
   if (content) {
     const links = extractNostrStrings(content);
     if (links) {
-      const pubkeys = links.map((link) => {
+      const pubkeys: string[] = links.map((link: string) => {
         if (link.startsWith("npub")) {
           return nip19.decode(link).data;
         }
@@ -143,7 +158,11 @@ const Note = () => {
       }
     }
   }
-  function replaceNostrLinks(inputText, replacementText, pattern) {
+  function replaceNostrLinks(
+    inputText: string,
+    replacementText: string,
+    pattern: string
+  ) {
     const nostrPattern = pattern;
     return inputText
       .toString()
@@ -208,7 +227,7 @@ const Note = () => {
 
   const { router } = useParams();
   const note = router;
-  const noteId = nip19.decode(note).data;
+  const noteId = note ? nip19.decode(note).data.toString() : "";
 
   const fetchNote = async () => {
     try {
@@ -218,10 +237,11 @@ const Note = () => {
       const ndk = new NDK({ explicitRelayUrls: ["wss://relay.nostr.band"] });
       ndk.connect();
       setNdk(ndk);
+      //@ts-ignore
       const note = await ndk.fetchEvent({ ids: [noteId] });
 
-      const tagsE = getAllTags(note.tags, "e");
-      const rootId = note.tags.find((r) => r[0] === "e");
+      const tagsE = note?.tags ? getAllTags(note.tags, "e") : [];
+      const rootId = note?.tags && note.tags.find((r) => r[0] === "e");
       if (rootId) {
         note.tags.map((n) => {
           if (!rootId.includes("mention")) {
@@ -231,10 +251,12 @@ const Note = () => {
           }
           return "";
         });
+        //@ts-ignore
         const rootPost = await ndk.fetchEvent({ ids: [rootId[1]] });
+        //@ts-ignore
         const rootPostAuthor = await ndk.fetchEvent({
           kinds: [0],
-          authors: [rootPost.pubkey],
+          authors: rootPost ? [rootPost.pubkey] : [],
         });
         setRootPost(rootPost);
         const authorContent = rootPostAuthor
@@ -247,15 +269,16 @@ const Note = () => {
         for (const e of tagsE) {
           if (e.includes("reply")) {
             const threadId = e[1];
+            //@ts-ignore
             const threadPost = await ndk.fetchEvent({ ids: [threadId] });
+            //@ts-ignore
             const threadPostAuthor = await ndk.fetchEvent({
               kinds: [0],
-              authors: [threadPost.pubkey],
+              authors: threadPost ? [threadPost.pubkey] : [],
             });
             const authorContent = threadPostAuthor
               ? JSON.parse(threadPostAuthor.content)
               : {};
-            console.log(authorContent);
             setThreadPost(threadPost);
             setThreadPostAuthor(authorContent);
           }
@@ -263,26 +286,28 @@ const Note = () => {
       }
 
       setEvent(note);
-      setContent(note ? note.content : {});
+      setContent(note ? note.content : "");
+      //@ts-ignore
       const author = await ndk.fetchEvent({
         kinds: [0],
-        authors: [note.pubkey],
+        authors: note ? [note.pubkey] : [],
       });
-      console.log(author);
-      setAuthor(JSON.parse(author ? author.content : {}));
-      setPubkey(author.pubkey);
-      setCreatedTime(note.created_at);
-      const npub = nip19.npubEncode(note.pubkey);
-      const nprofile = nip19.nprofileEncode({ pubkey: note.pubkey });
+      setAuthor(author?.content ? JSON.parse(author.content) : {});
+      setPubkey(author?.pubkey ? author.pubkey : "");
+      setCreatedTime(note?.created_at ? note.created_at : 0);
+      const npub = note?.pubkey ? nip19.npubEncode(note.pubkey) : "";
+      const nprofile = note?.pubkey
+        ? nip19.nprofileEncode({ pubkey: note.pubkey })
+        : "";
       setContentJson(
         JSON.stringify(
           {
-            pubkey: author.pubkey,
+            pubkey: author?.pubkey ? author.pubkey : "",
             content: note ? note.content : {},
-            id: note.id,
-            created_at: note.created_at,
+            id: note?.id ? note.id : "",
+            created_at: note?.created_at ? note.created_at : 0,
             kind: "1",
-            tags: note.tags,
+            tags: note?.tags ? note.tags : [],
           },
           null,
           2
@@ -293,7 +318,7 @@ const Note = () => {
       setNnadr(
         nip19.naddrEncode({
           kind: 3,
-          pubkey: note.pubkey,
+          pubkey: note?.pubkey ? note.pubkey : "",
           identifier: "",
           relays: ["wss://relay.nostr.band"],
         })
@@ -335,7 +360,7 @@ const Note = () => {
     }
   };
 
-  const fetchReplies = async (ndk) => {
+  const fetchReplies = async (ndk?: NDK | {}) => {
     if (ndk instanceof NDK) {
       try {
         const repliesArr = Array.from(
@@ -347,21 +372,19 @@ const Note = () => {
         );
 
         const authorPks = repliesArr.map((author) => author.pubkey);
-        const replies = repliesArr
-          .map((reply) => {
-            const tagsE = getAllTags(reply.tags, "e");
+        const replies: NDKEvent[] = repliesArr.map((reply) => {
+          const tagsE = getAllTags(reply.tags, "e");
 
-            const eTag = tagsE.find((r) => r[0] === "e");
-            if (!eTag.includes("mention") && tagsE.length === 1) {
-              return reply;
-            } else if (eTag.includes("root")) {
-              return reply;
-            } else if (eTag.length <= 3) {
-              return reply;
-            }
-            return "";
-          })
-          .sort((a, b) => a.created_at - b.created_at);
+          const eTag = tagsE.find((r) => r[0] === "e");
+          if (eTag && !eTag.includes("mention") && tagsE.length === 1) {
+            return reply;
+          } else if (eTag && eTag.includes("root")) {
+            return reply;
+          } else if (eTag && eTag.length <= 3) {
+            return reply;
+          }
+          return reply;
+        });
         setReplies(replies);
         const authors = Array.from(
           await ndk.fetchEvents({
@@ -379,73 +402,75 @@ const Note = () => {
 
   const fetchZaps = async (eventId) => {
     try {
-      const zaps = Array.from(
-        await ndk.fetchEvents({
-          kinds: [9735],
-          "#e": [eventId],
-          limit: limitZaps,
-        })
-      );
-      setReceivedZaps(zaps);
+      if (ndk instanceof NDK) {
+        const zaps = Array.from(
+          await ndk.fetchEvents({
+            kinds: [9735],
+            "#e": [eventId],
+            limit: limitZaps,
+          })
+        );
+        setReceivedZaps(zaps);
 
-      const providersPubkyes = zaps.map((zap) => zap.pubkey);
-      const providers = Array.from(
-        await ndk.fetchEvents({
-          kinds: [0],
-          authors: providersPubkyes,
-          limit: limitZaps,
-        })
-      );
-      setProviders(providers);
+        const providersPubkyes = zaps.map((zap) => zap.pubkey);
+        const providers = Array.from(
+          await ndk.fetchEvents({
+            kinds: [0],
+            authors: providersPubkyes,
+            limit: limitZaps,
+          })
+        );
+        setProviders(providers);
 
-      const zapsAmount = zaps.map((zap) => {
-        return getZapAmount(zap);
-      });
-      setAmountReceivedZaps(zapsAmount);
+        const zapsAmount = zaps.map((zap) => {
+          return getZapAmount(zap);
+        });
+        setAmountReceivedZaps(zapsAmount);
 
-      const postsIds = zaps.map((zap) => {
-        return zap.tags.find((item) => item[0] === "e")
-          ? zap.tags.find((item) => item[0] === "e")[1]
-          : "";
-      });
-      const zappedPosts = Array.from(
-        await ndk.fetchEvents({ kinds: [1], ids: postsIds, limit: limitZaps })
-      );
-      setZappedPosts(zappedPosts);
+        const postsIds = zaps.map((zap) => {
+          return zap.tags.find((item) => item[0] === "e")
+            ? zap.tags.find((item) => item[0] === "e")![1]
+            : "";
+        });
+        const zappedPosts = Array.from(
+          await ndk.fetchEvents({ kinds: [1], ids: postsIds, limit: limitZaps })
+        );
+        setZappedPosts(zappedPosts);
 
-      const sendersPubkeys = zaps.map((zap) => {
-        const cleanJSON = zap.tags
-          .find((item) => item[0] === "description")[1]
-          .replace(/[^\x20-\x7E]/g, "");
-        return JSON.parse(cleanJSON).pubkey;
-      });
-      // console.log(sendersPubkeys);
+        const sendersPubkeys = zaps.map((zap) => {
+          const cleanJSON = zap.tags
+            .find((item) => item[0] === "description")![1]
+            .replace(/[^\x20-\x7E]/g, "");
+          return JSON.parse(cleanJSON).pubkey;
+        });
+        // console.log(sendersPubkeys);
 
-      const sendersComments = zaps.map((zap) => {
-        const cleanJSON = zap.tags
-          .find((item) => item[0] === "description")[1]
-          .replace(/[^\x20-\x7E]/g, "");
-        return JSON.parse(cleanJSON).content;
-      });
-      setSendersComments(sendersComments);
+        const sendersComments: string[] = zaps.map((zap) => {
+          const cleanJSON = zap.tags
+            .find((item) => item[0] === "description")![1]
+            .replace(/[^\x20-\x7E]/g, "");
+          return JSON.parse(cleanJSON).content;
+        });
+        setSendersComments(sendersComments);
 
-      const createdTimes = zaps.map((zap) => {
-        return zap.created_at;
-      });
-      setCreatedTimes(createdTimes);
+        const createdTimes = zaps.map((zap) => {
+          return zap.created_at ? zap.created_at : 0;
+        });
+        setCreatedTimes(createdTimes);
 
-      const sendersArr = Array.from(
-        await ndk.fetchEvents({
-          kinds: [0],
-          authors: sendersPubkeys,
-          limit: limitZaps,
-        })
-      );
-      // console.log(sendersArr);
-      const senders = sendersArr.map((sender) => {
-        return sender;
-      });
-      setSentAuthors(senders);
+        const sendersArr = Array.from(
+          await ndk.fetchEvents({
+            kinds: [0],
+            authors: sendersPubkeys,
+            limit: limitZaps,
+          })
+        );
+        // console.log(sendersArr);
+        const senders = sendersArr.map((sender) => {
+          return sender;
+        });
+        setSentAuthors(senders);
+      }
     } catch (e) {
       console.log(e);
     }
@@ -465,7 +490,7 @@ const Note = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tabKey]);
 
-  const sats = stats?.zaps?.msats / 1000;
+  const sats = stats?.zaps?.msats ? stats?.zaps?.msats / 1000 : null;
 
   const closeModal = () => {
     setIsModal(false);
@@ -476,7 +501,8 @@ const Note = () => {
     d.setAttribute("data-npub", npubKey);
     d.setAttribute("data-note-id", noteId);
     d.setAttribute("data-relays", "wss://relay.nostr.band");
-    window.nostrZap.initTarget(d);
+    //@ts-ignore
+    window!.nostrZap!.initTarget(d)!;
     d.click();
     d.remove();
   };
@@ -529,33 +555,40 @@ const Note = () => {
             rootPostAuthor.display_name
               ? rootPostAuthor.display_name
               : rootPostAuthor.name
+              ? rootPostAuthor.name
+              : ""
           }
-          picture={rootPostAuthor.picture}
+          picture={rootPostAuthor.picture ? rootPostAuthor.picture : ""}
           eventId={rootPost.id}
           about={rootPost.content}
           pubkey={rootPost.pubkey}
-          createdDate={rootPost.created_at}
+          createdDate={rootPost.created_at ? rootPost.created_at : 0}
           ndk={ndk}
+          thread={""}
         />
       ) : (
         ""
       )}
-      {threadPost && threadPostAuthor ? (
+      {threadPost && threadPostAuthor && rootPostAuthor ? (
         <PostCard
           name={
             threadPostAuthor.display_name
               ? threadPostAuthor.display_name
               : threadPostAuthor.name
+              ? threadPostAuthor.name
+              : ""
           }
-          picture={threadPostAuthor.picture}
+          picture={threadPostAuthor.picture ? threadPostAuthor.picture : ""}
           eventId={threadPost.id}
           about={threadPost.content}
           pubkey={threadPost.pubkey}
-          createdDate={threadPost.created_at}
+          createdDate={threadPost.created_at ? threadPost.created_at : 0}
           thread={
             rootPostAuthor.display_name
               ? rootPostAuthor.display_name
               : rootPostAuthor.name
+              ? rootPostAuthor.name
+              : ""
           }
         />
       ) : (
@@ -571,14 +604,14 @@ const Note = () => {
                   ? threadPostAuthor.display_name
                     ? threadPostAuthor.display_name
                     : threadPostAuthor.name
-                  : rootPostAuthor.display_name
-                  ? rootPostAuthor.display_name
-                  : rootPostAuthor.name}
+                  : rootPostAuthor?.display_name
+                  ? rootPostAuthor?.display_name
+                  : rootPostAuthor?.name}
               </p>
             )}
             <div className={cl.noteAuthor}>
               <div className={cl.noteAuthorAvatar}>
-                {!imgError ? (
+                {!imgError && author ? (
                   author.picture ? (
                     <img
                       src={author.picture}
@@ -600,9 +633,11 @@ const Note = () => {
                   />
                 )}
               </div>
-              <Link className={cl.noteNameLink}>
-                {author.display_name ? author.display_name : author.name}
-              </Link>
+              {author && (
+                <Link className={cl.noteNameLink} to={""}>
+                  {author.display_name ? author.display_name : author.name}
+                </Link>
+              )}
               <Dropdown id="profile-dropdown" className="profile-dropdown">
                 <Dropdown.Toggle
                   size="sm"
@@ -628,13 +663,13 @@ const Note = () => {
               </Dropdown>
             </div>
             <div className={cl.noteAbout}>
-              <MarkdownComponent content={content} mode="post" ndk={ndk} />
+              <MarkdownComponent content={content} mode="post" />
             </div>
             <div className={cl.noteCreated}>
               <span>{formatAMPM(createdTime * 1000)}</span>
             </div>
             <div className={cl.postStats}>
-              {stats?.zaps?.msats && (
+              {sats && (
                 <div className={cl.postState}>
                   <Lightning />
                   <span>
@@ -739,7 +774,7 @@ const Note = () => {
           <div className={cl.userEvents}>
             <Tabs
               activeKey={tabKey}
-              onSelect={(k) => setTabKey(k)}
+              onSelect={(k) => setTabKey(k ? k : "")}
               defaultActiveKey="profile"
               id="justify-tab-example"
               className={`mb-3 ${cl.tab}`}
@@ -766,9 +801,12 @@ const Note = () => {
                         <Reply
                           key={index}
                           author={author}
-                          content={reply.content}
-                          eventId={reply.id}
-                          createdDateAt={reply.created_at}
+                          content={reply?.content ? reply.content : ""}
+                          eventId={reply?.id ? reply.id : ""}
+                          createdDateAt={
+                            reply.created_at ? reply.created_at : 0
+                          }
+                          mode={""}
                         />
                       ) : (
                         ""
@@ -789,7 +827,7 @@ const Note = () => {
                 {receivedZaps.length && createdTimes.length
                   ? receivedZaps.map((rzap, index) => {
                       const cleanJSON = rzap.tags
-                        .find((item) => item[0] === "description")[1]
+                        .find((item) => item[0] === "description")![1]
                         .replace(/[^\x20-\x7E]/g, "");
                       const pk = JSON.parse(cleanJSON).pubkey;
                       const sender = sentAuthors.find((item) => {
@@ -801,7 +839,7 @@ const Note = () => {
 
                       const zappedPost = zappedPosts.find((item) => {
                         const e = rzap.tags.find((item) => item[0] === "e")
-                          ? rzap.tags.find((item) => item[0] === "e")[1]
+                          ? rzap.tags.find((item) => item[0] === "e")![1]
                           : "";
                         return item.id === e;
                       });
@@ -822,6 +860,7 @@ const Note = () => {
                           provider={provider}
                           eventId={zappedPost ? zappedPost?.id : ""}
                           senderPubkey={pk}
+                          mode={""}
                         />
                       );
                     })

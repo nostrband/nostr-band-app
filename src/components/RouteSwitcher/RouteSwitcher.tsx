@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
-import Note from "../../pages/Note/Note";
+//@ts-ignore
+import Note from "../../pages/Note/Note.tsx";
 import Profile from "../../pages/Profile/Profile";
 import React from "react";
 
