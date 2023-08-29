@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 import cl from "./ProfileSkeleton.module.css";
 import Skeleton from "react-loading-skeleton";
 

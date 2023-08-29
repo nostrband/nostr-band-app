@@ -1,6 +1,6 @@
 import { useLocation, useParams } from "react-router-dom";
 import cl from "./Profile.module.css";
-import NDK, { NDKEvent, NDKNip07Signer } from "@nostrband/ndk";
+import NDK from "@nostrband/ndk";
 import { useEffect, useState } from "react";
 import Search from "../../components/Search/Search.tsx";
 import {
@@ -21,10 +21,10 @@ import { formatAMPM } from "../../utils/formatDate.ts";
 import { Button } from "react-bootstrap";
 import Dropdown from "react-bootstrap/Dropdown";
 import MarkdownComponent from "../../components/MarkdownComponent/MarkdownComponent.tsx";
-import EventItem from "./EventItem/EventItem";
+import EventItem from "./EventItem/EventItem.tsx";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import ProfileSkeleton from "./ProfileSkeleton/ProfileSkeleton";
+import ProfileSkeleton from "./ProfileSkeleton/ProfileSkeleton.tsx";
 import { copyLink, copyUrl } from "../../utils/copy-funtions/copyFuntions.ts";
 import { nip19 } from "nostr-tools";
 import { getZapAmount } from "../../utils/zapFunctions.ts";
