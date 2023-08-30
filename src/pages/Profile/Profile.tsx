@@ -201,16 +201,15 @@ const Profile = () => {
           })
         );
 
-        //@ts-ignore
         const lists = Array.from(
           await ndk.fetchEvents({
+            //@ts-ignore
             kinds: [30000],
-            authors: [localStorage.getItem("login")],
+            authors: [localStorage.getItem("login")!],
           })
         );
 
         const allTags = lists.map((list) => list.tags);
-        console.log(allTags);
         setAllTags(allTags);
 
         setIsZapLoading(false);
@@ -685,7 +684,9 @@ const Profile = () => {
               </Button>
               <Dropdown>
                 <Dropdown.Toggle
-                  variant={`${allTags ? "outline-success" : "outline-success"}`}
+                  variant={`${
+                    allTags.length > 0 ? "outline-success" : "outline-secondary"
+                  }`}
                   style={{ alignItems: "center" }}
                 >
                   List
@@ -693,6 +694,7 @@ const Profile = () => {
 
                 <Dropdown.Menu>
                   {allTags &&
+                    store.isAuth &&
                     allTags.map((tags, index) => {
                       const listLabel = getAllTags(tags, "name").flat();
                       const pksOfList = getAllTags(tags, "p");
