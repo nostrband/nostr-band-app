@@ -1,6 +1,6 @@
 import { useLocation, useParams } from "react-router-dom";
 import cl from "./Profile.module.css";
-import NDK, { NDKEvent, NDKUserProfile } from "@nostrband/ndk";
+import NDK, { NDKEvent, NDKTag, NDKUserProfile } from "@nostrband/ndk";
 import { useEffect, useState } from "react";
 import Search from "../../components/Search/Search";
 import {
@@ -15,6 +15,7 @@ import {
   ChatQuote,
   LightningFill,
   X,
+  Check,
 } from "react-bootstrap-icons";
 import axios from "axios";
 import { formatAMPM } from "../../utils/formatDate";
@@ -38,6 +39,7 @@ import { getAllTags } from "../../utils/getTags";
 import { useNostr, dateToUnix } from "nostr-react";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { statsType } from "../../types/types";
+import { log } from "console";
 
 const Profile = () => {
   const store = useAppSelector((store) => store.userReducer);
@@ -84,6 +86,7 @@ const Profile = () => {
   const [profileJson, setProfileJson] = useState("");
   const [contactJson, setContactJson] = useState("");
   const [isEmbedModal, setIsEmbedModal] = useState(false);
+  const [allTags, setAllTags] = useState<NDKTag[][]>([]);
   const location = useLocation();
   const { setContacts } = userSlice.actions;
 
@@ -197,6 +200,19 @@ const Profile = () => {
             relays: ["wss://relay.nostr.band"],
           })
         );
+
+        //@ts-ignore
+        const lists = Array.from(
+          await ndk.fetchEvents({
+            kinds: [30000],
+            authors: [localStorage.getItem("login")],
+          })
+        );
+
+        const allTags = lists.map((list) => list.tags);
+        console.log(allTags);
+        setAllTags(allTags);
+
         setIsZapLoading(false);
       }
     } catch (e) {
@@ -667,9 +683,40 @@ const Profile = () => {
                 <PersonPlus />{" "}
                 {followedPubkeys.includes(pubkey) ? "Followed" : "Follow"}
               </Button>
-              <Button variant="outline-secondary">
-                <BookmarkPlus /> List
-              </Button>
+              <Dropdown>
+                <Dropdown.Toggle
+                  variant={`${allTags ? "outline-success" : "outline-success"}`}
+                  style={{ alignItems: "center" }}
+                >
+                  List
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu>
+                  {allTags &&
+                    allTags.map((tags, index) => {
+                      const listLabel = getAllTags(tags, "name").flat();
+                      const pksOfList = getAllTags(tags, "p");
+
+                      return (
+                        <Dropdown.Item
+                          key={index}
+                          target="_blanc"
+                          href={`https://nostrapp.link/#${npub}?select=true`}
+                        >
+                          <Check /> {listLabel[1]}{" "}
+                          <strong>{pksOfList.length}</strong>
+                        </Dropdown.Item>
+                      );
+                    })}
+                  <Dropdown.Divider />
+                  <Dropdown.Item
+                    target="_blanc"
+                    href={`https://nostrapp.link/#${npub}?select=true`}
+                  >
+                    New List
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
               <Dropdown>
                 <Dropdown.Toggle
                   variant="outline-secondary"
