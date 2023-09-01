@@ -7,7 +7,6 @@ import {
   Key,
   TextCenter,
   BoxArrowUpRight,
-  BookmarkPlus,
   PersonPlus,
   Share,
   FileEarmarkPlus,
@@ -39,7 +38,7 @@ import { getAllTags } from "../../utils/getTags";
 import { useNostr, dateToUnix } from "nostr-react";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { statsType } from "../../types/types";
-import { log } from "console";
+import AddListModal from "../../components/AddListModal/AddListModal";
 
 const Profile = () => {
   const store = useAppSelector((store) => store.userReducer);
@@ -86,7 +85,9 @@ const Profile = () => {
   const [profileJson, setProfileJson] = useState("");
   const [contactJson, setContactJson] = useState("");
   const [isEmbedModal, setIsEmbedModal] = useState(false);
-  const [allTags, setAllTags] = useState<NDKTag[][]>([]);
+  const [isAddListModal, setIsAddListModal] = useState(false);
+  const allTags = store.lists;
+
   const location = useLocation();
   const { setContacts } = userSlice.actions;
 
@@ -200,17 +201,6 @@ const Profile = () => {
             relays: ["wss://relay.nostr.band"],
           })
         );
-
-        const lists = Array.from(
-          await ndk.fetchEvents({
-            //@ts-ignore
-            kinds: [30000],
-            authors: [localStorage.getItem("login")!],
-          })
-        );
-
-        const allTags = lists.map((list) => list.tags);
-        setAllTags(allTags);
 
         setIsZapLoading(false);
       }
@@ -537,6 +527,11 @@ const Profile = () => {
 
   return (
     <div className={cl.profileContainer}>
+      <AddListModal
+        isModal={isAddListModal}
+        setIsModal={setIsAddListModal}
+        selectedProfile={profile}
+      />
       <EmbedModal
         isModal={isEmbedModal}
         setIsModal={setIsEmbedModal}
@@ -711,10 +706,7 @@ const Profile = () => {
                       );
                     })}
                   <Dropdown.Divider />
-                  <Dropdown.Item
-                    target="_blanc"
-                    href={`https://nostrapp.link/#${npub}?select=true`}
-                  >
+                  <Dropdown.Item onClick={() => setIsAddListModal(true)}>
                     New List
                   </Dropdown.Item>
                 </Dropdown.Menu>
