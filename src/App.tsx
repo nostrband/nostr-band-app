@@ -26,7 +26,7 @@ const App = () => {
   const closeModal = (): void => setIsModal(false);
   const stote = useAppSelector((store: any) => store.userReducer);
   const dispatch = useAppDispatch();
-  const { setIsAuth, setContacts } = userSlice.actions;
+  const { setIsAuth, setContacts, setLists } = userSlice.actions;
 
   const getUser = async (pubkey: string): Promise<void> => {
     const ndk = new NDK({ explicitRelayUrls: ["wss://relay.nostr.band"] });
@@ -34,6 +34,19 @@ const App = () => {
     const contacts = Array.from(
       await ndk.fetchEvents({ kinds: [3], authors: [pubkey] })
     )[0];
+
+    const lists = Array.from(
+      await ndk.fetchEvents({
+        //@ts-ignore
+        kinds: [30000],
+        authors: [localStorage.getItem("login")!],
+      })
+    );
+
+    const allTags = lists.map((list) => list.tags);
+
+    dispatch(setLists(allTags));
+
     dispatch(setContacts(contacts));
   };
 

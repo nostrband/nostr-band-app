@@ -1,0 +1,73 @@
+.addListModal {
+  position: fixed;
+  top: 7%;
+  left: 50%;
+  width: 60%;
+  height: max-content;
+  transform: translate(-50%, -7%);
+  z-index: 6;
+  padding: 1rem 2.5rem;
+  background-color: white;
+  border: 1px solid rgb(204, 204, 204);
+  border-radius: 16px;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.modalBody {
+  padding: 1.2rem 1rem;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  border: 1px solid rgba(128, 128, 128, 0.337);
+  border-radius: 10px;
+}
+.modalBody div {
+  display: flex;
+  justify-content: flex-start;
+}
+.modalFooter {
+  float: right;
+}
+
+.selectedProfile {
+  display: flex;
+  flex-direction: column;
+}
+.selectedProfileImage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.15rem solid rgba(200, 200, 200, 0.4);
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+}
+
+.selectedProfileImage img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.selectedProfileName {
+  margin-left: 0.3rem;
+  margin-bottom: 0;
+  font-size: 1.2rem;
+  padding: 0;
+}
+.selectedProfileHeader {
+  display: flex;
+  align-items: flex-start;
+}
+
+.modalControls {
+  display: flex;
+  justify-content: flex-end;
+}
+.modalControls button {
+  margin-left: 0.4rem;
+}
