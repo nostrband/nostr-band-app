@@ -26,8 +26,6 @@ const AddListModal: FC<addListTypes> = ({
   const closeModal = (): void => setIsModal(false);
   const allTags = store.lists;
 
-  console.log(selectedProfile);
-
   return (
     <ReactModal
       isOpen={isModal}

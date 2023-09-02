@@ -71,3 +71,15 @@
 .modalControls button {
   margin-left: 0.4rem;
 }
+
+@media screen and (max-width: 1000px) {
+  .addListModal {
+    width: 75%;
+  }
+}
+
+@media screen and (max-width: 760px) {
+  .addListModal {
+    width: 98%;
+  }
+}
