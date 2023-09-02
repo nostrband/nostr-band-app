@@ -72,9 +72,9 @@ const EventItem: FC<eventItemTypes> = ({
     if (links) {
       const pubkeys = links.map((link) => {
         if (link.startsWith("npub")) {
-          return !link.includes("i")
+          return link.length === 63
             ? nip19.decode(link).data.toString()
-            : link;
+            : nip19.decode(link.slice(0, 63)).data.toString();
         }
         return link;
       });
