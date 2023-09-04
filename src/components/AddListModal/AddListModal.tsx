@@ -9,22 +9,44 @@ import { getAllTags } from "../../utils/getTags";
 import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
 import { profileType } from "../../types/types";
 import UserIcon from "../../assets/user.png";
+import { useNostr, dateToUnix } from "nostr-react";
 
 type addListTypes = {
   isModal: boolean;
   setIsModal: (a: boolean) => void;
   selectedProfile?: profileType;
+  selectedProfilePubkey?: string;
 };
 
 const AddListModal: FC<addListTypes> = ({
   isModal,
   setIsModal,
   selectedProfile,
+  selectedProfilePubkey,
 }) => {
   const [selectedList, setSelectedList] = useState("newList");
+  const [listName, setListName] = useState("");
   const store = useAppSelector((store) => store.userReducer);
   const closeModal = (): void => setIsModal(false);
   const allTags = store.lists;
+  const { publish } = useNostr();
+
+  const addToList = async () => {
+    const msg = {
+      kind: 30000,
+      tags: [
+        ["d", listName],
+        ["name", listName],
+        ["p", selectedProfilePubkey ? selectedProfilePubkey : ""],
+      ],
+      content: "",
+      created_at: dateToUnix(),
+      pubkey: localStorage.getItem("login")!,
+    };
+    const res = await window!.nostr!.signEvent(msg);
+    //@ts-ignore
+    publish(res);
+  };
 
   return (
     <ReactModal
@@ -65,7 +87,7 @@ const AddListModal: FC<addListTypes> = ({
           {allTags &&
             store.isAuth &&
             allTags.map((tags, index) => {
-              const listLabel = getAllTags(tags, "name").flat();
+              const listLabel = getAllTags(tags, "d").flat();
 
               return <option key={index}>{listLabel[1]}</option>;
             })}
@@ -77,6 +99,8 @@ const AddListModal: FC<addListTypes> = ({
             <strong>List name:</strong>
           </Form.Label>
           <Form.Control
+            value={listName}
+            onChange={(e) => setListName(e.target.value)}
             type="text"
             id="inputListName"
             placeholder="Enter List Name"
@@ -121,7 +145,9 @@ const AddListModal: FC<addListTypes> = ({
         <Button variant="secondary" onClick={closeModal}>
           Cancel
         </Button>
-        <Button variant="success">Add</Button>
+        <Button variant="success" onClick={() => addToList()}>
+          Add
+        </Button>
       </div>
     </ReactModal>
   );
