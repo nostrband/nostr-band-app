@@ -35,6 +35,8 @@ const App = () => {
       await ndk.fetchEvents({ kinds: [3], authors: [pubkey] })
     )[0];
 
+    dispatch(setContacts(contacts));
+
     const lists = Array.from(
       await ndk.fetchEvents({
         //@ts-ignore
@@ -46,8 +48,6 @@ const App = () => {
     const allTags = lists.map((list) => list.tags);
 
     dispatch(setLists(allTags));
-
-    dispatch(setContacts(contacts));
   };
 
   useEffect(() => {

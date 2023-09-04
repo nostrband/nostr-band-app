@@ -531,6 +531,7 @@ const Profile = () => {
         isModal={isAddListModal}
         setIsModal={setIsAddListModal}
         selectedProfile={profile}
+        selectedProfilePubkey={pubkey}
       />
       <EmbedModal
         isModal={isEmbedModal}
@@ -691,17 +692,13 @@ const Profile = () => {
                   {allTags &&
                     store.isAuth &&
                     allTags.map((tags, index) => {
-                      const listLabel = getAllTags(tags, "name").flat();
-                      const pksOfList = getAllTags(tags, "p");
+                      const listLabel = getAllTags(tags, "d").flat();
+                      const pksOfList = getAllTags(tags, "p").map((p) => p[1]);
 
                       return (
-                        <Dropdown.Item
-                          key={index}
-                          target="_blanc"
-                          href={`https://nostrapp.link/#${npub}?select=true`}
-                        >
-                          <Check /> {listLabel[1]}{" "}
-                          <strong>{pksOfList.length}</strong>
+                        <Dropdown.Item key={index}>
+                          {pksOfList.includes(pubkey) && <Check />}{" "}
+                          {listLabel[1]} <strong>{pksOfList.length}</strong>
                         </Dropdown.Item>
                       );
                     })}

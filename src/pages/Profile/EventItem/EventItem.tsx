@@ -68,19 +68,23 @@ const EventItem: FC<eventItemTypes> = ({
   };
 
   if (content) {
-    const links = extractNostrStrings(content);
-    if (links) {
-      const pubkeys = links.map((link) => {
-        if (link.startsWith("npub")) {
-          return link.length === 63
-            ? nip19.decode(link).data.toString()
-            : nip19.decode(link.slice(0, 63)).data.toString();
+    try {
+      const links = extractNostrStrings(content);
+      if (links) {
+        const pubkeys = links.map((link) => {
+          if (link.startsWith("npub")) {
+            return link.length <= 63
+              ? nip19.decode(link).data.toString()
+              : nip19.decode(link.slice(0, 63)).data.toString();
+          }
+          return link;
+        });
+        if (ndk instanceof NDK) {
+          fetchProfiles(pubkeys);
         }
-        return link;
-      });
-      if (ndk instanceof NDK) {
-        fetchProfiles(pubkeys);
       }
+    } catch (e) {
+      console.log(e);
     }
   }
 
