@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { profileType } from "../../types/types";
-import { NDKTag } from "@nostrband/ndk";
+import { NDKEvent, NDKTag } from "@nostrband/ndk";
 
 interface IUserState {
   isAuth: boolean;
   contacts: profileType;
-  lists: NDKTag[][];
+  lists: NDKEvent[];
 }
 
 const initialState: IUserState = {
