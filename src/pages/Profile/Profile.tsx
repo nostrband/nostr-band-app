@@ -86,7 +86,7 @@ const Profile = () => {
   const [contactJson, setContactJson] = useState("");
   const [isEmbedModal, setIsEmbedModal] = useState(false);
   const [isAddListModal, setIsAddListModal] = useState(false);
-  const allTags = store.lists;
+  const allLists = store.lists;
 
   const location = useLocation();
   const { setContacts } = userSlice.actions;
@@ -525,6 +525,42 @@ const Profile = () => {
     }
   };
 
+  const handleList = async (listId: string) => {
+    const list = allLists.find((list) => list.id === listId);
+    const listPubkeys = list && getAllTags(list.tags, "p").map((p) => p[1]);
+    try {
+      if (listPubkeys?.includes(pubkey)) {
+        const newList = list?.tags.filter((list) => list[1] !== pubkey);
+        const msg = {
+          kind: 30000,
+          tags: newList,
+          content: "",
+          created_at: dateToUnix(),
+          pubkey: localStorage.getItem("login")!,
+        };
+        //@ts-ignore
+        const res = await window!.nostr!.signEvent(msg);
+        //@ts-ignore
+        publish(res);
+      } else {
+        const newList = [...list?.tags!, ["p", pubkey]];
+        const msg = {
+          kind: 30000,
+          tags: newList,
+          content: "",
+          created_at: dateToUnix(),
+          pubkey: localStorage.getItem("login")!,
+        };
+        //@ts-ignore
+        const res = await window!.nostr!.signEvent(msg);
+        //@ts-ignore
+        publish(res);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <div className={cl.profileContainer}>
       <AddListModal
@@ -681,7 +717,9 @@ const Profile = () => {
               <Dropdown>
                 <Dropdown.Toggle
                   variant={`${
-                    allTags.length > 0 ? "outline-success" : "outline-secondary"
+                    allLists.length > 0
+                      ? "outline-success"
+                      : "outline-secondary"
                   }`}
                   style={{ alignItems: "center" }}
                 >
@@ -689,14 +727,19 @@ const Profile = () => {
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu>
-                  {allTags &&
+                  {allLists &&
                     store.isAuth &&
-                    allTags.map((tags, index) => {
-                      const listLabel = getAllTags(tags, "d").flat();
-                      const pksOfList = getAllTags(tags, "p").map((p) => p[1]);
+                    allLists.map((list, index) => {
+                      const listLabel = getAllTags(list.tags, "d").flat();
+                      const pksOfList = getAllTags(list.tags, "p").map(
+                        (p) => p[1]
+                      );
 
                       return (
-                        <Dropdown.Item key={index}>
+                        <Dropdown.Item
+                          key={index}
+                          onClick={() => handleList(list.id)}
+                        >
                           {pksOfList.includes(pubkey) && <Check />}{" "}
                           {listLabel[1]} <strong>{pksOfList.length}</strong>
                         </Dropdown.Item>

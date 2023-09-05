@@ -28,7 +28,7 @@ const AddListModal: FC<addListTypes> = ({
   const [listName, setListName] = useState("");
   const store = useAppSelector((store) => store.userReducer);
   const closeModal = (): void => setIsModal(false);
-  const allTags = store.lists;
+  const allLists = store.lists;
   const { publish } = useNostr();
 
   const addToList = async () => {
@@ -84,10 +84,10 @@ const AddListModal: FC<addListTypes> = ({
           onChange={(e) => setSelectedList(e.target.value)}
         >
           <option value="newList">+ New List</option>
-          {allTags &&
+          {allLists &&
             store.isAuth &&
-            allTags.map((tags, index) => {
-              const listLabel = getAllTags(tags, "d").flat();
+            allLists.map((list, index) => {
+              const listLabel = getAllTags(list.tags, "d").flat();
 
               return <option key={index}>{listLabel[1]}</option>;
             })}

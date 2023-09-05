@@ -45,9 +45,7 @@ const App = () => {
       })
     );
 
-    const allTags = lists.map((list) => list.tags);
-
-    dispatch(setLists(allTags));
+    dispatch(setLists(lists));
   };
 
   useEffect(() => {
