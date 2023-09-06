@@ -6,7 +6,7 @@ import {
   ZoomIn,
   BoxArrowUpRight,
   PersonPlus,
-  BookmarkPlus,
+  Check,
 } from "react-bootstrap-icons";
 import { Button } from "react-bootstrap";
 import { FC, useEffect, useState } from "react";
@@ -20,7 +20,8 @@ import { userSlice } from "../../store/reducers/UserSlice";
 import { toast } from "react-toastify";
 import { useNostr, dateToUnix } from "nostr-react";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import { statsType } from "../../types/types";
+import { profileType, statsType } from "../../types/types";
+import AddListModal from "../AddListModal/AddListModal";
 
 type profileItemTypes = {
   img: string;
@@ -46,6 +47,8 @@ const ProfileItem: FC<profileItemTypes> = ({
   const [npubKey, setNpubKey] = useState("");
   const [nprofile, setNprofile] = useState("");
   const splitedMail = mail ? mail.toString().split("") : [];
+  const [isAddListModal, setIsAddListModal] = useState(false);
+
   const findMailIndex = splitedMail && splitedMail.findIndex((m) => m === "@");
   const mailName =
     splitedMail && findMailIndex
@@ -55,7 +58,7 @@ const ProfileItem: FC<profileItemTypes> = ({
     splitedMail && findMailIndex
       ? splitedMail.slice(findMailIndex + 1).join("")
       : "";
-  const { setContacts } = userSlice.actions;
+  const { setContacts, setLists } = userSlice.actions;
 
   const dispatch = useAppDispatch();
 
@@ -128,8 +131,72 @@ const ProfileItem: FC<profileItemTypes> = ({
     }
   };
 
+  const profile: profileType = {
+    pubkey: pubKey,
+    display_name: name,
+    picture: img,
+    about: bio,
+    image: img,
+  };
+
+  const handleList = async (listId: string) => {
+    const list = store.lists.find((list) => list.id === listId);
+    const listPubkeys = list && getAllTags(list.tags, "p").map((p) => p[1]);
+    try {
+      if (listPubkeys?.includes(pubKey)) {
+        const newList = list?.tags.filter((list) => list[1] !== pubKey);
+        const msg = {
+          kind: 30000,
+          tags: newList,
+          content: "",
+          created_at: dateToUnix(),
+          pubkey: localStorage.getItem("login")!,
+        };
+        //@ts-ignore
+        const res = await window!.nostr!.signEvent(msg);
+        //@ts-ignore
+        publish(res);
+        const updatedList = store.lists.map((l) => {
+          if (l.id !== listId) {
+            return l;
+          }
+          return res;
+        });
+        dispatch(setLists(updatedList));
+      } else {
+        const newList = [...list?.tags!, ["p", pubKey]];
+        const msg = {
+          kind: 30000,
+          tags: newList,
+          content: "",
+          created_at: dateToUnix(),
+          pubkey: localStorage.getItem("login")!,
+        };
+        //@ts-ignore
+        const res = await window!.nostr!.signEvent(msg);
+        //@ts-ignore
+        publish(res);
+        const updatedList = store.lists.map((l) => {
+          if (l.id !== listId) {
+            return l;
+          }
+          return res;
+        });
+        dispatch(setLists(updatedList));
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <div className="profile">
+      <AddListModal
+        isModal={isAddListModal}
+        setIsModal={setIsAddListModal}
+        selectedProfile={profile}
+        selectedProfilePubkey={pubKey}
+      />
       <div className="profile-info">
         {img && (
           <Link to={`/${npubKey}`}>
@@ -272,9 +339,46 @@ const ProfileItem: FC<profileItemTypes> = ({
           <PersonPlus />{" "}
           {followedPubkeys.includes(pubKey) ? "Followed" : "Follow"}
         </Button>
-        <Button variant="outline-secondary">
-          <BookmarkPlus /> List
-        </Button>
+        <Dropdown>
+          <Dropdown.Toggle
+            variant={`${
+              store.lists.some((list) => {
+                const pksOfList = getAllTags(list.tags, "p").map((p) => p[1]);
+                if (pksOfList.includes(pubKey)) {
+                  return true;
+                }
+              })
+                ? "outline-success"
+                : "outline-secondary"
+            }`}
+            style={{ alignItems: "center" }}
+          >
+            List
+          </Dropdown.Toggle>
+
+          <Dropdown.Menu>
+            {store.lists &&
+              store.isAuth &&
+              store.lists.map((list, index) => {
+                const listLabel = getAllTags(list.tags, "d").flat();
+                const pksOfList = getAllTags(list.tags, "p").map((p) => p[1]);
+
+                return (
+                  <Dropdown.Item
+                    key={index}
+                    onClick={() => handleList(list.id)}
+                  >
+                    {pksOfList.includes(pubKey) && <Check />} {listLabel[1]}{" "}
+                    <strong>{pksOfList.length}</strong>
+                  </Dropdown.Item>
+                );
+              })}
+            <Dropdown.Divider />
+            <Dropdown.Item onClick={() => setIsAddListModal(true)}>
+              New List
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
       </div>
     </div>
   );

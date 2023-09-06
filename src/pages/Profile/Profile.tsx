@@ -730,7 +730,14 @@ const Profile = () => {
               <Dropdown>
                 <Dropdown.Toggle
                   variant={`${
-                    store.lists.length > 0
+                    store.lists.some((list) => {
+                      const pksOfList = getAllTags(list.tags, "p").map(
+                        (p) => p[1]
+                      );
+                      if (pksOfList.includes(pubkey)) {
+                        return true;
+                      }
+                    })
                       ? "outline-success"
                       : "outline-secondary"
                   }`}

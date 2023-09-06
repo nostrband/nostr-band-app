@@ -134,6 +134,8 @@ a {
   bottom: 9px;
 }
 .profile-content__control {
+  display: flex;
+  align-items: flex-start;
   margin-top: 0.65rem;
 }
 .profile-content__control button {
