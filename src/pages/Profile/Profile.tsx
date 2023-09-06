@@ -755,7 +755,10 @@ const Profile = () => {
                         (p) => p[1]
                       );
 
-                      return (
+                      return !(
+                        listLabel[1].startsWith("notifications") ||
+                        listLabel[1].startsWith("chats")
+                      ) ? (
                         <Dropdown.Item
                           key={index}
                           onClick={() => handleList(list.id)}
@@ -763,7 +766,7 @@ const Profile = () => {
                           {pksOfList.includes(pubkey) && <Check />}{" "}
                           {listLabel[1]} <strong>{pksOfList.length}</strong>
                         </Dropdown.Item>
-                      );
+                      ) : null;
                     })}
                   <Dropdown.Divider />
                   <Dropdown.Item onClick={() => setIsAddListModal(true)}>
