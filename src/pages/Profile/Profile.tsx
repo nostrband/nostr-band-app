@@ -86,10 +86,9 @@ const Profile = () => {
   const [contactJson, setContactJson] = useState("");
   const [isEmbedModal, setIsEmbedModal] = useState(false);
   const [isAddListModal, setIsAddListModal] = useState(false);
-  const allLists = store.lists;
 
   const location = useLocation();
-  const { setContacts } = userSlice.actions;
+  const { setContacts, setLists } = userSlice.actions;
 
   const dispatch = useAppDispatch();
 
@@ -526,7 +525,7 @@ const Profile = () => {
   };
 
   const handleList = async (listId: string) => {
-    const list = allLists.find((list) => list.id === listId);
+    const list = store.lists.find((list) => list.id === listId);
     const listPubkeys = list && getAllTags(list.tags, "p").map((p) => p[1]);
     try {
       if (listPubkeys?.includes(pubkey)) {
@@ -542,6 +541,13 @@ const Profile = () => {
         const res = await window!.nostr!.signEvent(msg);
         //@ts-ignore
         publish(res);
+        const updatedList = store.lists.map((l) => {
+          if (l.id !== listId) {
+            return l;
+          }
+          return res;
+        });
+        dispatch(setLists(updatedList));
       } else {
         const newList = [...list?.tags!, ["p", pubkey]];
         const msg = {
@@ -555,6 +561,13 @@ const Profile = () => {
         const res = await window!.nostr!.signEvent(msg);
         //@ts-ignore
         publish(res);
+        const updatedList = store.lists.map((l) => {
+          if (l.id !== listId) {
+            return l;
+          }
+          return res;
+        });
+        dispatch(setLists(updatedList));
       }
     } catch (e) {
       console.log(e);
@@ -717,7 +730,7 @@ const Profile = () => {
               <Dropdown>
                 <Dropdown.Toggle
                   variant={`${
-                    allLists.length > 0
+                    store.lists.length > 0
                       ? "outline-success"
                       : "outline-secondary"
                   }`}
@@ -727,9 +740,9 @@ const Profile = () => {
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu>
-                  {allLists &&
+                  {store.lists &&
                     store.isAuth &&
-                    allLists.map((list, index) => {
+                    store.lists.map((list, index) => {
                       const listLabel = getAllTags(list.tags, "d").flat();
                       const pksOfList = getAllTags(list.tags, "p").map(
                         (p) => p[1]

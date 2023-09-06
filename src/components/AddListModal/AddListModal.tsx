@@ -4,12 +4,14 @@ import { X } from "react-bootstrap-icons";
 import ReactModal from "react-modal";
 import cl from "./AddListModal.module.css";
 import Form from "react-bootstrap/Form";
-import { useAppSelector } from "../../hooks/redux";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { getAllTags } from "../../utils/getTags";
 import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
 import { profileType } from "../../types/types";
 import UserIcon from "../../assets/user.png";
 import { useNostr, dateToUnix } from "nostr-react";
+import { toast } from "react-toastify";
+import { userSlice } from "../../store/reducers/UserSlice";
 
 type addListTypes = {
   isModal: boolean;
@@ -27,25 +29,36 @@ const AddListModal: FC<addListTypes> = ({
   const [selectedList, setSelectedList] = useState("newList");
   const [listName, setListName] = useState("");
   const store = useAppSelector((store) => store.userReducer);
+  const { setContacts, setLists } = userSlice.actions;
   const closeModal = (): void => setIsModal(false);
   const allLists = store.lists;
   const { publish } = useNostr();
 
+  const dispatch = useAppDispatch();
+
   const addToList = async () => {
-    const msg = {
-      kind: 30000,
-      tags: [
-        ["d", listName],
-        ["name", listName],
-        ["p", selectedProfilePubkey ? selectedProfilePubkey : ""],
-      ],
-      content: "",
-      created_at: dateToUnix(),
-      pubkey: localStorage.getItem("login")!,
-    };
-    const res = await window!.nostr!.signEvent(msg);
-    //@ts-ignore
-    publish(res);
+    try {
+      const msg = {
+        kind: 30000,
+        tags: [
+          ["d", listName],
+          ["name", listName],
+          ["p", selectedProfilePubkey ? selectedProfilePubkey : ""],
+        ],
+        content: "",
+        created_at: dateToUnix(),
+        pubkey: localStorage.getItem("login")!,
+      };
+      const res = await window!.nostr!.signEvent(msg);
+      //@ts-ignore
+      publish(res);
+      closeModal();
+      const updatedList = [...store.lists, res];
+      dispatch(setLists(updatedList));
+    } catch (e) {
+      console.log(e);
+      toast.error("Failed to update list", { autoClose: 3000 });
+    }
   };
 
   return (
