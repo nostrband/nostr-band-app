@@ -35,7 +35,7 @@ const People: FC<peopleTypes> = ({ setIsLoading }) => {
     <>
       {profiles && profiles.length ? (
         profiles.map((profile) => {
-          const profileContent = profile.profile.content
+          const profileContent = profile?.profile?.content
             ? JSON.parse(profile.profile.content)
             : "";
           return (
