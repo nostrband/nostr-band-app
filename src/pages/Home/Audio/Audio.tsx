@@ -34,7 +34,7 @@ const Audio: FC<audioTypes> = ({ setIsLoading }) => {
     <>
       {audios && audios.length ? (
         audios.map((image) => {
-          const authorContent = image.author
+          const authorContent = image?.author?.content
             ? JSON.parse(image?.author?.content)
             : {};
           return (

@@ -37,7 +37,7 @@ const Images: FC<imagesTypes> = ({ setIsLoading }) => {
     <>
       {images && images.length ? (
         images.map((image) => {
-          const authorContent = image?.author
+          const authorContent = image?.author?.content
             ? JSON.parse(image.author?.content)
             : {};
           return (

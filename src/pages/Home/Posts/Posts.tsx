@@ -35,17 +35,19 @@ const Posts: FC<postsTypes> = ({ setIsLoading }) => {
     <>
       {posts && posts.length ? (
         posts.map((post) => {
-          const authorContent = JSON.parse(post.author.content);
+          const authorContent = post?.author?.content
+            ? JSON.parse(post.author.content)
+            : {};
           return (
             <PostCard
               key={post.id}
               name={
-                authorContent.display_name
-                  ? authorContent.display_name
-                  : authorContent.name
+                authorContent?.display_name
+                  ? authorContent?.display_name
+                  : authorContent?.name
               }
               about={post.event.content}
-              picture={authorContent.picture}
+              picture={authorContent?.picture}
               pubkey={post.pubkey}
               eventId={post.event.id}
               createdDate={post.event.created_at}
