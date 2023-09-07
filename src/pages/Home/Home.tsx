@@ -1,22 +1,14 @@
 import "./Home.css";
-//@ts-ignore
-import Search from "../../components/Search/Search.tsx";
+import Search from "../../components/Search/Search";
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
-//@ts-ignore
-import People from "./People/People.tsx";
+import People from "./People/People";
 import { Link, useSearchParams } from "react-router-dom";
-//@ts-ignore
-import Posts from "./Posts/Posts.tsx";
-//@ts-ignore
-import Images from "./Images/Images.tsx";
-//@ts-ignore
-import Video from "./Video/Video.tsx";
-//@ts-ignore
-import Audio from "./Audio/Audio.tsx";
-//@ts-ignore
-import Result from "../Result/Result.tsx";
-import React from "react";
+import Posts from "./Posts/Posts";
+import Images from "./Images/Images";
+import Video from "./Video/Video";
+import Audio from "./Audio/Audio";
+import Result from "../Result/Result";
 
 const Home = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);

@@ -34,7 +34,7 @@ const Video: FC<videoType> = ({ setIsLoading }) => {
     <>
       {videos && videos.length ? (
         videos.map((video) => {
-          const authorContent = video?.author
+          const authorContent = video?.author?.content
             ? JSON.parse(video?.author?.content)
             : {};
           return (
