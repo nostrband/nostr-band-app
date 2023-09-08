@@ -232,7 +232,6 @@ const Note = () => {
 
       const tagsE = note?.tags ? getAllTags(note.tags, "e") : [];
       const rootId = note?.tags && note.tags.find((r) => r[0] === "e");
-      console.log(tagsE);
 
       if (rootId) {
         note?.tags.map((n) => {
@@ -251,6 +250,7 @@ const Note = () => {
           authors: rootPost ? [rootPost.pubkey] : [],
         });
         setRootPost(rootPost);
+
         const authorContent = rootPostAuthor
           ? JSON.parse(rootPostAuthor.content)
           : {};
@@ -275,6 +275,7 @@ const Note = () => {
               ? JSON.parse(threadPostAuthor.content)
               : {};
             setThreadPost(threadPost);
+
             setThreadPostAuthor(authorContent);
           }
         }
@@ -592,7 +593,7 @@ const Note = () => {
       {event ? (
         <>
           <div className={cl.note}>
-            {rootPost && threadPostAuthor && (
+            {rootPost && (
               <p className={cl.replyTo}>
                 Replying to{" "}
                 {threadPostAuthor
