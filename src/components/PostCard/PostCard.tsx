@@ -285,7 +285,9 @@ const PostItem: FC<postItemType> = ({
         )}
 
         <div className={cl.postState}>
-          <span>{formatAMPM(createdDateAt.getTime())}</span>
+          <Link to={`/${note}`}>
+            <span>{formatAMPM(createdDateAt.getTime())}</span>
+          </Link>
         </div>
       </div>
       <div className={cl.btnLink}>

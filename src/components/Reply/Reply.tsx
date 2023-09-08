@@ -10,7 +10,6 @@ import { formatAMPM } from "../../utils/formatDate";
 import { nip19 } from "nostr-tools";
 import { copyUrl } from "../../utils/copy-funtions/copyFuntions";
 import { profileType, statsType } from "../../types/types";
-import React from "react";
 
 type replyTypes = {
   author: profileType;
@@ -137,7 +136,11 @@ const Reply: FC<replyTypes> = ({
 
         {createdDateAt && (
           <div className={cl.postState}>
-            <span>{agoTime ? agoTime : formatAMPM(createdDateAt * 1000)}</span>
+            <Link to={`/${noteId}`}>
+              <span>
+                {agoTime ? agoTime : formatAMPM(createdDateAt * 1000)}
+              </span>
+            </Link>
           </div>
         )}
       </div>
