@@ -232,6 +232,8 @@ const Note = () => {
 
       const tagsE = note?.tags ? getAllTags(note.tags, "e") : [];
       const rootId = note?.tags && note.tags.find((r) => r[0] === "e");
+      console.log(tagsE);
+
       if (rootId) {
         note?.tags.map((n) => {
           if (!rootId.includes("mention")) {
@@ -257,7 +259,10 @@ const Note = () => {
 
       if (tagsE.length >= 2) {
         for (const e of tagsE) {
-          if (e.includes("reply")) {
+          if (
+            (rootId && e.includes("reply")) ||
+            (e[1] !== rootId![1] && e.length <= 3)
+          ) {
             const threadId = e[1];
             //@ts-ignore
             const threadPost = await ndk.fetchEvent({ ids: [threadId] });
