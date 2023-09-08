@@ -10,13 +10,16 @@ import { formatAMPM } from "../../utils/formatDate";
 import { nip19 } from "nostr-tools";
 import { copyUrl } from "../../utils/copy-funtions/copyFuntions";
 import { profileType, statsType } from "../../types/types";
+import NDK, { NDKEvent } from "@nostrband/ndk";
+import { extractNostrStrings, replaceNostrLinks } from "../../utils/formatLink";
 
 type replyTypes = {
   author: profileType;
   content: string;
   eventId: string;
   createdDateAt: number;
-  mode: string;
+  mode?: string;
+  ndk?: NDK;
 };
 
 const Reply: FC<replyTypes> = ({
@@ -25,6 +28,7 @@ const Reply: FC<replyTypes> = ({
   eventId,
   createdDateAt,
   mode,
+  ndk,
 }) => {
   const authorContent = author?.content ? JSON.parse(author.content) : "";
   const [imgError, setImgError] = useState<boolean>(false);
@@ -35,6 +39,78 @@ const Reply: FC<replyTypes> = ({
   const nprofile = pk ? nip19.nprofileEncode({ pubkey: pk }) : "";
   const npub = pk ? nip19.npubEncode(pk) : "";
   const agoTime = formatAMPM(createdDateAt * 1000);
+  const [taggedProfiles, setTaggedProfiles] = useState<(NDKEvent | string)[]>(
+    []
+  );
+  const [aboutContent, setAboutContent] = useState(content);
+
+  const fetchProfiles = async (pubkeys: string[]) => {
+    if (ndk instanceof NDK) {
+      const profiles = Array.from(
+        await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
+      );
+      setTaggedProfiles(profiles.length ? profiles : pubkeys);
+    }
+  };
+
+  if (content) {
+    try {
+      const links = extractNostrStrings(content);
+      if (links) {
+        const pubkeys: string[] = links.map((link: string) => {
+          if (link.startsWith("npub")) {
+            return nip19.decode(link).data.toString();
+          }
+          return link;
+        });
+        if (ndk instanceof NDK) {
+          fetchProfiles(pubkeys);
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  useEffect(() => {
+    if (taggedProfiles) {
+      taggedProfiles.map((profile) => {
+        if (profile instanceof Object) {
+          const profileContent = JSON.parse(profile.content);
+          const npub = nip19.npubEncode(profile.pubkey);
+          setAboutContent(
+            replaceNostrLinks(
+              aboutContent,
+              profileContent?.display_name
+                ? `@${profileContent?.display_name}`
+                : `@${profileContent?.name}`,
+              `nostr:${npub}`
+            )
+          );
+        } else if (profile.toString().startsWith("note")) {
+          setAboutContent(
+            replaceNostrLinks(
+              aboutContent,
+              `${profile.toString().slice(0, 10)}...${profile
+                .toString()
+                .slice(-4)}`,
+              `nostr:${profile}`
+            )
+          );
+        } else {
+          setAboutContent(
+            replaceNostrLinks(
+              aboutContent,
+              `${profile.toString().slice(0, 12)}...${profile
+                .toString()
+                .slice(-4)}`,
+              `nostr:${profile}`
+            )
+          );
+        }
+      });
+    }
+  }, [taggedProfiles]);
 
   useEffect(() => {
     if (eventId) {
@@ -114,7 +190,7 @@ const Reply: FC<replyTypes> = ({
           navigate(`/${noteId}`);
         }}
       >
-        <MarkdownComponent content={content} mode="" />
+        <MarkdownComponent content={aboutContent} mode="" />
       </div>
       <div className={cl.postStats}>
         {stats.reply_count && (

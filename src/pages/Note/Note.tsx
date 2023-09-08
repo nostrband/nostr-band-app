@@ -36,6 +36,7 @@ import EmbedModal from "../../components/EmbedModal/EmbedModal";
 import { profileType, statsType } from "../../types/types.js";
 import Gallery from "../../components/Gallery/Gallery";
 import { formatContent } from "../../utils/formatContent";
+import { replaceNostrLinks } from "../../utils/formatLink";
 
 const Note = () => {
   const [event, setEvent] = useState<NDKEvent | null>(null);
@@ -152,19 +153,6 @@ const Note = () => {
         fetchProfiles(pubkeys);
       }
     }
-  }
-  function replaceNostrLinks(
-    inputText: string,
-    replacementText: string,
-    pattern: string
-  ) {
-    const nostrPattern = pattern;
-    return inputText
-      .toString()
-      ?.replace(
-        nostrPattern,
-        `[${replacementText}](/${pattern.split(":")[1]})`
-      );
   }
 
   useEffect(() => {
@@ -848,7 +836,7 @@ const Note = () => {
                           createdDateAt={
                             reply.created_at ? reply.created_at : 0
                           }
-                          mode={""}
+                          ndk={ndk}
                         />
                       ) : (
                         ""
