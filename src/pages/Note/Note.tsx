@@ -17,6 +17,8 @@ import {
   Reply as ReplyIcon,
   LightningFill,
   X,
+  ImageFill,
+  PlayBtnFill,
 } from "react-bootstrap-icons";
 import { copyLink, copyUrl } from "../../utils/copy-funtions/copyFuntions";
 import { Button, Dropdown, Tab, Tabs } from "react-bootstrap";
@@ -32,6 +34,8 @@ import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
 import ReactModal from "react-modal";
 import EmbedModal from "../../components/EmbedModal/EmbedModal";
 import { profileType, statsType } from "../../types/types.js";
+import Gallery from "../../components/Gallery/Gallery";
+import { formatContent } from "../../utils/formatContent";
 
 const Note = () => {
   const [event, setEvent] = useState<NDKEvent | null>(null);
@@ -72,6 +76,7 @@ const Note = () => {
   const [modalContent, setModalContent] = useState("");
   const [contentJson, setContentJson] = useState("");
   const [isEmbedModal, setIsEmbedModal] = useState(false);
+  const [isBannerVisible, setIsBannerVisible] = useState(false);
 
   const location = useLocation();
 
@@ -492,6 +497,11 @@ const Note = () => {
     setIsModal(false);
   };
 
+  const contents = formatContent(event?.content ? event.content : "");
+
+  const isSameType = () =>
+    contents.every((obj) => obj.type === contents[0].type);
+
   const zapBtn = async () => {
     const d = document.createElement("div");
     d.setAttribute("data-npub", npubKey);
@@ -661,6 +671,42 @@ const Note = () => {
             <div className={cl.noteAbout}>
               <MarkdownComponent content={content} mode="post" />
             </div>
+            <div className={cl.btnLink}>
+              {contents && contents.length ? (
+                isBannerVisible ? (
+                  <Button
+                    onClick={() => setIsBannerVisible(false)}
+                    variant="light"
+                  >
+                    Hide
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => setIsBannerVisible(true)}
+                    variant="light"
+                  >
+                    {isSameType() ? (
+                      contents[0].type === "PictureType" ? (
+                        <>
+                          Show <ImageFill />
+                        </>
+                      ) : (
+                        <>
+                          Show <PlayBtnFill />
+                        </>
+                      )
+                    ) : (
+                      <>
+                        Show <ImageFill /> <PlayBtnFill />
+                      </>
+                    )}
+                  </Button>
+                )
+              ) : (
+                ""
+              )}
+            </div>
+            <Gallery contents={contents} isBannerVisible={isBannerVisible} />
             <div className={cl.noteCreated}>
               <span>{formatAMPM(createdTime * 1000)}</span>
             </div>
