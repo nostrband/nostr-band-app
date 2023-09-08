@@ -739,7 +739,7 @@ const Note = () => {
               )}
             </div>
             <div className={`${cl.profileContentControl} ${cl.profileButtons}`}>
-              <a target="_blanc" href={`https://nostrapp.link/#${npubKey}`}>
+              <a target="_blanc" href={`https://nostrapp.link/#${note}`}>
                 <Button variant="outline-secondary">
                   <BoxArrowUpRight /> Open
                 </Button>
@@ -762,7 +762,7 @@ const Note = () => {
                 <Dropdown.Menu id={cl["menu-id"]}>
                   <Dropdown.Item
                     target="_blanc"
-                    href={`https://nostrapp.link/#${npubKey}?select=true`}
+                    href={`https://nostrapp.link/#${note}?select=true`}
                   >
                     <BoxArrowUpRight /> Open with
                   </Dropdown.Item>
