@@ -17,6 +17,8 @@ import {
   Reply as ReplyIcon,
   LightningFill,
   X,
+  ImageFill,
+  PlayBtnFill,
 } from "react-bootstrap-icons";
 import { copyLink, copyUrl } from "../../utils/copy-funtions/copyFuntions";
 import { Button, Dropdown, Tab, Tabs } from "react-bootstrap";
@@ -32,6 +34,9 @@ import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
 import ReactModal from "react-modal";
 import EmbedModal from "../../components/EmbedModal/EmbedModal";
 import { profileType, statsType } from "../../types/types.js";
+import Gallery from "../../components/Gallery/Gallery";
+import { formatContent } from "../../utils/formatContent";
+import { replaceNostrLinks } from "../../utils/formatLink";
 
 const Note = () => {
   const [event, setEvent] = useState<NDKEvent | null>(null);
@@ -72,6 +77,7 @@ const Note = () => {
   const [modalContent, setModalContent] = useState("");
   const [contentJson, setContentJson] = useState("");
   const [isEmbedModal, setIsEmbedModal] = useState(false);
+  const [isBannerVisible, setIsBannerVisible] = useState(false);
 
   const location = useLocation();
 
@@ -148,19 +154,6 @@ const Note = () => {
       }
     }
   }
-  function replaceNostrLinks(
-    inputText: string,
-    replacementText: string,
-    pattern: string
-  ) {
-    const nostrPattern = pattern;
-    return inputText
-      .toString()
-      ?.replace(
-        nostrPattern,
-        `[${replacementText}](/${pattern.split(":")[1]})`
-      );
-  }
 
   useEffect(() => {
     if (taggedProfiles) {
@@ -232,6 +225,7 @@ const Note = () => {
 
       const tagsE = note?.tags ? getAllTags(note.tags, "e") : [];
       const rootId = note?.tags && note.tags.find((r) => r[0] === "e");
+
       if (rootId) {
         note?.tags.map((n) => {
           if (!rootId.includes("mention")) {
@@ -249,6 +243,7 @@ const Note = () => {
           authors: rootPost ? [rootPost.pubkey] : [],
         });
         setRootPost(rootPost);
+
         const authorContent = rootPostAuthor
           ? JSON.parse(rootPostAuthor.content)
           : {};
@@ -257,7 +252,10 @@ const Note = () => {
 
       if (tagsE.length >= 2) {
         for (const e of tagsE) {
-          if (e.includes("reply")) {
+          if (
+            (rootId && e.includes("reply")) ||
+            (e[1] !== rootId![1] && e.length <= 3)
+          ) {
             const threadId = e[1];
             //@ts-ignore
             const threadPost = await ndk.fetchEvent({ ids: [threadId] });
@@ -270,6 +268,7 @@ const Note = () => {
               ? JSON.parse(threadPostAuthor.content)
               : {};
             setThreadPost(threadPost);
+
             setThreadPostAuthor(authorContent);
           }
         }
@@ -486,6 +485,11 @@ const Note = () => {
     setIsModal(false);
   };
 
+  const contents = formatContent(event?.content ? event.content : "");
+
+  const isSameType = () =>
+    contents.every((obj) => obj.type === contents[0].type);
+
   const zapBtn = async () => {
     const d = document.createElement("div");
     d.setAttribute("data-npub", npubKey);
@@ -587,7 +591,7 @@ const Note = () => {
       {event ? (
         <>
           <div className={cl.note}>
-            {rootPost && threadPostAuthor && (
+            {rootPost && (
               <p className={cl.replyTo}>
                 Replying to{" "}
                 {threadPostAuthor
@@ -655,6 +659,42 @@ const Note = () => {
             <div className={cl.noteAbout}>
               <MarkdownComponent content={content} mode="post" />
             </div>
+            <div className={cl.btnLink}>
+              {contents && contents.length ? (
+                isBannerVisible ? (
+                  <Button
+                    onClick={() => setIsBannerVisible(false)}
+                    variant="light"
+                  >
+                    Hide
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => setIsBannerVisible(true)}
+                    variant="light"
+                  >
+                    {isSameType() ? (
+                      contents[0].type === "PictureType" ? (
+                        <>
+                          Show <ImageFill />
+                        </>
+                      ) : (
+                        <>
+                          Show <PlayBtnFill />
+                        </>
+                      )
+                    ) : (
+                      <>
+                        Show <ImageFill /> <PlayBtnFill />
+                      </>
+                    )}
+                  </Button>
+                )
+              ) : (
+                ""
+              )}
+            </div>
+            <Gallery contents={contents} isBannerVisible={isBannerVisible} />
             <div className={cl.noteCreated}>
               <span>{formatAMPM(createdTime * 1000)}</span>
             </div>
@@ -699,7 +739,7 @@ const Note = () => {
               )}
             </div>
             <div className={`${cl.profileContentControl} ${cl.profileButtons}`}>
-              <a target="_blanc" href={`https://nostrapp.link/#${npubKey}`}>
+              <a target="_blanc" href={`https://nostrapp.link/#${note}`}>
                 <Button variant="outline-secondary">
                   <BoxArrowUpRight /> Open
                 </Button>
@@ -722,7 +762,7 @@ const Note = () => {
                 <Dropdown.Menu id={cl["menu-id"]}>
                   <Dropdown.Item
                     target="_blanc"
-                    href={`https://nostrapp.link/#${npubKey}?select=true`}
+                    href={`https://nostrapp.link/#${note}?select=true`}
                   >
                     <BoxArrowUpRight /> Open with
                   </Dropdown.Item>
@@ -796,7 +836,7 @@ const Note = () => {
                           createdDateAt={
                             reply.created_at ? reply.created_at : 0
                           }
-                          mode={""}
+                          ndk={ndk}
                         />
                       ) : (
                         ""

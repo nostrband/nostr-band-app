@@ -11,13 +11,8 @@ import {
   PlayBtnFill,
   X,
 } from "react-bootstrap-icons";
-import {
-  collectLinksFromStr,
-  defineTypeLink,
-  extractNostrStrings,
-  replaceNostrLinks,
-} from "../../utils/formatLink";
-import { Button, Carousel, Modal } from "react-bootstrap";
+import { extractNostrStrings, replaceNostrLinks } from "../../utils/formatLink";
+import { Button } from "react-bootstrap";
 import { formatAMPM } from "../../utils/formatDate";
 import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
 import UserIcon from "../../assets/user.png";
@@ -26,6 +21,8 @@ import { nip19 } from "nostr-tools";
 import { copyUrl } from "../../utils/copy-funtions/copyFuntions";
 import NDK, { NDKEvent } from "@nostrband/ndk";
 import { statsType } from "../../types/types";
+import Gallery from "../Gallery/Gallery";
+import { formatContent } from "../../utils/formatContent";
 
 type postItemType = {
   name: string;
@@ -52,8 +49,6 @@ const PostItem: FC<postItemType> = ({
   const [stats, setStats] = useState<statsType>({});
   const [isBannerVisible, setIsBannerVisible] = useState(false);
   const createdDateAt = new Date(createdDate * 1000);
-  const [show, setShow] = useState(false);
-  const [carouselIndex, setCarouselIndex] = useState(0);
   const [npubKey, setNpubKey] = useState("");
   const [nprofile, setNprofile] = useState("");
   const [taggedProfiles, setTaggedProfiles] = useState<(NDKEvent | string)[]>(
@@ -130,11 +125,7 @@ const PostItem: FC<postItemType> = ({
 
   const navigate = useNavigate();
 
-  const windowSize = useRef(window.innerWidth);
   const note = nip19.noteEncode(eventId);
-
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
 
   const fetchStats = async () => {
     try {
@@ -151,27 +142,7 @@ const PostItem: FC<postItemType> = ({
   const isSameType = () =>
     contents.every((obj) => obj.type === contents[0].type);
 
-  const handleSelect = (selectedIndex: number) => {
-    setCarouselIndex(selectedIndex);
-  };
-
-  let contents: { type: string; url: string }[] = [];
-  if (about) {
-    const links = collectLinksFromStr(about);
-
-    contents = links
-      .map((link: string) => {
-        const links: { type: string; url: string }[] = [];
-        const obj = defineTypeLink(link);
-        if (obj) {
-          if (obj.type !== "NotMedia" && obj.type) {
-            links.push(obj);
-          }
-        }
-        return links ? links : [];
-      })
-      .flat();
-  }
+  const contents = formatContent(about);
 
   useEffect(() => {
     if (eventId) {
@@ -285,7 +256,9 @@ const PostItem: FC<postItemType> = ({
         )}
 
         <div className={cl.postState}>
-          <span>{formatAMPM(createdDateAt.getTime())}</span>
+          <Link to={`/${note}`}>
+            <span>{formatAMPM(createdDateAt.getTime())}</span>
+          </Link>
         </div>
       </div>
       <div className={cl.btnLink}>
@@ -317,101 +290,7 @@ const PostItem: FC<postItemType> = ({
           ""
         )}
       </div>
-      <div className={cl.bannerWrapper}>
-        {isBannerVisible && contents.length
-          ? contents.map((content, index) => {
-              return content.type === "AudioType" ? (
-                <div key={index} className={cl.banner}>
-                  <audio
-                    className="audio-content"
-                    src={content.url}
-                    controls
-                    preload="metadata"
-                  />
-                </div>
-              ) : content.type === "YouTubeType" ? (
-                <div key={index} className={cl.bannerMovie}>
-                  <iframe
-                    title="youtube"
-                    id="ytplayer"
-                    className="youtube-fram"
-                    width="640"
-                    height="360"
-                    src={content.url}
-                  />
-                </div>
-              ) : content.type === "MovieType" ? (
-                <div key={index} className={cl.bannerMovie}>
-                  <video
-                    className="video-wrapper"
-                    src={content.url}
-                    controls
-                    preload="metadata"
-                  />
-                </div>
-              ) : content.type === "PictureType" ? (
-                <div key={index} className={cl.banner}>
-                  <img
-                    alt="content"
-                    width="100%"
-                    className="content-image"
-                    src={content.url}
-                    onClick={handleShow}
-                  />
-                  <Modal
-                    className={cl.modal}
-                    centered
-                    show={show}
-                    onHide={handleClose}
-                  >
-                    {contents.length <= 1 ? (
-                      <div className={`${cl.modalContainer}`}>
-                        <X onClick={handleClose} className={cl.modalClose} />
-                        <img src={content.url} alt="content" />
-                      </div>
-                    ) : (
-                      <Carousel
-                        fade
-                        interval={null}
-                        activeIndex={carouselIndex}
-                        onSelect={handleSelect}
-                        controls={windowSize.current <= 500 ? false : true}
-                        className={cl.carousel}
-                      >
-                        {contents.map((img, index) => {
-                          return (
-                            <Carousel.Item
-                              key={index}
-                              className={cl.carouselItem}
-                            >
-                              <div className={cl.carouselItemWrapper}>
-                                <X
-                                  onClick={() => handleClose()}
-                                  className={cl.modalClose}
-                                />
-                                <img
-                                  src={img.url}
-                                  alt="content"
-                                  style={{
-                                    width: "100%",
-                                    display: "block",
-                                    height: "auto",
-                                  }}
-                                />
-                              </div>
-                            </Carousel.Item>
-                          );
-                        })}
-                      </Carousel>
-                    )}
-                  </Modal>
-                </div>
-              ) : (
-                ""
-              );
-            })
-          : ""}
-      </div>
+      <Gallery contents={contents} isBannerVisible={isBannerVisible} />
     </div>
   );
 };

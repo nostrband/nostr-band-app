@@ -67,3 +67,16 @@
 .postState span {
   margin-left: 0.25rem;
 }
+
+.postState a {
+  color: var(--bg-secondary-color);
+  text-decoration: none;
+  margin-right: 0.6rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  transition: 0.3s all;
+}
+.postState a:hover {
+  text-decoration: underline;
+}

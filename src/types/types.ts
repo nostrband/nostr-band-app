@@ -116,3 +116,5 @@ export type nostrPeopleType = {
     tags: tagType;
   };
 };
+
+export type contentType = { type: string; url: string };
