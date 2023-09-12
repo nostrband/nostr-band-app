@@ -37,12 +37,13 @@ import { profileType, statsType } from "../../types/types.js";
 import Gallery from "../../components/Gallery/Gallery";
 import { formatContent } from "../../utils/formatContent";
 import { replaceNostrLinks } from "../../utils/formatLink";
+import { useAppSelector } from "../../hooks/redux";
 
 const Note = () => {
+  const ndk = useAppSelector((store) => store.connectionReducer.ndk);
   const [event, setEvent] = useState<NDKEvent | null>(null);
   const [tabKey, setTabKey] = useState("replies");
   const [isLoading, setIsLoading] = useState(false);
-  const [ndk, setNdk] = useState<NDK>();
   const [pubkey, setPubkey] = useState("");
   const [npubKey, setNpubKey] = useState("");
   const [nprofile, setNprofile] = useState("");
@@ -58,7 +59,7 @@ const Note = () => {
   const [rootPostAuthor, setRootPostAuthor] = useState<profileType>();
   const [threadPost, setThreadPost] = useState<NDKEvent | null>(null);
   const [threadPostAuthor, setThreadPostAuthor] = useState<profileType>();
-  const [limitReplies, setLimitReplies] = useState(100);
+  const [limitReplies, setLimitReplies] = useState(30);
   const [isBottom, setIsBottom] = useState(false);
   const [receivedZaps, setReceivedZaps] = useState<NDKEvent[]>([]);
   const [amountReceivedZaps, setAmountReceivedZaps] = useState<number[]>([]);
@@ -112,7 +113,7 @@ const Note = () => {
           getMoreReplies();
         }
       } else if (tabKey === "zaps") {
-        if (countOfZaps - receivedZaps.length > 0) {
+        if (countOfZaps - receivedZaps.length > 0 && !isLoading) {
           getMoreZaps();
         }
       }
@@ -136,22 +137,27 @@ const Note = () => {
       const profiles = Array.from(
         await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
       );
+
       setTaggedProfiles(profiles.length ? profiles : pubkeys);
     }
   };
 
   if (content) {
-    const links = extractNostrStrings(content);
-    if (links) {
-      const pubkeys: string[] = links.map((link: string) => {
-        if (link.startsWith("npub")) {
-          return nip19.decode(link).data.toString();
+    try {
+      const links = extractNostrStrings(content);
+      if (links) {
+        const pubkeys: string[] = links.map((link: string) => {
+          if (link.startsWith("npub")) {
+            return nip19.decode(link).data.toString();
+          }
+          return link;
+        });
+        if (ndk instanceof NDK) {
+          fetchProfiles(pubkeys);
         }
-        return link;
-      });
-      if (ndk instanceof NDK) {
-        fetchProfiles(pubkeys);
       }
+    } catch (e) {
+      console.log(e);
     }
   }
 
@@ -217,9 +223,6 @@ const Note = () => {
       setRootPost(null);
       setThreadPost(null);
       setIsLoading(true);
-      const ndk = new NDK({ explicitRelayUrls: ["wss://relay.nostr.band"] });
-      ndk.connect();
-      setNdk(ndk);
       //@ts-ignore
       const note = await ndk.fetchEvent({ ids: [noteId] });
 
@@ -237,12 +240,13 @@ const Note = () => {
         });
         //@ts-ignore
         const rootPost = await ndk.fetchEvent({ ids: [rootId[1]] });
+        setRootPost(rootPost);
+
         //@ts-ignore
         const rootPostAuthor = await ndk.fetchEvent({
           kinds: [0],
           authors: rootPost ? [rootPost.pubkey] : [],
         });
-        setRootPost(rootPost);
 
         const authorContent = rootPostAuthor
           ? JSON.parse(rootPostAuthor.content)
@@ -259,6 +263,7 @@ const Note = () => {
             const threadId = e[1];
             //@ts-ignore
             const threadPost = await ndk.fetchEvent({ ids: [threadId] });
+
             //@ts-ignore
             const threadPostAuthor = await ndk.fetchEvent({
               kinds: [0],
@@ -281,6 +286,7 @@ const Note = () => {
         kinds: [0],
         authors: note ? [note.pubkey] : [],
       });
+
       setAuthor(author?.content ? JSON.parse(author.content) : {});
       setPubkey(author?.pubkey ? author.pubkey : "");
       setCreatedTime(note?.created_at ? note.created_at : 0);
@@ -315,9 +321,10 @@ const Note = () => {
       fetchStats();
       fetchReplies(ndk);
       // console.log(JSON.parse(author.content));
-      setIsLoading(false);
     } catch (e) {
       console.log(e);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -375,6 +382,7 @@ const Note = () => {
           return reply;
         });
         setReplies(replies);
+
         const authors = Array.from(
           await ndk.fetchEvents({
             kinds: [0],
@@ -382,6 +390,7 @@ const Note = () => {
             limit: limitReplies,
           })
         );
+
         setAuthors(authors);
       } catch (e) {
         console.log(e);
@@ -392,6 +401,7 @@ const Note = () => {
   const fetchZaps = async (eventId: string) => {
     try {
       if (ndk instanceof NDK) {
+        setIsLoading(true);
         const zaps = Array.from(
           await ndk.fetchEvents({
             kinds: [9735],
@@ -399,9 +409,11 @@ const Note = () => {
             limit: limitZaps,
           })
         );
+
         setReceivedZaps(zaps);
 
         const providersPubkyes = zaps.map((zap) => zap.pubkey);
+
         const providers = Array.from(
           await ndk.fetchEvents({
             kinds: [0],
@@ -409,6 +421,7 @@ const Note = () => {
             limit: limitZaps,
           })
         );
+
         setProviders(providers);
 
         const zapsAmount = zaps.map((zap) => {
@@ -454,14 +467,16 @@ const Note = () => {
             limit: limitZaps,
           })
         );
-        // console.log(sendersArr);
+
         const senders = sendersArr.map((sender) => {
           return sender;
         });
         setSentAuthors(senders);
+        setIsLoading(false);
       }
     } catch (e) {
       console.log(e);
+    } finally {
     }
   };
 
@@ -628,7 +643,7 @@ const Note = () => {
                 )}
               </div>
               {author && (
-                <Link className={cl.noteNameLink} to={""}>
+                <Link className={cl.noteNameLink} to={`/${npubKey}`}>
                   {author.display_name ? author.display_name : author.name}
                 </Link>
               )}
@@ -836,7 +851,7 @@ const Note = () => {
                           createdDateAt={
                             reply.created_at ? reply.created_at : 0
                           }
-                          ndk={ndk}
+                          // ndk={ndk}
                         />
                       ) : (
                         ""
