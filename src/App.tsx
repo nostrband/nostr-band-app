@@ -24,12 +24,13 @@ const relayUrls = ["wss://relay.nostr.band"];
 const App = () => {
   const [isModal, setIsModal] = useState<boolean>(false);
   const closeModal = (): void => setIsModal(false);
-  const stote = useAppSelector((store: any) => store.userReducer);
+  const store = useAppSelector((store: any) => store.userReducer);
+  const ndk = useAppSelector((store) => store.connectionReducer.ndk);
+
   const dispatch = useAppDispatch();
   const { setIsAuth, setContacts, setLists } = userSlice.actions;
 
   const getUser = async (pubkey: string): Promise<void> => {
-    const ndk = new NDK({ explicitRelayUrls: ["wss://relay.nostr.band"] });
     ndk.connect();
     const contacts = Array.from(
       await ndk.fetchEvents({ kinds: [3], authors: [pubkey] })
@@ -53,7 +54,7 @@ const App = () => {
     if (pubkey) {
       getUser(pubkey);
     }
-  }, [stote.isAuth]);
+  }, [store.isAuth]);
 
   const loginBtn = async (): Promise<void> => {
     if (window.nostr) {

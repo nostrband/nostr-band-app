@@ -1,36 +1,14 @@
-import { FC, useEffect, useState } from "react";
-import axios from "axios";
+import { FC } from "react";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 import PostCard from "../../../components/PostCard/PostCard";
 import { nostrApiType } from "../../../types/types.js";
 
 type postsTypes = {
   setIsLoading: (a: boolean) => void;
+  posts: nostrApiType[];
 };
 
-const Posts: FC<postsTypes> = ({ setIsLoading }) => {
-  const [posts, setPosts] = useState<nostrApiType[]>([]);
-
-  const fetchPosts = async () => {
-    try {
-      setIsLoading(true);
-      const { data } = await axios.get(
-        `${process.env.REACT_APP_API_URL}/trending/notes`
-      );
-      setPosts(data.notes);
-      // console.log(data);
-    } catch (e) {
-      console.log(e);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchPosts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+const Posts: FC<postsTypes> = ({ posts }) => {
   return (
     <>
       {posts && posts.length ? (
