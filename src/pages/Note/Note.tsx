@@ -96,15 +96,8 @@ const Note = () => {
 
   useEffect(() => {
     fetchNote();
-    setTabKey("replies");
+    fetchReplies(ndk);
   }, [location.pathname]);
-
-  useEffect(() => {
-    if (tabKey === "replies") {
-      fetchReplies(ndk);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [limitReplies]);
 
   useEffect(() => {
     if (isBottom) {
@@ -153,7 +146,7 @@ const Note = () => {
           return link;
         });
         if (ndk instanceof NDK) {
-          fetchProfiles(pubkeys);
+          // fetchProfiles(pubkeys);
         }
       }
     } catch (e) {
@@ -242,11 +235,13 @@ const Note = () => {
         const rootPost = await ndk.fetchEvent({ ids: [rootId[1]] });
         setRootPost(rootPost);
 
-        //@ts-ignore
-        const rootPostAuthor = await ndk.fetchEvent({
-          kinds: [0],
-          authors: rootPost ? [rootPost.pubkey] : [],
-        });
+        const rootPostAuthor = rootPost
+          ? //@ts-ignore
+            await ndk.fetchEvent({
+              kinds: [0],
+              authors: [rootPost.pubkey],
+            })
+          : null;
 
         const authorContent = rootPostAuthor
           ? JSON.parse(rootPostAuthor.content)
@@ -264,11 +259,13 @@ const Note = () => {
             //@ts-ignore
             const threadPost = await ndk.fetchEvent({ ids: [threadId] });
 
-            //@ts-ignore
-            const threadPostAuthor = await ndk.fetchEvent({
-              kinds: [0],
-              authors: threadPost ? [threadPost.pubkey] : [],
-            });
+            const threadPostAuthor = threadPost
+              ? //@ts-ignore
+                await ndk.fetchEvent({
+                  kinds: [0],
+                  authors: [threadPost.pubkey],
+                })
+              : null;
             const authorContent = threadPostAuthor
               ? JSON.parse(threadPostAuthor.content)
               : {};
@@ -281,11 +278,13 @@ const Note = () => {
 
       setEvent(note);
       setContent(note ? note.content : "");
-      //@ts-ignore
-      const author = await ndk.fetchEvent({
-        kinds: [0],
-        authors: note ? [note.pubkey] : [],
-      });
+      const author = note
+        ? //@ts-ignore
+          await ndk.fetchEvent({
+            kinds: [0],
+            authors: [note.pubkey],
+          })
+        : null;
 
       setAuthor(author?.content ? JSON.parse(author.content) : {});
       setPubkey(author?.pubkey ? author.pubkey : "");
@@ -319,25 +318,17 @@ const Note = () => {
         })
       );
       fetchStats();
-      fetchReplies(ndk);
       // console.log(JSON.parse(author.content));
+      // fetchReplies(ndk);
+      setIsLoading(false);
     } catch (e) {
       console.log(e);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const getMoreZaps = () => {
     setLimitZaps((prevState) => prevState + 10);
   };
-
-  useEffect(() => {
-    if (tabKey === "zaps") {
-      fetchZaps(noteId);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [limitZaps]);
 
   const fetchStats = async () => {
     try {
@@ -357,8 +348,11 @@ const Note = () => {
   };
 
   const fetchReplies = async (ndk?: NDK | {}) => {
+    console.log("srabotal");
+
     if (ndk instanceof NDK) {
       try {
+        setIsLoading(true);
         const repliesArr = Array.from(
           await ndk.fetchEvents({
             kinds: [1],
@@ -392,6 +386,7 @@ const Note = () => {
         );
 
         setAuthors(authors);
+        setIsLoading(false);
       } catch (e) {
         console.log(e);
       }
@@ -480,19 +475,14 @@ const Note = () => {
     }
   };
 
-  useEffect(() => {
-    fetchNote();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (tabKey === "replies") {
-      fetchReplies();
-    } else if (tabKey === "zaps") {
-      fetchZaps(noteId);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabKey]);
+  // useEffect(() => {
+  //   if (tabKey === "replies") {
+  //     fetchReplies(ndk);
+  //   } else if (tabKey === "zaps") {
+  //     fetchZaps(noteId);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [tabKey, limitReplies, limitZaps]);
 
   const sats = stats?.zaps?.msats ? stats?.zaps?.msats / 1000 : null;
 
