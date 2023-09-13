@@ -77,7 +77,7 @@ const PostItem: FC<postItemType> = ({
       });
       if (ndk instanceof NDK) {
         if (pubkeys.length > 0) {
-          fetchProfiles(pubkeys as string[]);
+          // fetchProfiles(pubkeys as string[]);
         }
       }
     }
