@@ -36,7 +36,7 @@ import EmbedModal from "../../components/EmbedModal/EmbedModal";
 import { profileType, statsType } from "../../types/types.js";
 import Gallery from "../../components/Gallery/Gallery";
 import { formatContent } from "../../utils/formatContent";
-import { replaceNostrLinks } from "../../utils/formatLink";
+import { extractNostrStrings, replaceNostrLinks } from "../../utils/formatLink";
 import { useAppSelector } from "../../hooks/redux";
 
 const Note = () => {
@@ -114,45 +114,36 @@ const Note = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isBottom]);
 
-  function extractNostrStrings(inputString: string) {
-    const nostrPattern = /nostr:[a-zA-Z0-9]+/;
-    const matches = inputString.match(nostrPattern);
+  // const fetchProfiles = async (pubkeys: string[]) => {
+  //   if (ndk instanceof NDK) {
+  //     const profiles = Array.from(
+  //       await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
+  //     );
 
-    if (matches) {
-      return matches.map((match) => match.slice("nostr:".length));
-    } else {
-      return [];
-    }
-  }
+  //     setTaggedProfiles(profiles.length ? profiles : pubkeys);
+  //   }
+  // };
 
-  const fetchProfiles = async (pubkeys: string[]) => {
-    if (ndk instanceof NDK) {
-      const profiles = Array.from(
-        await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
-      );
+  // if (content) {
+  //   try {
+  //     const links = extractNostrStrings(content);
+  //     if (links) {
+  //       const pubkeys: string[] = links.map((link: string) => {
+  //         if (link.startsWith("npub")) {
+  //           return nip19.decode(link).data.toString();
+  //         }
+  //         return link;
+  //       });
+  //       console.log(pubkeys);
 
-      setTaggedProfiles(profiles.length ? profiles : pubkeys);
-    }
-  };
-
-  if (content) {
-    try {
-      const links = extractNostrStrings(content);
-      if (links) {
-        const pubkeys: string[] = links.map((link: string) => {
-          if (link.startsWith("npub")) {
-            return nip19.decode(link).data.toString();
-          }
-          return link;
-        });
-        if (ndk instanceof NDK) {
-          // fetchProfiles(pubkeys);
-        }
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  }
+  //       if (ndk instanceof NDK) {
+  //         // fetchProfiles(pubkeys);
+  //       }
+  //     }
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // }
 
   useEffect(() => {
     if (taggedProfiles) {
@@ -220,6 +211,7 @@ const Note = () => {
       const note = await ndk.fetchEvent({ ids: [noteId] });
 
       const tagsE = note?.tags ? getAllTags(note.tags, "e") : [];
+
       const rootId = note?.tags && note.tags.find((r) => r[0] === "e");
 
       if (rootId) {
@@ -251,10 +243,25 @@ const Note = () => {
 
       if (tagsE.length >= 2) {
         for (const e of tagsE) {
-          if (
-            (rootId && e.includes("reply")) ||
-            (e[1] !== rootId![1] && e.length <= 3)
-          ) {
+          if (rootId && e.includes("reply")) {
+            const threadId = e[1];
+            //@ts-ignore
+            const threadPost = await ndk.fetchEvent({ ids: [threadId] });
+
+            const threadPostAuthor = threadPost
+              ? //@ts-ignore
+                await ndk.fetchEvent({
+                  kinds: [0],
+                  authors: [threadPost.pubkey],
+                })
+              : null;
+            const authorContent = threadPostAuthor
+              ? JSON.parse(threadPostAuthor.content)
+              : {};
+            setThreadPost(threadPost);
+
+            setThreadPostAuthor(authorContent);
+          } else if (e[1] !== rootId![1] && e.length <= 3 && e[1] !== noteId) {
             const threadId = e[1];
             //@ts-ignore
             const threadPost = await ndk.fetchEvent({ ids: [threadId] });
@@ -348,8 +355,6 @@ const Note = () => {
   };
 
   const fetchReplies = async (ndk?: NDK | {}) => {
-    console.log("srabotal");
-
     if (ndk instanceof NDK) {
       try {
         setIsLoading(true);
@@ -475,14 +480,14 @@ const Note = () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (tabKey === "replies") {
-  //     fetchReplies(ndk);
-  //   } else if (tabKey === "zaps") {
-  //     fetchZaps(noteId);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [tabKey, limitReplies, limitZaps]);
+  useEffect(() => {
+    if (tabKey === "replies") {
+      fetchReplies(ndk);
+    } else if (tabKey === "zaps") {
+      fetchZaps(noteId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tabKey, limitReplies, limitZaps]);
 
   const sats = stats?.zaps?.msats ? stats?.zaps?.msats / 1000 : null;
 
