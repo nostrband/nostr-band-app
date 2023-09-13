@@ -9,6 +9,8 @@ import Images from "./Images/Images";
 import Video from "./Video/Video";
 import Audio from "./Audio/Audio";
 import Result from "../Result/Result";
+import { nostrApiType } from "../../types/types";
+import axios from "axios";
 
 const Home = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -16,8 +18,26 @@ const Home = () => {
   const [trendingQuery, setTrendingQuery] = useState(
     searchParams.get("trending") ? searchParams.get("trending") : "people"
   );
+  const [posts, setPosts] = useState<nostrApiType[]>([]);
+
+  const fetchPosts = async () => {
+    try {
+      setIsLoading(true);
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API_URL}/trending/notes`
+      );
+
+      setPosts(data.notes);
+      // console.log(data);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
+    fetchPosts();
     if (searchParams.get("trending")) {
       setTrendingQuery(searchParams.get("trending"));
     } else {
@@ -101,7 +121,7 @@ const Home = () => {
         {trendingQuery === "people" ? (
           <People setIsLoading={setIsLoading} />
         ) : trendingQuery === "posts" ? (
-          <Posts setIsLoading={setIsLoading} />
+          <Posts posts={posts} setIsLoading={setIsLoading} />
         ) : trendingQuery === "images" ? (
           <Images setIsLoading={setIsLoading} />
         ) : trendingQuery === "video" ? (
