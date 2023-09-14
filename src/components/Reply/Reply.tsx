@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import cl from "./Reply.module.css";
 import UserIcon from "../../assets/user.png";
 import { Link, useNavigate } from "react-router-dom";
@@ -44,46 +44,22 @@ const Reply: FC<replyTypes> = ({
   );
   const [aboutContent, setAboutContent] = useState(content);
 
-  const fetchProfiles = async (pubkeys: string[]) => {
-    if (ndk instanceof NDK) {
-      const profiles = Array.from(
-        await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
-      );
-      setTaggedProfiles(profiles.length ? profiles : pubkeys);
-    }
-  };
+  const links = useMemo(() => extractNostrStrings(content), [content]);
 
-  if (content) {
-    try {
-      const links = extractNostrStrings(content);
-      if (links) {
-        const pubkeys: string[] = links.map((link: string) => {
-          if (link.startsWith("npub")) {
-            return nip19.decode(link).data.toString();
-          }
-          return link;
-        });
-        if (ndk instanceof NDK) {
-          fetchProfiles(pubkeys);
-        }
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  }
+  useEffect(() => {
+    setTaggedProfiles(links);
+  }, [links]);
 
   useEffect(() => {
     if (taggedProfiles) {
       taggedProfiles.map((profile) => {
         if (profile instanceof Object) {
-          const profileContent = JSON.parse(profile.content);
+          // const profileContent = JSON.parse(profile.content);
           const npub = nip19.npubEncode(profile.pubkey);
           setAboutContent(
             replaceNostrLinks(
               aboutContent,
-              profileContent?.display_name
-                ? `@${profileContent?.display_name}`
-                : `@${profileContent?.name}`,
+              npub && `@${npub.slice(0, 4)}...${npub.slice(-4)}`,
               `nostr:${npub}`
             )
           );
