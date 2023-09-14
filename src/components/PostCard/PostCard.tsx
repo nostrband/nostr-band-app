@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, FC } from "react";
+import { useEffect, useState, useRef, FC, useMemo } from "react";
 import cl from "./PostCard.module.css";
 import Dropdown from "react-bootstrap/Dropdown";
 import axios from "axios";
@@ -56,32 +56,11 @@ const PostItem: FC<postItemType> = ({
   );
   const [content, setContent] = useState(about);
 
-  const fetchProfiles = async (pubkeys: string[]) => {
-    if (ndk) {
-      const profiles: NDKEvent[] = Array.from(
-        await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
-      );
+  const links = useMemo(() => extractNostrStrings(content), [content]);
 
-      setTaggedProfiles(profiles.length ? profiles : pubkeys);
-    }
-  };
-
-  if (content) {
-    const links = extractNostrStrings(content);
-    if (links) {
-      const pubkeys = links.map((link: string) => {
-        if (link.startsWith("npub")) {
-          return nip19.decode(link).data;
-        }
-        return link;
-      });
-      if (ndk instanceof NDK) {
-        if (pubkeys.length > 0) {
-          // fetchProfiles(pubkeys as string[]);
-        }
-      }
-    }
-  }
+  useEffect(() => {
+    setTaggedProfiles(links);
+  }, [links]);
 
   useEffect(() => {
     if (taggedProfiles) {

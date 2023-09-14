@@ -209,6 +209,8 @@ const Note = () => {
       setIsLoading(true);
       //@ts-ignore
       const note = await ndk.fetchEvent({ ids: [noteId] });
+      const links = extractNostrStrings(note!.content);
+      setTaggedProfiles(links);
 
       const tagsE = note?.tags ? getAllTags(note.tags, "e") : [];
 
@@ -846,7 +848,6 @@ const Note = () => {
                           createdDateAt={
                             reply.created_at ? reply.created_at : 0
                           }
-                          // ndk={ndk}
                         />
                       ) : (
                         ""
