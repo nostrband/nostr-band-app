@@ -245,48 +245,51 @@ const Note = () => {
 
       if (tagsE.length >= 2) {
         for (const e of tagsE) {
-          if (rootId && e.includes("reply")) {
-            const threadId = e[1];
-            //@ts-ignore
-            const threadPost = await ndk.fetchEvent({ ids: [threadId] });
+          if (!rootPost) {
+            if (rootId && e.includes("reply")) {
+              const threadId = e[1];
+              //@ts-ignore
+              const threadPost = await ndk.fetchEvent({ ids: [threadId] });
 
-            const threadPostAuthor = threadPost
-              ? //@ts-ignore
-                await ndk.fetchEvent({
-                  kinds: [0],
-                  authors: [threadPost.pubkey],
-                })
-              : null;
-            const authorContent = threadPostAuthor
-              ? JSON.parse(threadPostAuthor.content)
-              : {};
-            setThreadPost(threadPost);
+              const threadPostAuthor = threadPost
+                ? //@ts-ignore
+                  await ndk.fetchEvent({
+                    kinds: [0],
+                    authors: [threadPost.pubkey],
+                  })
+                : null;
+              const authorContent = threadPostAuthor
+                ? JSON.parse(threadPostAuthor.content)
+                : {};
+              setThreadPost(threadPost);
 
-            setThreadPostAuthor(authorContent);
-          } else if (
-            e[1] !== rootId![1] &&
-            e.length <= 3 &&
-            e[1] !== noteId &&
-            !threadPost
-          ) {
-            const threadId = e[1];
-            //@ts-ignore
-            const threadPost = await ndk.fetchEvent({ ids: [threadId] });
-
-            const threadPostAuthor = threadPost
-              ? //@ts-ignore
-                await ndk.fetchEvent({
-                  kinds: [0],
-                  authors: [threadPost.pubkey],
-                })
-              : null;
-            const authorContent = threadPostAuthor
-              ? JSON.parse(threadPostAuthor.content)
-              : {};
-            setThreadPost(threadPost);
-
-            setThreadPostAuthor(authorContent);
+              setThreadPostAuthor(authorContent);
+            }
           }
+          // else if (
+          //   e[1] !== rootId![1] &&
+          //   e.length <= 3 &&
+          //   e[1] !== noteId &&
+          //   !threadPost
+          // ) {
+          //   const threadId = e[1];
+          //   //@ts-ignore
+          //   const threadPost = await ndk.fetchEvent({ ids: [threadId] });
+
+          //   const threadPostAuthor = threadPost
+          //     ? //@ts-ignore
+          //       await ndk.fetchEvent({
+          //         kinds: [0],
+          //         authors: [threadPost.pubkey],
+          //       })
+          //     : null;
+          //   const authorContent = threadPostAuthor
+          //     ? JSON.parse(threadPostAuthor.content)
+          //     : {};
+          //   setThreadPost(threadPost);
+
+          //   setThreadPostAuthor(authorContent);
+          // }
         }
       }
 
