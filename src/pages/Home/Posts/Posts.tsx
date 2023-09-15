@@ -4,7 +4,6 @@ import PostCard from "../../../components/PostCard/PostCard";
 import { nostrApiType } from "../../../types/types.js";
 
 type postsTypes = {
-  setIsLoading: (a: boolean) => void;
   posts: nostrApiType[];
 };
 

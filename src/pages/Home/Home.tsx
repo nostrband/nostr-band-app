@@ -121,7 +121,7 @@ const Home = () => {
         {trendingQuery === "people" ? (
           <People setIsLoading={setIsLoading} />
         ) : trendingQuery === "posts" ? (
-          <Posts posts={posts} setIsLoading={setIsLoading} />
+          <Posts posts={posts} />
         ) : trendingQuery === "images" ? (
           <Images setIsLoading={setIsLoading} />
         ) : trendingQuery === "video" ? (
