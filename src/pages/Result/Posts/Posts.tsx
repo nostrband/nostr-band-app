@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import cl from "./Posts.module.css";
 import NDK, { NDKEvent } from "@nostrband/ndk";
 import Search from "../../../components/Search/Search";
 import { useSearchParams } from "react-router-dom";
 import PostCard from "../../../components/PostCard/PostCard";
+import { useAppSelector } from "../../../hooks/redux";
 
 const Posts = () => {
+  const ndk = useAppSelector((store) => store.connectionReducer.ndk);
   const [searchParams] = useSearchParams();
-  const [ndk, setNdk] = useState<NDK>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [posts, setPosts] = useState<NDKEvent[]>([]);
   const [postsAuthors, setPostsAuthors] = useState<NDKEvent[]>([]);
@@ -49,13 +50,8 @@ const Posts = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isBottom]);
 
-  useEffect(() => {
-    const ndk = new NDK({ explicitRelayUrls: ["wss://relay.nostr.band"] });
-    ndk.connect();
-    setNdk(ndk);
-    getPosts(ndk);
+  useLayoutEffect(() => {
     fetchPostsCount(ndk);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -63,7 +59,7 @@ const Posts = () => {
       getPosts(ndk);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [limitPosts]);
+  }, [searchParams.get("q"), limitPosts]);
 
   const fetchPostsCount = async (ndk: NDK) => {
     if (ndk instanceof NDK) {
@@ -75,14 +71,6 @@ const Posts = () => {
       setPostsCount(postsCount?.count ? postsCount.count : 0);
     }
   };
-
-  useEffect(() => {
-    if (ndk instanceof NDK) {
-      getPosts(ndk);
-      fetchPostsCount(ndk);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams.get("q")]);
 
   const getPosts = async (ndk: NDK) => {
     try {

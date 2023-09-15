@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import NDK, { NDKEvent } from "@nostrband/ndk";
 import { getZapAmount } from "../../../utils/zapFunctions";
 import { useSearchParams } from "react-router-dom";
 import ZapTransfer from "../../../components/ZapTransfer/ZapTransfer";
 import cl from "./Zaps.module.css";
 import Search from "../../../components/Search/Search";
+import { useAppSelector } from "../../../hooks/redux";
 
 const Zaps = () => {
-  const [ndk, setNdk] = useState<NDK>();
+  const ndk = useAppSelector((store) => store.connectionReducer.ndk);
   const [searchParams] = useSearchParams();
   const [receivedZaps, setReceivedZaps] = useState<NDKEvent[]>([]);
   const [amountReceivedZaps, setAmountReceivedZaps] = useState<number[]>([]);
@@ -36,7 +37,7 @@ const Zaps = () => {
 
   useEffect(() => {
     if (isBottom) {
-      if (zapsCount - receivedZaps.length) {
+      if (zapsCount - receivedZaps.length && !isLoading) {
         getMoreZaps();
       }
     }
@@ -48,16 +49,7 @@ const Zaps = () => {
       getZaps(ndk);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [limitZaps]);
-
-  useEffect(() => {
-    const ndk = new NDK({ explicitRelayUrls: ["wss://relay.nostr.band"] });
-    ndk.connect();
-    setNdk(ndk);
-    getZaps(ndk);
-    fetchZapsCount(ndk);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [limitZaps, searchParams.get("q")]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
@@ -68,13 +60,9 @@ const Zaps = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (ndk instanceof NDK) {
-      getZaps(ndk);
-      fetchZapsCount(ndk);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams.get("q")]);
+  useLayoutEffect(() => {
+    fetchZapsCount(ndk);
+  }, []);
 
   const fetchZapsCount = async (ndk: NDK) => {
     if (ndk instanceof NDK) {
