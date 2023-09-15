@@ -6,25 +6,17 @@ import PostCard from "../../../components/PostCard/PostCard";
 import NDK, { NDKEvent } from "@nostrband/ndk";
 import { Link, useSearchParams } from "react-router-dom";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
+import { useAppSelector } from "../../../hooks/redux";
 
 const AllResults = () => {
+  const ndk = useAppSelector((store) => store.connectionReducer.ndk);
   const [searchParams] = useSearchParams();
   const [profiles, setProfiles] = useState<NDKEvent[]>([]);
   const [profilesCount, setProfilesCount] = useState<number>(0);
-  const [ndk, setNdk] = useState<NDK>();
   const [isLoadingProfiles, setIsLoadingProfiles] = useState<boolean>(false);
   const [posts, setPosts] = useState<NDKEvent[]>([]);
   const [postsAuthors, setPostsAuthors] = useState<NDKEvent[]>([]);
   const [postsCount, setPostsCount] = useState(0);
-
-  useEffect(() => {
-    const ndk = new NDK({ explicitRelayUrls: ["wss://relay.nostr.band"] });
-    ndk.connect();
-    setNdk(ndk);
-    getProfiles(ndk);
-    getPosts(ndk);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     if (ndk instanceof NDK) {

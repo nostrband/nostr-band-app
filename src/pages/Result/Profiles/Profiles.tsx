@@ -1,16 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import cl from "./Profiles.module.css";
 import NDK, { NDKEvent } from "@nostrband/ndk";
 import Search from "../../../components/Search/Search";
 import { useSearchParams } from "react-router-dom";
 import ProfileItem from "../../../components/ProfileItem/ProfileItem";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
+import { useAppSelector } from "../../../hooks/redux";
 
 const Profiles = () => {
+  const ndk = useAppSelector((store) => store.connectionReducer.ndk);
   const [searchParams] = useSearchParams();
   const [profiles, setProfiles] = useState<NDKEvent[]>([]);
   const [profilesCount, setProfilesCount] = useState(0);
-  const [ndk, setNdk] = useState<NDK>();
   const [isLoadingProfiles, setIsLoadingProfiles] = useState<boolean>(false);
   const [profilesIds, setProfilesIds] = useState<string[]>([]);
   const [limitProfiles, setLimitProfiles] = useState(10);
@@ -43,20 +44,23 @@ const Profiles = () => {
 
   useEffect(() => {
     if (isBottom) {
-      if (profilesCount - profiles.length) {
+      if (profilesCount - profiles.length && !isLoadingProfiles) {
         getMoreProfiles();
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isBottom]);
 
-  useEffect(() => {
-    const ndk = new NDK({ explicitRelayUrls: ["wss://relay.nostr.band"] });
-    ndk.connect();
-    setNdk(ndk);
-    fetchProfilesIds(ndk);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  useLayoutEffect(() => {
+    fetchProfilesCount();
   }, []);
+
+  useEffect(() => {
+    if (ndk instanceof NDK) {
+      fetchProfilesIds(ndk);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.get("q")]);
 
   const fetchProfilesIds = async (ndk: NDK) => {
     if (ndk instanceof NDK) {
@@ -68,12 +72,19 @@ const Profiles = () => {
       });
       setProfilesIds(profilesIds?.ids ? profilesIds.ids : []);
       getProfiles(ndk, profilesIds?.ids ? profilesIds.ids : []);
+    }
+  };
+
+  const fetchProfilesCount = async () => {
+    try {
       const profilesCount = await ndk.fetchCount({
         kinds: [0],
         //@ts-ignore
         search: searchParams.get("q"),
       });
       setProfilesCount(profilesCount?.count ? profilesCount.count : 0);
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -84,28 +95,28 @@ const Profiles = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limitProfiles]);
 
-  useEffect(() => {
-    if (ndk instanceof NDK) {
-      fetchProfilesIds(ndk);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams.get("q")]);
-
   function compareByKeys(a: NDKEvent, b: NDKEvent, ids: string | any[]) {
     return ids.indexOf(a.id) - ids.indexOf(b.id);
   }
 
   const getProfiles = async (ndk: NDK, ids: string[]) => {
-    if (ndk instanceof NDK) {
-      setIsLoadingProfiles(true);
-      const profiles = Array.from(
-        await ndk.fetchEvents({ kinds: [0], ids: ids.slice(0, limitProfiles) })
-      );
-      const sortedContentArray = profiles
-        .slice()
-        .sort((a, b) => compareByKeys(a, b, ids));
-      setProfiles(sortedContentArray);
-      setIsLoadingProfiles(false);
+    try {
+      if (ndk instanceof NDK) {
+        setIsLoadingProfiles(true);
+        const profiles = Array.from(
+          await ndk.fetchEvents({
+            kinds: [0],
+            ids: ids.slice(0, limitProfiles),
+          })
+        );
+        const sortedContentArray = profiles
+          .slice()
+          .sort((a, b) => compareByKeys(a, b, ids));
+        setProfiles(sortedContentArray);
+        setIsLoadingProfiles(false);
+      }
+    } catch (e) {
+      console.log(e);
     }
   };
 
