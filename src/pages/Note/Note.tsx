@@ -263,7 +263,12 @@ const Note = () => {
             setThreadPost(threadPost);
 
             setThreadPostAuthor(authorContent);
-          } else if (e[1] !== rootId![1] && e.length <= 3 && e[1] !== noteId) {
+          } else if (
+            e[1] !== rootId![1] &&
+            e.length <= 3 &&
+            e[1] !== noteId &&
+            !threadPost
+          ) {
             const threadId = e[1];
             //@ts-ignore
             const threadPost = await ndk.fetchEvent({ ids: [threadId] });
