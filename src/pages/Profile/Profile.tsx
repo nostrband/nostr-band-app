@@ -42,6 +42,7 @@ import AddListModal from "../../components/AddListModal/AddListModal";
 
 const Profile = () => {
   const store = useAppSelector((store) => store.userReducer);
+  const ndk = useAppSelector((store) => store.connectionReducer.ndk);
   const { publish } = useNostr();
   const [pubkey, setPubkey] = useState("");
   const [lastEvent, setLastEvent] = useState<NDKEvent | null>(null);
@@ -50,10 +51,6 @@ const Profile = () => {
   const { router } = useParams();
   const npub = router;
   const [stats, setStats] = useState<statsType>({});
-  const [ndk, setNdk] = useState<NDK>();
-  const [isPostMoreButton, setIsPostMoreButton] = useState(false);
-  const [isZapMoreButton, setIsZapMoreButton] = useState(false);
-  const [isSentZapMoreButton, setIsSentZapMoreButton] = useState(false);
   const [tabKey, setTabKey] = useState("posts");
   const [nprofile, setNprofile] = useState("");
   const [nnadr, setNnadr] = useState("");
@@ -114,34 +111,16 @@ const Profile = () => {
   useEffect(() => {
     if (isBottom) {
       if (tabKey === "posts") {
-        if (
-          events.length <= 50 &&
-          countOfPosts - events.length > 0 &&
-          !isZapLoading
-        ) {
+        if (countOfPosts - events.length > 0 && !isZapLoading) {
           getMorePosts();
-        } else {
-          setIsPostMoreButton(true);
         }
       } else if (tabKey === "zaps") {
-        if (
-          receivedZaps.length <= 50 &&
-          countOfZaps - receivedZaps.length > 0 &&
-          !isZapLoading
-        ) {
+        if (countOfZaps - receivedZaps.length > 0 && !isZapLoading) {
           getMoreZaps();
-        } else {
-          setIsZapMoreButton(true);
         }
       } else if (tabKey === "zaps-sent") {
-        if (
-          sentZaps.length <= 50 &&
-          countOfSentZaps - sentZaps.length > 0 &&
-          !isZapLoading
-        ) {
+        if (countOfSentZaps - sentZaps.length > 0 && !isZapLoading) {
           getMoreSentZaps();
-        } else {
-          setIsSentZapMoreButton(true);
         }
       }
     }
@@ -247,14 +226,6 @@ const Profile = () => {
       console.log(e);
     }
   };
-
-  useEffect(() => {
-    const ndk = new NDK({ explicitRelayUrls: ["wss://relay.nostr.band"] });
-    ndk.connect();
-    setNdk(ndk);
-    fetchUser(ndk);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     if (tabKey === "zaps") {
@@ -876,23 +847,10 @@ const Profile = () => {
                               ? profile.name
                               : ""
                           }
-                          ndk={ndk && ndk}
                         />
                       );
                     })
                   : "No posts"}
-                {countOfPosts - events.length > 0 && isPostMoreButton ? (
-                  <div className={cl.moreBtn}>
-                    <Button
-                      onClick={() => getMorePosts()}
-                      disabled={isZapLoading}
-                    >
-                      Load more
-                    </Button>
-                  </div>
-                ) : (
-                  ""
-                )}
               </Tab>
               <Tab
                 eventKey="zaps"
@@ -947,18 +905,6 @@ const Profile = () => {
                       );
                     })
                   : "No received zaps"}
-                {countOfZaps - receivedZaps.length > 0 && isZapMoreButton ? (
-                  <div className={cl.moreBtn}>
-                    <Button
-                      onClick={() => getMoreZaps()}
-                      disabled={isZapLoading}
-                    >
-                      Load more
-                    </Button>
-                  </div>
-                ) : (
-                  ""
-                )}
               </Tab>
               <Tab
                 eventKey="zaps-sent"
@@ -1013,19 +959,6 @@ const Profile = () => {
                       );
                     })
                   : "No sent zaps"}
-                {countOfSentZaps - sentZaps.length > 0 &&
-                isSentZapMoreButton ? (
-                  <div className={cl.moreBtn}>
-                    <Button
-                      onClick={() => getMoreSentZaps()}
-                      disabled={isZapLoading}
-                    >
-                      Load more
-                    </Button>
-                  </div>
-                ) : (
-                  ""
-                )}
               </Tab>
             </Tabs>
           </div>

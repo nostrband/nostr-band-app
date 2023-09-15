@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, FC } from "react";
+import { useEffect, useState, useRef, FC, useMemo } from "react";
 import cl from "./EventItem.module.css";
 import Dropdown from "react-bootstrap/Dropdown";
 import axios from "axios";
@@ -34,7 +34,6 @@ type eventItemTypes = {
   pubkey: string;
   createdDate: number;
   eventId: string;
-  ndk?: NDK;
 };
 
 const EventItem: FC<eventItemTypes> = ({
@@ -44,7 +43,6 @@ const EventItem: FC<eventItemTypes> = ({
   pubkey,
   createdDate,
   eventId,
-  ndk,
 }) => {
   const [imgError, setImgError] = useState(false);
   const [stats, setStats] = useState<statsType>();
@@ -58,48 +56,22 @@ const EventItem: FC<eventItemTypes> = ({
   );
   const [content, setContent] = useState(about);
 
-  const fetchProfiles = async (pubkeys: string[]) => {
-    if (ndk instanceof NDK) {
-      const profiles = Array.from(
-        await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
-      );
-      setTaggedProfiles(profiles?.length ? profiles : pubkeys);
-    }
-  };
+  const links = useMemo(() => extractNostrStrings(content), [content]);
 
-  if (content) {
-    try {
-      const links = extractNostrStrings(content);
-      if (links) {
-        const pubkeys = links.map((link) => {
-          if (link.startsWith("npub")) {
-            return link.length <= 63
-              ? nip19.decode(link).data.toString()
-              : nip19.decode(link.slice(0, 63)).data.toString();
-          }
-          return link;
-        });
-        if (ndk instanceof NDK) {
-          fetchProfiles(pubkeys);
-        }
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  }
+  useEffect(() => {
+    setTaggedProfiles(links);
+  }, [links]);
 
   useEffect(() => {
     if (taggedProfiles) {
       taggedProfiles.map((profile) => {
         if (profile instanceof Object) {
-          const profileContent = JSON.parse(profile.content);
+          // const profileContent = JSON.parse(profile.content);
           const npub = nip19.npubEncode(profile.pubkey);
           setContent(
             replaceNostrLinks(
               content,
-              profileContent?.display_name
-                ? `@${profileContent?.display_name}`
-                : `@${profileContent?.name}`,
+              npub && `@${npub.slice(0, 4)}...${npub.slice(-4)}`,
               `nostr:${npub}`
             )
           );
@@ -108,6 +80,16 @@ const EventItem: FC<eventItemTypes> = ({
             replaceNostrLinks(
               content,
               `${profile.toString().slice(0, 10)}...${profile
+                .toString()
+                .slice(-4)}`,
+              `nostr:${profile}`
+            )
+          );
+        } else if (profile.toString().startsWith("npub")) {
+          setContent(
+            replaceNostrLinks(
+              content,
+              `${profile.toString().slice(0, 7)}...${profile
                 .toString()
                 .slice(-4)}`,
               `nostr:${profile}`
