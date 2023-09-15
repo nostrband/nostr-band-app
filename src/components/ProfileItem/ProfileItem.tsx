@@ -44,9 +44,9 @@ const ProfileItem: FC<profileItemTypes> = ({
   const { publish } = useNostr();
   const [imgError, setImgError] = useState(false);
   const [stats, setStats] = useState<statsType>({});
-  const [npubKey, setNpubKey] = useState("");
-  const [nprofile, setNprofile] = useState("");
   const splitedMail = mail ? mail.toString().split("") : [];
+  const npubKey = nip19.npubEncode(pubKey);
+  const nprofile = nip19.nprofileEncode({ pubkey: pubKey });
   const [isAddListModal, setIsAddListModal] = useState(false);
 
   const findMailIndex = splitedMail && splitedMail.findIndex((m) => m === "@");
@@ -69,10 +69,9 @@ const ProfileItem: FC<profileItemTypes> = ({
 
     setStats(data.stats[pubKey]);
   };
+
   useEffect(() => {
     fetchStats();
-    setNpubKey(nip19.npubEncode(pubKey));
-    setNprofile(nip19.nprofileEncode({ pubkey: pubKey }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
