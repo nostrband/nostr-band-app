@@ -1,6 +1,5 @@
 import NDK from "@nostrband/ndk";
 import { createSlice } from "@reduxjs/toolkit";
-
 type connectionType = {
   ndk: NDK;
 };
@@ -10,7 +9,7 @@ const initialState: connectionType = {
 };
 
 export const connectionSlice = createSlice({
-  name: "user",
+  name: "connection",
   initialState,
   reducers: {
     setNdk(state, action) {
