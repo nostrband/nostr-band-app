@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ReactModal from "react-modal";
 import { Button } from "react-bootstrap";
 import { X } from "react-bootstrap-icons";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { userSlice } from "./store/reducers/UserSlice";
 import NDK from "@nostrband/ndk";
@@ -30,8 +30,11 @@ const App = () => {
   const dispatch = useAppDispatch();
   const { setIsAuth, setContacts, setLists } = userSlice.actions;
 
-  const getUser = async (pubkey: string): Promise<void> => {
+  useLayoutEffect(() => {
     ndk.connect();
+  }, []);
+
+  const getUser = async (pubkey: string): Promise<void> => {
     const contacts = Array.from(
       await ndk.fetchEvents({ kinds: [3], authors: [pubkey] })
     )[0];
