@@ -28,7 +28,7 @@ import axios from "axios";
 import NoteSkeleton from "./NoteSkeleton/NoteSkeleton";
 import Reply from "../../components/Reply/Reply";
 import PostCard from "../../components/PostCard/PostCard";
-import { getAllTags } from "../../utils/getTags";
+import { getAllTags, getReplyTag, getRootTag } from "../../utils/getTags";
 import { getZapAmount } from "../../utils/zapFunctions";
 import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
 import ReactModal from "react-modal";
@@ -56,9 +56,13 @@ const Note = () => {
   const [authors, setAuthors] = useState<NDKEvent[]>([]);
   const [replies, setReplies] = useState<NDKEvent[]>([]);
   const [rootPost, setRootPost] = useState<NDKEvent | null>(null);
-  const [rootPostAuthor, setRootPostAuthor] = useState<profileType>();
+  const [rootPostAuthor, setRootPostAuthor] = useState<profileType | null>(
+    null
+  );
   const [threadPost, setThreadPost] = useState<NDKEvent | null>(null);
-  const [threadPostAuthor, setThreadPostAuthor] = useState<profileType>();
+  const [threadPostAuthor, setThreadPostAuthor] = useState<profileType | null>(
+    null
+  );
   const [limitReplies, setLimitReplies] = useState(30);
   const [isBottom, setIsBottom] = useState(false);
   const [receivedZaps, setReceivedZaps] = useState<NDKEvent[]>([]);
@@ -205,6 +209,8 @@ const Note = () => {
   const fetchNote = async () => {
     try {
       setRootPost(null);
+      setRootPostAuthor(null);
+      setThreadPostAuthor(null);
       setThreadPost(null);
       setIsLoading(true);
       //@ts-ignore
@@ -214,19 +220,11 @@ const Note = () => {
 
       const tagsE = note?.tags ? getAllTags(note.tags, "e") : [];
 
-      const rootId = note?.tags && note.tags.find((r) => r[0] === "e");
+      const rootId = getRootTag(tagsE);
 
       if (rootId) {
-        note?.tags.map((n) => {
-          if (!rootId.includes("mention")) {
-            return n;
-          } else if (rootId.includes("root")) {
-            return n;
-          }
-          return "";
-        });
         //@ts-ignore
-        const rootPost = await ndk.fetchEvent({ ids: [rootId[1]] });
+        const rootPost = await ndk.fetchEvent({ ids: [rootId] });
         setRootPost(rootPost);
 
         const rootPostAuthor = rootPost
@@ -243,54 +241,25 @@ const Note = () => {
         setRootPostAuthor(authorContent);
       }
 
-      if (tagsE.length >= 2) {
-        for (const e of tagsE) {
-          if (!rootPost) {
-            if (rootId && e.includes("reply")) {
-              const threadId = e[1];
-              //@ts-ignore
-              const threadPost = await ndk.fetchEvent({ ids: [threadId] });
+      const replyId = getReplyTag(tagsE);
 
-              const threadPostAuthor = threadPost
-                ? //@ts-ignore
-                  await ndk.fetchEvent({
-                    kinds: [0],
-                    authors: [threadPost.pubkey],
-                  })
-                : null;
-              const authorContent = threadPostAuthor
-                ? JSON.parse(threadPostAuthor.content)
-                : {};
-              setThreadPost(threadPost);
+      if (replyId) {
+        //@ts-ignore
+        const threadPost = await ndk.fetchEvent({ ids: [replyId] });
 
-              setThreadPostAuthor(authorContent);
-            }
-          }
-          // else if (
-          //   e[1] !== rootId![1] &&
-          //   e.length <= 3 &&
-          //   e[1] !== noteId &&
-          //   !threadPost
-          // ) {
-          //   const threadId = e[1];
-          //   //@ts-ignore
-          //   const threadPost = await ndk.fetchEvent({ ids: [threadId] });
+        const threadPostAuthor = threadPost
+          ? //@ts-ignore
+            await ndk.fetchEvent({
+              kinds: [0],
+              authors: [threadPost.pubkey],
+            })
+          : null;
+        const authorContent = threadPostAuthor
+          ? JSON.parse(threadPostAuthor.content)
+          : {};
+        setThreadPost(threadPost);
 
-          //   const threadPostAuthor = threadPost
-          //     ? //@ts-ignore
-          //       await ndk.fetchEvent({
-          //         kinds: [0],
-          //         authors: [threadPost.pubkey],
-          //       })
-          //     : null;
-          //   const authorContent = threadPostAuthor
-          //     ? JSON.parse(threadPostAuthor.content)
-          //     : {};
-          //   setThreadPost(threadPost);
-
-          //   setThreadPostAuthor(authorContent);
-          // }
-        }
+        setThreadPostAuthor(authorContent);
       }
 
       setEvent(note);
