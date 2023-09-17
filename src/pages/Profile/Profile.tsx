@@ -408,7 +408,7 @@ const Profile = () => {
   }, [limitSentZaps]);
 
   useEffect(() => {
-    if (tabKey === "posts" && ndk instanceof NDK) {
+    if (tabKey === "posts" && ndk instanceof NDK && pubkey) {
       fetchPosts(pubkey, ndk);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

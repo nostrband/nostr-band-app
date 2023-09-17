@@ -100,7 +100,6 @@ const Note = () => {
 
   useEffect(() => {
     fetchNote();
-    fetchReplies(ndk);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -466,7 +465,7 @@ const Note = () => {
       fetchZaps(noteId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabKey, limitReplies, limitZaps]);
+  }, [tabKey, limitReplies, limitZaps, location.pathname]);
 
   const sats = stats?.zaps?.msats ? stats?.zaps?.msats / 1000 : null;
 
