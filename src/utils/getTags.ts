@@ -9,3 +9,26 @@ export function getAllTags(array: tagType, tagName: string): tagType {
   }
   return tags;
 }
+
+export function getRootTag(array: tagType): string {
+  if (array.length === 1 && !array[0].includes("mention")) {
+    return array[0][1];
+  }
+  for (const tag of array) {
+    if (tag.includes("root")) {
+      return tag[1];
+    } else if (!tag.includes("reply") && !tag.includes("mention")) {
+      return tag[1];
+    }
+  }
+  return "";
+}
+
+export function getReplyTag(array: tagType): string {
+  for (const tag of array) {
+    if (tag.includes("reply") && array.length >= 2) {
+      return tag[1];
+    }
+  }
+  return "";
+}
