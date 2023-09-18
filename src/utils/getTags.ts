@@ -25,9 +25,18 @@ export function getRootTag(array: tagType): string {
 }
 
 export function getReplyTag(array: tagType): string {
-  for (const tag of array) {
-    if (tag.includes("reply") && array.length >= 2) {
-      return tag[1];
+  const findReply = array.find((tag) => tag[3] === "reply");
+  const rootId = getRootTag(array);
+
+  if (findReply) {
+    return findReply[1];
+  } else {
+    for (const tag of array) {
+      if (tag.includes("reply") && array.length >= 2) {
+        return tag[1];
+      } else if (array.length >= 2 && tag[1] !== rootId) {
+        return tag[1];
+      }
     }
   }
   return "";
