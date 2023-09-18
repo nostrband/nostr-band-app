@@ -18,6 +18,7 @@ type addModalTypes = {
   setIsModal: (a: boolean) => void;
   selectedProfile?: profileType;
   selectedProfilePubkey?: string;
+  selectedPostId?: string;
   type: string;
 };
 
@@ -27,11 +28,12 @@ const AddModal: FC<addModalTypes> = ({
   selectedProfile,
   selectedProfilePubkey,
   type,
+  selectedPostId,
 }) => {
   const [selectedList, setSelectedList] = useState("newList");
   const [nameValue, setNameValue] = useState("");
   const store = useAppSelector((store) => store.userReducer);
-  const { setLists } = userSlice.actions;
+  const { setLists, setLabels } = userSlice.actions;
   const closeModal = (): void => setIsModal(false);
   const allLists = store.lists;
   const { publish } = useNostr();
@@ -40,7 +42,27 @@ const AddModal: FC<addModalTypes> = ({
 
   const addNewLabel = async () => {
     try {
-    } catch (e) {}
+      const msg = {
+        kind: 1985,
+        tags: [
+          ["l", nameValue, "ugc"],
+          ["L", "ugc"],
+          ["e", `${selectedPostId}`],
+        ],
+        content: "",
+        created_at: dateToUnix(),
+        pubkey: localStorage.getItem("login")!,
+      };
+      const res = await window!.nostr!.signEvent(msg);
+      //@ts-ignore
+      publish(res);
+      closeModal();
+      const updatedLabels = [...store.labels, res];
+      dispatch(setLabels(updatedLabels));
+    } catch (e) {
+      console.log(e);
+      toast.error("Failed to update list", { autoClose: 3000 });
+    }
   };
 
   const addToList = async () => {
@@ -188,7 +210,7 @@ const AddModal: FC<addModalTypes> = ({
         style={{ overlay: { zIndex: 6 } }}
       >
         <div className={cl.modalHeader}>
-          <h4>Add to list</h4>
+          <h4>New Label</h4>
           <Button
             variant="link"
             style={{ fontSize: "1.8rem", color: "black" }}

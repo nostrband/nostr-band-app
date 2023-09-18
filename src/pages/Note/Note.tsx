@@ -38,12 +38,15 @@ import { profileType, statsType } from "../../types/types.js";
 import Gallery from "../../components/Gallery/Gallery";
 import { formatContent } from "../../utils/formatContent";
 import { extractNostrStrings, replaceNostrLinks } from "../../utils/formatLink";
-import { useAppSelector } from "../../hooks/redux";
+import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import AddModal from "../../components/AddModal/AddModal";
+import { dateToUnix, useNostr } from "nostr-react";
+import { userSlice } from "../../store/reducers/UserSlice";
 
 const Note = () => {
   const store = useAppSelector((store) => store.userReducer);
   const ndk = useAppSelector((store) => store.connectionReducer.ndk);
+  const { publish } = useNostr();
   const [event, setEvent] = useState<NDKEvent | null>(null);
   const [tabKey, setTabKey] = useState("replies");
   const [isLoading, setIsLoading] = useState(false);
@@ -87,6 +90,10 @@ const Note = () => {
   const [isEmbedModal, setIsEmbedModal] = useState(false);
   const [isBannerVisible, setIsBannerVisible] = useState(false);
   const [isVisibleLabelModal, setIsVisibleLabelModal] = useState(false);
+  const renderedLabel: string[] = [];
+
+  const { setLabels } = userSlice.actions;
+  const dispatch = useAppDispatch();
 
   const location = useLocation();
 
@@ -493,12 +500,63 @@ const Note = () => {
     d.remove();
   };
 
+  const handleLabel = async (labelId: string) => {
+    const label = store.labels.find((label) => label.id === labelId);
+    const labelNotes = label && getAllTags(label.tags, "e").map((e) => e[1]);
+    try {
+      if (labelNotes?.includes(noteId)) {
+        const newLabel = label?.tags.filter((label) => label[1] !== noteId);
+        const msg = {
+          kind: 1985,
+          tags: newLabel,
+          content: "",
+          created_at: dateToUnix(),
+          pubkey: localStorage.getItem("login")!,
+        };
+        //@ts-ignore
+        const res = await window!.nostr!.signEvent(msg);
+        //@ts-ignore
+        publish(res);
+        const updatedLabels = store.labels.map((l) => {
+          if (l.id !== labelId) {
+            return l;
+          }
+          return res;
+        });
+        dispatch(setLabels(updatedLabels));
+      } else {
+        const newLabel = [...label?.tags!, ["e", noteId]];
+        const msg = {
+          kind: 1985,
+          tags: newLabel,
+          content: "",
+          created_at: dateToUnix(),
+          pubkey: localStorage.getItem("login")!,
+        };
+        //@ts-ignore
+        const res = await window!.nostr!.signEvent(msg);
+        //@ts-ignore
+        publish(res);
+        const updatedLabel = store.labels.map((l) => {
+          if (l.id !== labelId) {
+            return l;
+          }
+          return res;
+        });
+        dispatch(setLabels(updatedLabel));
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <div className={cl.noteContainer}>
       <AddModal
         isModal={isVisibleLabelModal}
         setIsModal={setIsVisibleLabelModal}
         type={"label"}
+        selectedPostId={noteId}
       />
       <EmbedModal
         isModal={isEmbedModal}
@@ -747,11 +805,11 @@ const Note = () => {
               <Dropdown>
                 <Dropdown.Toggle
                   variant={`${
-                    store.lists.some((list) => {
-                      const pksOfList = getAllTags(list.tags, "p").map(
-                        (p) => p[1]
+                    store.labels.some((label) => {
+                      const idsOfLabel = getAllTags(label.tags, "e").map(
+                        (e) => e[1]
                       );
-                      if (pksOfList.includes(pubkey)) {
+                      if (idsOfLabel.includes(noteId)) {
                         return true;
                       }
                     })
@@ -764,26 +822,26 @@ const Note = () => {
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu>
-                  {store.lists &&
+                  {store.labels &&
                     store.isAuth &&
-                    store.lists.map((list, index) => {
-                      const listLabel = getAllTags(list.tags, "d").flat();
-                      const pksOfList = getAllTags(list.tags, "p").map(
-                        (p) => p[1]
+                    store.labels.map((label) => {
+                      const listLabel = getAllTags(label.tags, "l").flat();
+                      if (renderedLabel.includes(listLabel[1])) {
+                        return null;
+                      }
+                      renderedLabel.push(listLabel[1]);
+                      const idsOfLabel = getAllTags(label.tags, "e").map(
+                        (e) => e[1]
                       );
-
-                      return !(
-                        listLabel[1].startsWith("notifications") ||
-                        listLabel[1].startsWith("chats")
-                      ) ? (
+                      return (
                         <Dropdown.Item
-                          key={index}
-                          // onClick={() => handleList(list.id)}
+                          key={label.id}
+                          onClick={() => handleLabel(label.id)}
                         >
-                          {pksOfList.includes(pubkey) && <Check />}{" "}
-                          {listLabel[1]} <strong>{pksOfList.length}</strong>
+                          {idsOfLabel.includes(noteId) && <Check />}{" "}
+                          {listLabel[1]}
                         </Dropdown.Item>
-                      ) : null;
+                      );
                     })}
                   <Dropdown.Divider />
                   <Dropdown.Item onClick={() => setIsVisibleLabelModal(true)}>

@@ -6,12 +6,14 @@ interface IUserState {
   isAuth: boolean;
   contacts: profileType;
   lists: NDKEvent[];
+  labels: NDKEvent[];
 }
 
 const initialState: IUserState = {
   isAuth: localStorage.getItem("login") ? true : false,
   contacts: {},
   lists: [],
+  labels: [],
 };
 
 export const userSlice = createSlice({
@@ -28,6 +30,10 @@ export const userSlice = createSlice({
     },
     setLists(state, action) {
       state = { ...state, lists: action.payload };
+      return state;
+    },
+    setLabels(state, action) {
+      state = { ...state, labels: action.payload };
       return state;
     },
   },
