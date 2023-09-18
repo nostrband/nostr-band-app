@@ -1,6 +1,6 @@
 import { useLocation, useParams } from "react-router-dom";
 import cl from "./Profile.module.css";
-import NDK, { NDKEvent, NDKTag, NDKUserProfile } from "@nostrband/ndk";
+import NDK, { NDKEvent, NDKUserProfile } from "@nostrband/ndk";
 import { useEffect, useState } from "react";
 import Search from "../../components/Search/Search";
 import {
@@ -38,7 +38,7 @@ import { getAllTags } from "../../utils/getTags";
 import { useNostr, dateToUnix } from "nostr-react";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { statsType } from "../../types/types";
-import AddListModal from "../../components/AddListModal/AddListModal";
+import AddModal from "../../components/AddModal/AddModal";
 
 const Profile = () => {
   const store = useAppSelector((store) => store.userReducer);
@@ -547,11 +547,12 @@ const Profile = () => {
 
   return (
     <div className={cl.profileContainer}>
-      <AddListModal
+      <AddModal
         isModal={isAddListModal}
         setIsModal={setIsAddListModal}
         selectedProfile={profile}
         selectedProfilePubkey={pubkey}
+        type="list"
       />
       <EmbedModal
         isModal={isEmbedModal}

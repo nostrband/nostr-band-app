@@ -29,6 +29,16 @@
   display: flex;
   justify-content: flex-start;
 }
+.modalBodyLabel {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  border-radius: 10px;
+}
+.modalBodyLabel div {
+  display: flex;
+  justify-content: flex-start;
+}
 .modalFooter {
   float: right;
 }

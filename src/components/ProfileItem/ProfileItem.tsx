@@ -21,7 +21,7 @@ import { toast } from "react-toastify";
 import { useNostr, dateToUnix } from "nostr-react";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { profileType, statsType } from "../../types/types";
-import AddListModal from "../AddListModal/AddListModal";
+import AddModal from "../AddModal/AddModal";
 
 type profileItemTypes = {
   img: string;
@@ -190,11 +190,12 @@ const ProfileItem: FC<profileItemTypes> = ({
 
   return (
     <div className="profile">
-      <AddListModal
+      <AddModal
         isModal={isAddListModal}
         setIsModal={setIsAddListModal}
         selectedProfile={profile}
         selectedProfilePubkey={pubKey}
+        type="list"
       />
       <div className="profile-info">
         {img && (

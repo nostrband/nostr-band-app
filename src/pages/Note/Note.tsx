@@ -19,6 +19,7 @@ import {
   X,
   ImageFill,
   PlayBtnFill,
+  Check,
 } from "react-bootstrap-icons";
 import { copyLink, copyUrl } from "../../utils/copy-funtions/copyFuntions";
 import { Button, Dropdown, Tab, Tabs } from "react-bootstrap";
@@ -38,8 +39,10 @@ import Gallery from "../../components/Gallery/Gallery";
 import { formatContent } from "../../utils/formatContent";
 import { extractNostrStrings, replaceNostrLinks } from "../../utils/formatLink";
 import { useAppSelector } from "../../hooks/redux";
+import AddModal from "../../components/AddModal/AddModal";
 
 const Note = () => {
+  const store = useAppSelector((store) => store.userReducer);
   const ndk = useAppSelector((store) => store.connectionReducer.ndk);
   const [event, setEvent] = useState<NDKEvent | null>(null);
   const [tabKey, setTabKey] = useState("replies");
@@ -83,6 +86,7 @@ const Note = () => {
   const [contentJson, setContentJson] = useState("");
   const [isEmbedModal, setIsEmbedModal] = useState(false);
   const [isBannerVisible, setIsBannerVisible] = useState(false);
+  const [isVisibleLabelModal, setIsVisibleLabelModal] = useState(false);
 
   const location = useLocation();
 
@@ -491,6 +495,11 @@ const Note = () => {
 
   return (
     <div className={cl.noteContainer}>
+      <AddModal
+        isModal={isVisibleLabelModal}
+        setIsModal={setIsVisibleLabelModal}
+        type={"label"}
+      />
       <EmbedModal
         isModal={isEmbedModal}
         setIsModal={setIsEmbedModal}
@@ -735,9 +744,53 @@ const Note = () => {
               <Button variant="outline-secondary" onClick={() => zapBtn()}>
                 <Lightning /> Zap
               </Button>
-              <Button variant="outline-secondary">
-                <Tags /> Label
-              </Button>
+              <Dropdown>
+                <Dropdown.Toggle
+                  variant={`${
+                    store.lists.some((list) => {
+                      const pksOfList = getAllTags(list.tags, "p").map(
+                        (p) => p[1]
+                      );
+                      if (pksOfList.includes(pubkey)) {
+                        return true;
+                      }
+                    })
+                      ? "outline-success"
+                      : "outline-secondary"
+                  }`}
+                  style={{ alignItems: "center" }}
+                >
+                  Label
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu>
+                  {store.lists &&
+                    store.isAuth &&
+                    store.lists.map((list, index) => {
+                      const listLabel = getAllTags(list.tags, "d").flat();
+                      const pksOfList = getAllTags(list.tags, "p").map(
+                        (p) => p[1]
+                      );
+
+                      return !(
+                        listLabel[1].startsWith("notifications") ||
+                        listLabel[1].startsWith("chats")
+                      ) ? (
+                        <Dropdown.Item
+                          key={index}
+                          // onClick={() => handleList(list.id)}
+                        >
+                          {pksOfList.includes(pubkey) && <Check />}{" "}
+                          {listLabel[1]} <strong>{pksOfList.length}</strong>
+                        </Dropdown.Item>
+                      ) : null;
+                    })}
+                  <Dropdown.Divider />
+                  <Dropdown.Item onClick={() => setIsVisibleLabelModal(true)}>
+                    New Label
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
               <Dropdown>
                 <Dropdown.Toggle
                   variant="secondary"
