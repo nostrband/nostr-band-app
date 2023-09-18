@@ -28,7 +28,7 @@ const App = () => {
   const ndk = useAppSelector((store) => store.connectionReducer.ndk);
 
   const dispatch = useAppDispatch();
-  const { setIsAuth, setContacts, setLists } = userSlice.actions;
+  const { setIsAuth, setContacts, setLists, setLabels } = userSlice.actions;
 
   useLayoutEffect(() => {
     ndk.connect();
@@ -48,8 +48,16 @@ const App = () => {
         authors: [localStorage.getItem("login")!],
       })
     );
-
     dispatch(setLists(lists));
+
+    const labels = Array.from(
+      await ndk.fetchEvents({
+        //@ts-ignore
+        kinds: [1985],
+        authors: [localStorage.getItem("login")!],
+      })
+    );
+    dispatch(setLabels(labels));
   };
 
   useEffect(() => {
