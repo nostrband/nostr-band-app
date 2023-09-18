@@ -28,7 +28,7 @@ export function getReplyTag(array: tagType): string {
   const findReply = array.find((tag) => tag[3] === "reply");
   const rootId = getRootTag(array);
 
-  if (findReply) {
+  if (findReply && array.length >= 2) {
     return findReply[1];
   } else {
     for (const tag of array) {
