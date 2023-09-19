@@ -61,7 +61,7 @@ const AddModal: FC<addModalTypes> = ({
       dispatch(setLabels(updatedLabels));
     } catch (e) {
       console.log(e);
-      toast.error("Failed to update list", { autoClose: 3000 });
+      toast.error("Failed to update label", { autoClose: 3000 });
     }
   };
 

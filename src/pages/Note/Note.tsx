@@ -20,6 +20,7 @@ import {
   ImageFill,
   PlayBtnFill,
   Check,
+  TagsFill,
 } from "react-bootstrap-icons";
 import { copyLink, copyUrl } from "../../utils/copy-funtions/copyFuntions";
 import { Button, Dropdown, Tab, Tabs } from "react-bootstrap";
@@ -818,7 +819,7 @@ const Note = () => {
                   }`}
                   style={{ alignItems: "center" }}
                 >
-                  Label
+                  <TagsFill /> Label
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu>
