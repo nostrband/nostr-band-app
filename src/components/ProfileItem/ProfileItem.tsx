@@ -254,7 +254,9 @@ const ProfileItem: FC<profileItemTypes> = ({
                 onClick={() => copyUrl(mail)}
                 className="profile-info__hero-keys-mail"
               >
-                {mailName === "_" ? mailName.replace("_", "") : mailName.slice(0, 9)}
+                {mailName === "_"
+                  ? mailName.replace("_", "")
+                  : mailName.slice(0, 9)}
                 {mailName.length >= 11 && "..."}
                 <CheckCircle />
                 {mailAdress.slice(-10)}
@@ -362,6 +364,50 @@ const ProfileItem: FC<profileItemTypes> = ({
               store.lists.map((list, index) => {
                 const listLabel = getAllTags(list.tags, "d").flat();
                 const pksOfList = getAllTags(list.tags, "p").map((p) => p[1]);
+                if (
+                  pksOfList.includes(pubKey) &&
+                  !listLabel[1].startsWith("notifications") &&
+                  !listLabel[1].startsWith("chats")
+                ) {
+                  return (
+                    <Dropdown.Item
+                      key={index}
+                      onClick={() => handleList(list.id)}
+                    >
+                      {pksOfList.includes(pubKey) && <Check />} {listLabel[1]}{" "}
+                      <strong>{pksOfList.length}</strong>
+                    </Dropdown.Item>
+                  );
+                }
+                return null;
+              })}
+            {store.lists &&
+              store.isAuth &&
+              store.lists.map((list, index) => {
+                const listLabel = getAllTags(list.tags, "d").flat();
+                const pksOfList = getAllTags(list.tags, "p").map((p) => p[1]);
+                if (
+                  !pksOfList.includes(pubKey) &&
+                  !listLabel[1].startsWith("notifications") &&
+                  !listLabel[1].startsWith("chats")
+                ) {
+                  return (
+                    <Dropdown.Item
+                      key={index}
+                      onClick={() => handleList(list.id)}
+                    >
+                      {pksOfList.includes(pubKey) && <Check />} {listLabel[1]}{" "}
+                      <strong>{pksOfList.length}</strong>
+                    </Dropdown.Item>
+                  );
+                }
+                return null;
+              })}
+            {/* {store.lists &&
+              store.isAuth &&
+              store.lists.map((list, index) => {
+                const listLabel = getAllTags(list.tags, "d").flat();
+                const pksOfList = getAllTags(list.tags, "p").map((p) => p[1]);
 
                 return !(
                   listLabel[1].startsWith("notifications") ||
@@ -375,7 +421,7 @@ const ProfileItem: FC<profileItemTypes> = ({
                     <strong>{pksOfList.length}</strong>
                   </Dropdown.Item>
                 ) : null;
-              })}
+              })} */}
             <Dropdown.Divider />
             <Dropdown.Item onClick={() => setIsAddListModal(true)}>
               New List

@@ -18,7 +18,7 @@ import {
 } from "react-bootstrap-icons";
 import axios from "axios";
 import { formatAMPM } from "../../utils/formatDate";
-import { Button } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import Dropdown from "react-bootstrap/Dropdown";
 import MarkdownComponent from "../../components/MarkdownComponent/MarkdownComponent";
 import EventItem from "./EventItem/EventItem";
@@ -37,7 +37,7 @@ import { toast } from "react-toastify";
 import { getAllTags } from "../../utils/getTags";
 import { useNostr, dateToUnix } from "nostr-react";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import { statsType } from "../../types/types";
+import { profileType, statsType } from "../../types/types";
 import AddModal from "../../components/AddModal/AddModal";
 
 const Profile = () => {
@@ -47,7 +47,7 @@ const Profile = () => {
   const [pubkey, setPubkey] = useState("");
   const [lastEvent, setLastEvent] = useState<NDKEvent | null>(null);
   const [events, setEvents] = useState<NDKEvent[]>([]);
-  const [profile, setProfile] = useState<NDKUserProfile>();
+  const [profile, setProfile] = useState<profileType>();
   const { router } = useParams();
   const npub = router;
   const [stats, setStats] = useState<statsType>({});
@@ -83,6 +83,7 @@ const Profile = () => {
   const [contactJson, setContactJson] = useState("");
   const [isEmbedModal, setIsEmbedModal] = useState(false);
   const [isAddListModal, setIsAddListModal] = useState(false);
+  const [isFullAvatar, setIsFullAvatar] = useState(false);
 
   const location = useLocation();
   const { setContacts, setLists } = userSlice.actions;
@@ -140,9 +141,12 @@ const Profile = () => {
     try {
       if (ndk instanceof NDK) {
         setIsZapLoading(true);
-        const user = ndk.getUser({ npub });
-        await user.fetchProfile();
-        const pk = user.hexpubkey();
+        // const user = ndk.getUser({ npub });
+        // await user.fetchProfile();
+        const pk = npub ? nip19.decode(npub).data.toString() : "";
+        //@ts-ignore
+        const user = await ndk.fetchEvent({ kinds: [0], authors: [pk] });
+
         setPubkey(pk);
         fetchStats(pk);
         //@ts-ignore
@@ -153,9 +157,21 @@ const Profile = () => {
         });
         setLastEvent(lastEv);
         fetchPosts(pk, ndk);
-        // console.log(user.profile);
-        setProfile(user.profile);
-        setProfileJson(JSON.stringify(user.profile, null, 2));
+        const userContent: profileType = user?.content
+          ? JSON.parse(user?.content)
+          : {};
+
+        setProfile(userContent);
+        const profileObj = {
+          content: userContent,
+          created_at: user?.created_at,
+          id: user?.id,
+          kind: "0",
+          pubkey: user?.pubkey,
+          sig: user?.sig,
+          tags: user?.tags,
+        };
+        setProfileJson(JSON.stringify(profileObj, null, 2));
         //@ts-ignore
         const contactJson = await ndk.fetchEvent({ kinds: [3], authors: [pk] });
         setContactJson(
@@ -547,6 +563,25 @@ const Profile = () => {
 
   return (
     <div className={cl.profileContainer}>
+      <Modal
+        show={isFullAvatar}
+        id={[`${cl.profileFullAvatar}`]}
+        centered
+        onHide={() => setIsFullAvatar(false)}
+      >
+        {!imgError ? (
+          <img src={profile?.picture ? profile?.picture : profile?.image} />
+        ) : (
+          <img
+            src={`https://media.nostr.band/thumbs/${pubkey.slice(
+              -4
+            )}/${pubkey}-picture-64`}
+            onError={({ currentTarget }) => {
+              currentTarget.srcset = UserIcon;
+            }}
+          />
+        )}
+      </Modal>
       <AddModal
         isModal={isAddListModal}
         setIsModal={setIsAddListModal}
@@ -602,12 +637,14 @@ const Profile = () => {
               <div className={cl.profileTitleAvatar}>
                 {!imgError && profile.image ? (
                   <img
+                    onClick={() => setIsFullAvatar(true)}
                     src={profile.image}
                     alt="Profile icon"
                     onError={() => setImgError(true)}
                   />
                 ) : (
                   <img
+                    onClick={() => setIsFullAvatar(true)}
                     src={`https://media.nostr.band/thumbs/${pubkey.slice(
                       -4
                     )}/${pubkey}-picture-64`}
@@ -620,17 +657,37 @@ const Profile = () => {
               </div>
               <div className={cl.profileInfo}>
                 <p className={cl.profileInfoName}>
-                  {profile.displayName ? profile.displayName : profile.name}
+                  {profile.display_name ? profile.display_name : profile.name}
                 </p>
                 {npub && (
-                  <p>
+                  <p onClick={() => copyUrl(npub)}>
                     <Key /> {npub.slice(0, 8)}...{npub.slice(-4)}
                   </p>
                 )}
                 {profile.nip05 && (
                   <div className={cl.profileNip}>
                     <TextCenter />{" "}
-                    <MarkdownComponent content={profile.nip05} mode={""} />
+                    <p
+                      onClick={() =>
+                        copyUrl(profile.nip05 ? profile.nip05 : "")
+                      }
+                    >
+                      {profile.nip05}
+                    </p>
+                    {/* <MarkdownComponent content={profile.nip05} mode={""} /> */}
+                  </div>
+                )}
+                {profile.lud16 && (
+                  <div className={cl.profileNip}>
+                    <LightningFill width="20px" />
+                    <p
+                      onClick={() =>
+                        copyUrl(profile.lud16 ? profile.lud16 : "")
+                      }
+                    >
+                      {profile.lud16}
+                    </p>
+                    {/* <MarkdownComponent content={profile.nip05} mode={""} /> */}
                   </div>
                 )}
               </div>
@@ -726,6 +783,54 @@ const Profile = () => {
                       const pksOfList = getAllTags(list.tags, "p").map(
                         (p) => p[1]
                       );
+                      if (
+                        pksOfList.includes(pubkey) &&
+                        !listLabel[1].startsWith("notifications") &&
+                        !listLabel[1].startsWith("chats")
+                      ) {
+                        return (
+                          <Dropdown.Item
+                            key={index}
+                            onClick={() => handleList(list.id)}
+                          >
+                            {pksOfList.includes(pubkey) && <Check />}{" "}
+                            {listLabel[1]} <strong>{pksOfList.length}</strong>
+                          </Dropdown.Item>
+                        );
+                      }
+                      return null;
+                    })}
+                  {store.lists &&
+                    store.isAuth &&
+                    store.lists.map((list, index) => {
+                      const listLabel = getAllTags(list.tags, "d").flat();
+                      const pksOfList = getAllTags(list.tags, "p").map(
+                        (p) => p[1]
+                      );
+                      if (
+                        !pksOfList.includes(pubkey) &&
+                        !listLabel[1].startsWith("notifications") &&
+                        !listLabel[1].startsWith("chats")
+                      ) {
+                        return (
+                          <Dropdown.Item
+                            key={index}
+                            onClick={() => handleList(list.id)}
+                          >
+                            {pksOfList.includes(pubkey) && <Check />}{" "}
+                            {listLabel[1]} <strong>{pksOfList.length}</strong>
+                          </Dropdown.Item>
+                        );
+                      }
+                      return null;
+                    })}
+                  {/* {store.lists &&
+                    store.isAuth &&
+                    store.lists.map((list, index) => {
+                      const listLabel = getAllTags(list.tags, "d").flat();
+                      const pksOfList = getAllTags(list.tags, "p").map(
+                        (p) => p[1]
+                      );
 
                       return !(
                         listLabel[1].startsWith("notifications") ||
@@ -739,7 +844,7 @@ const Profile = () => {
                           {listLabel[1]} <strong>{pksOfList.length}</strong>
                         </Dropdown.Item>
                       ) : null;
-                    })}
+                    })} */}
                   <Dropdown.Divider />
                   <Dropdown.Item onClick={() => setIsAddListModal(true)}>
                     New List
@@ -786,9 +891,6 @@ const Profile = () => {
                   <hr />
                   <Dropdown.Item href={`/?q=following:${npub}&type=posts`}>
                     View home feed
-                  </Dropdown.Item>
-                  <Dropdown.Item href="#/action-1">
-                    View edit history
                   </Dropdown.Item>
                   <Dropdown.Item href="#/action-1">View relays</Dropdown.Item>
                   <Dropdown.Item
@@ -840,10 +942,16 @@ const Profile = () => {
                           about={event.content}
                           pubkey={event.pubkey}
                           eventId={event.id}
-                          picture={profile.image ? profile.image : ""}
+                          picture={
+                            profile.image
+                              ? profile.image
+                              : profile.picture
+                              ? profile.picture
+                              : ""
+                          }
                           name={
-                            profile.displayName
-                              ? profile.displayName
+                            profile.display_name
+                              ? profile.display_name
                               : profile.name
                               ? profile.name
                               : ""
