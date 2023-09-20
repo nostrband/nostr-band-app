@@ -37,7 +37,7 @@ import { toast } from "react-toastify";
 import { getAllTags } from "../../utils/getTags";
 import { useNostr, dateToUnix } from "nostr-react";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
-import { statsType } from "../../types/types";
+import { profileType, statsType } from "../../types/types";
 import AddModal from "../../components/AddModal/AddModal";
 
 const Profile = () => {
@@ -47,7 +47,7 @@ const Profile = () => {
   const [pubkey, setPubkey] = useState("");
   const [lastEvent, setLastEvent] = useState<NDKEvent | null>(null);
   const [events, setEvents] = useState<NDKEvent[]>([]);
-  const [profile, setProfile] = useState<NDKUserProfile>();
+  const [profile, setProfile] = useState<profileType>();
   const { router } = useParams();
   const npub = router;
   const [stats, setStats] = useState<statsType>({});
@@ -140,9 +140,13 @@ const Profile = () => {
     try {
       if (ndk instanceof NDK) {
         setIsZapLoading(true);
-        const user = ndk.getUser({ npub });
-        await user.fetchProfile();
-        const pk = user.hexpubkey();
+        // const user = ndk.getUser({ npub });
+        // await user.fetchProfile();
+        const pk = npub ? nip19.decode(npub).data.toString() : "";
+        //@ts-ignore
+        const user = await ndk.fetchEvent({ kinds: [0], authors: [pk] });
+        console.log(user);
+
         setPubkey(pk);
         fetchStats(pk);
         //@ts-ignore
@@ -153,9 +157,18 @@ const Profile = () => {
         });
         setLastEvent(lastEv);
         fetchPosts(pk, ndk);
-        // console.log(user.profile);
-        setProfile(user.profile);
-        setProfileJson(JSON.stringify(user.profile, null, 2));
+        const userContent = user?.content ? JSON.parse(user?.content) : {};
+        setProfile(userContent);
+        const profileObj = {
+          content: userContent,
+          created_at: user?.created_at,
+          id: user?.id,
+          kind: "0",
+          pubkey: user?.pubkey,
+          sig: user?.sig,
+          tags: user?.tags,
+        };
+        setProfileJson(JSON.stringify(profileObj, null, 2));
         //@ts-ignore
         const contactJson = await ndk.fetchEvent({ kinds: [3], authors: [pk] });
         setContactJson(
@@ -620,7 +633,7 @@ const Profile = () => {
               </div>
               <div className={cl.profileInfo}>
                 <p className={cl.profileInfoName}>
-                  {profile.displayName ? profile.displayName : profile.name}
+                  {profile.display_name ? profile.display_name : profile.name}
                 </p>
                 {npub && (
                   <p onClick={() => copyUrl(npub)}>
@@ -894,8 +907,8 @@ const Profile = () => {
                           eventId={event.id}
                           picture={profile.image ? profile.image : ""}
                           name={
-                            profile.displayName
-                              ? profile.displayName
+                            profile.display_name
+                              ? profile.display_name
                               : profile.name
                               ? profile.name
                               : ""
