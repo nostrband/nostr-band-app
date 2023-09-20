@@ -623,14 +623,21 @@ const Profile = () => {
                   {profile.displayName ? profile.displayName : profile.name}
                 </p>
                 {npub && (
-                  <p>
+                  <p onClick={() => copyUrl(npub)}>
                     <Key /> {npub.slice(0, 8)}...{npub.slice(-4)}
                   </p>
                 )}
                 {profile.nip05 && (
                   <div className={cl.profileNip}>
                     <TextCenter />{" "}
-                    <MarkdownComponent content={profile.nip05} mode={""} />
+                    <p
+                      onClick={() =>
+                        copyUrl(profile.nip05 ? profile.nip05 : "")
+                      }
+                    >
+                      {profile.nip05}
+                    </p>
+                    {/* <MarkdownComponent content={profile.nip05} mode={""} /> */}
                   </div>
                 )}
               </div>
@@ -834,9 +841,6 @@ const Profile = () => {
                   <hr />
                   <Dropdown.Item href={`/?q=following:${npub}&type=posts`}>
                     View home feed
-                  </Dropdown.Item>
-                  <Dropdown.Item href="#/action-1">
-                    View edit history
                   </Dropdown.Item>
                   <Dropdown.Item href="#/action-1">View relays</Dropdown.Item>
                   <Dropdown.Item

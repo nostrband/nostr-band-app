@@ -69,6 +69,8 @@
   margin-bottom: 0.5rem;
   text-overflow: ellipsis;
   overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
 }
 .profileStats span {
   font-weight: 700;
