@@ -319,9 +319,11 @@ const ProfileItem: FC<profileItemTypes> = ({
       </div>
 
       <div className="profile-content__control">
-        <Button variant="outline-secondary">
-          <ZoomIn /> View
-        </Button>
+        <Link to={`/${npubKey}`}>
+          <Button variant="outline-secondary">
+            <ZoomIn /> View
+          </Button>
+        </Link>
         <a target="_blanc" href={`https://nostrapp.link/#${npubKey}`}>
           <Button variant="outline-secondary">
             <BoxArrowUpRight /> Open

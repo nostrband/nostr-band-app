@@ -2,19 +2,24 @@ type stringOrNumber = string | number;
 
 export function formatAMPM(date: number): string {
   let agoTime = "";
-  const timeNow = Date.now();
+  const currentTime = new Date().getTime();
+  const elapsedTime = currentTime - date;
 
-  if (timeNow - date <= 86400000) {
-    const time = new Date(timeNow - date);
-    if (time.getHours()) {
-      const hs = time.getHours();
-      agoTime = `${hs > 1 ? hs : ""} ${hs > 1 ? "hours" : "an hour"} ago`;
-    } else if (time.getMinutes()) {
-      const minutes = time.getMinutes();
+  if (currentTime - date <= 86400000) {
+    const seconds = Math.floor(elapsedTime / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+
+    if (hours >= 0) {
+      agoTime = `${hours > 1 ? hours : ""} ${
+        hours > 1 ? "hours" : "an hour"
+      } ago`;
+    } else if (minutes >= 0) {
       agoTime = `${minutes} ${minutes > 1 ? "minutes" : "minute"} ago`;
     } else {
-      const secs = time.getSeconds();
-      agoTime = `${secs} ${secs > 5 ? "seconds ago" : "right now"}`;
+      agoTime = `${seconds > 5 ? seconds : ""} ${
+        seconds > 5 ? "seconds ago" : "right now"
+      }`;
     }
   }
 
