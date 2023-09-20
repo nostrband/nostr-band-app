@@ -43,6 +43,7 @@ import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import AddModal from "../../components/AddModal/AddModal";
 import { dateToUnix, useNostr } from "nostr-react";
 import { userSlice } from "../../store/reducers/UserSlice";
+import { noteHexToNoteId } from "../../utils/decodeFunctions";
 
 const Note = () => {
   const store = useAppSelector((store) => store.userReducer);
@@ -215,7 +216,7 @@ const Note = () => {
 
   const { router } = useParams();
   const note = router;
-  const noteId = note ? nip19.decode(note).data.toString() : "";
+  const noteId = note ? noteHexToNoteId(note) : "";
 
   const fetchNote = async () => {
     try {
