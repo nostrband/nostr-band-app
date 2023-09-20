@@ -145,7 +145,6 @@ const Profile = () => {
         const pk = npub ? nip19.decode(npub).data.toString() : "";
         //@ts-ignore
         const user = await ndk.fetchEvent({ kinds: [0], authors: [pk] });
-        console.log(user);
 
         setPubkey(pk);
         fetchStats(pk);
@@ -157,7 +156,10 @@ const Profile = () => {
         });
         setLastEvent(lastEv);
         fetchPosts(pk, ndk);
-        const userContent = user?.content ? JSON.parse(user?.content) : {};
+        const userContent: profileType = user?.content
+          ? JSON.parse(user?.content)
+          : {};
+
         setProfile(userContent);
         const profileObj = {
           content: userContent,
@@ -649,6 +651,19 @@ const Profile = () => {
                       }
                     >
                       {profile.nip05}
+                    </p>
+                    {/* <MarkdownComponent content={profile.nip05} mode={""} /> */}
+                  </div>
+                )}
+                {profile.lud16 && (
+                  <div className={cl.profileNip}>
+                    <LightningFill width="20px" />
+                    <p
+                      onClick={() =>
+                        copyUrl(profile.lud16 ? profile.lud16 : "")
+                      }
+                    >
+                      {profile.lud16}
                     </p>
                     {/* <MarkdownComponent content={profile.nip05} mode={""} /> */}
                   </div>
