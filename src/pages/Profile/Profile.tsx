@@ -726,6 +726,54 @@ const Profile = () => {
                       const pksOfList = getAllTags(list.tags, "p").map(
                         (p) => p[1]
                       );
+                      if (
+                        pksOfList.includes(pubkey) &&
+                        !listLabel[1].startsWith("notifications") &&
+                        !listLabel[1].startsWith("chats")
+                      ) {
+                        return (
+                          <Dropdown.Item
+                            key={index}
+                            onClick={() => handleList(list.id)}
+                          >
+                            {pksOfList.includes(pubkey) && <Check />}{" "}
+                            {listLabel[1]} <strong>{pksOfList.length}</strong>
+                          </Dropdown.Item>
+                        );
+                      }
+                      return null;
+                    })}
+                  {store.lists &&
+                    store.isAuth &&
+                    store.lists.map((list, index) => {
+                      const listLabel = getAllTags(list.tags, "d").flat();
+                      const pksOfList = getAllTags(list.tags, "p").map(
+                        (p) => p[1]
+                      );
+                      if (
+                        !pksOfList.includes(pubkey) &&
+                        !listLabel[1].startsWith("notifications") &&
+                        !listLabel[1].startsWith("chats")
+                      ) {
+                        return (
+                          <Dropdown.Item
+                            key={index}
+                            onClick={() => handleList(list.id)}
+                          >
+                            {pksOfList.includes(pubkey) && <Check />}{" "}
+                            {listLabel[1]} <strong>{pksOfList.length}</strong>
+                          </Dropdown.Item>
+                        );
+                      }
+                      return null;
+                    })}
+                  {/* {store.lists &&
+                    store.isAuth &&
+                    store.lists.map((list, index) => {
+                      const listLabel = getAllTags(list.tags, "d").flat();
+                      const pksOfList = getAllTags(list.tags, "p").map(
+                        (p) => p[1]
+                      );
 
                       return !(
                         listLabel[1].startsWith("notifications") ||
@@ -739,7 +787,7 @@ const Profile = () => {
                           {listLabel[1]} <strong>{pksOfList.length}</strong>
                         </Dropdown.Item>
                       ) : null;
-                    })}
+                    })} */}
                   <Dropdown.Divider />
                   <Dropdown.Item onClick={() => setIsAddListModal(true)}>
                     New List
