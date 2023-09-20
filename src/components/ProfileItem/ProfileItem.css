@@ -86,6 +86,7 @@ a {
   margin-right: 0.5rem;
   color: var(--bg-secondary-color);
   cursor: pointer;
+  text-overflow: ellipsis;
 }
 .profile-info__hero-keys {
   font-size: 1.05rem;

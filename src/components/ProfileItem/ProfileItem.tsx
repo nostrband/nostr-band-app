@@ -251,13 +251,11 @@ const ProfileItem: FC<profileItemTypes> = ({
           <div className="profile-info__hero-keys">
             {mail && (
               <a
-                href={`http://localhost:3000/?trending=people`}
+                onClick={() => copyUrl(mail)}
                 className="profile-info__hero-keys-mail"
               >
-                {mailName === "_"
-                  ? mailName.replace("_", "")
-                  : mailName.slice(0, 4)}
-                ...
+                {mailName === "_" ? mailName.replace("_", "") : mailName.slice(0, 9)}
+                {mailName.length >= 11 && "..."}
                 <CheckCircle />
                 {mailAdress.slice(-10)}
               </a>
@@ -272,7 +270,7 @@ const ProfileItem: FC<profileItemTypes> = ({
               </a>
             )} */}
             <a
-              href="http://localhost:3000/"
+              onClick={() => copyUrl(npubKey)}
               className="profile-info__hero-keys-key"
             >
               <Key /> {npubKey.slice(0, 8)}...{npubKey.slice(-4)}
