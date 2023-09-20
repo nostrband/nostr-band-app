@@ -1,0 +1,36 @@
+.notFound {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-top: auto;
+  height: 83vh;
+}
+.notFoundInfo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.notFoundInfo h2 {
+  font-size: 4.5rem;
+  color: var(--bg-secondary-color);
+  font-weight: 500;
+}
+.notFoundInfoContent {
+  margin-left: 1rem;
+}
+.notFoundInfoContentTitle {
+  font-weight: 500;
+  color: black;
+  display: flex;
+  align-items: center;
+}
+.notFoundInfoContent a {
+  font-weight: 500;
+  color: var(--accent-color);
+}
+
+@media screen and (max-width: 760px) {
+  .notFoundInfo {
+    flex-direction: column;
+  }
+}

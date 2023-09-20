@@ -14,9 +14,10 @@ import React from "react";
 
 type searchTypes = {
   isLoading: boolean;
+  placeholder?: string;
 };
 
-const Search: FC<searchTypes> = ({ isLoading }) => {
+const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [inputValue, setInputValue] = useState(
@@ -61,7 +62,11 @@ const Search: FC<searchTypes> = ({ isLoading }) => {
         <Form.Control
           value={inputValue ? inputValue : ""}
           onChange={(e) => setInputValue(e.target.value)}
-          placeholder="Keyword, hashtag, pubkey or post ID"
+          placeholder={
+            placeholder
+              ? `${placeholder}`
+              : "Keyword, hashtag, pubkey or post ID"
+          }
           aria-label="Recipient's username"
           aria-describedby="basic-addon2"
           onKeyDown={searchHandleByEnter}
