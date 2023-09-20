@@ -18,7 +18,7 @@ import {
 } from "react-bootstrap-icons";
 import axios from "axios";
 import { formatAMPM } from "../../utils/formatDate";
-import { Button } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import Dropdown from "react-bootstrap/Dropdown";
 import MarkdownComponent from "../../components/MarkdownComponent/MarkdownComponent";
 import EventItem from "./EventItem/EventItem";
@@ -83,6 +83,7 @@ const Profile = () => {
   const [contactJson, setContactJson] = useState("");
   const [isEmbedModal, setIsEmbedModal] = useState(false);
   const [isAddListModal, setIsAddListModal] = useState(false);
+  const [isFullAvatar, setIsFullAvatar] = useState(false);
 
   const location = useLocation();
   const { setContacts, setLists } = userSlice.actions;
@@ -562,6 +563,25 @@ const Profile = () => {
 
   return (
     <div className={cl.profileContainer}>
+      <Modal
+        show={isFullAvatar}
+        id={[`${cl.profileFullAvatar}`]}
+        centered
+        onHide={() => setIsFullAvatar(false)}
+      >
+        {!imgError ? (
+          <img src={profile?.picture ? profile?.picture : profile?.image} />
+        ) : (
+          <img
+            src={`https://media.nostr.band/thumbs/${pubkey.slice(
+              -4
+            )}/${pubkey}-picture-64`}
+            onError={({ currentTarget }) => {
+              currentTarget.srcset = UserIcon;
+            }}
+          />
+        )}
+      </Modal>
       <AddModal
         isModal={isAddListModal}
         setIsModal={setIsAddListModal}
@@ -617,12 +637,14 @@ const Profile = () => {
               <div className={cl.profileTitleAvatar}>
                 {!imgError && profile.image ? (
                   <img
+                    onClick={() => setIsFullAvatar(true)}
                     src={profile.image}
                     alt="Profile icon"
                     onError={() => setImgError(true)}
                   />
                 ) : (
                   <img
+                    onClick={() => setIsFullAvatar(true)}
                     src={`https://media.nostr.band/thumbs/${pubkey.slice(
                       -4
                     )}/${pubkey}-picture-64`}
@@ -920,7 +942,13 @@ const Profile = () => {
                           about={event.content}
                           pubkey={event.pubkey}
                           eventId={event.id}
-                          picture={profile.image ? profile.image : ""}
+                          picture={
+                            profile.image
+                              ? profile.image
+                              : profile.picture
+                              ? profile.picture
+                              : ""
+                          }
                           name={
                             profile.display_name
                               ? profile.display_name
