@@ -55,12 +55,55 @@ const Posts = () => {
     if (ndk instanceof NDK) {
       if (searchParams.get("q")?.startsWith("following:")) {
         getFollowingPosts();
+      } else if (searchParams.get("q")?.startsWith("by:")) {
+        getUserPosts();
       } else {
         getPosts(ndk);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("q"), limitPosts]);
+
+  const getUserPosts = async () => {
+    try {
+      setIsLoading(true);
+      const userNpub = searchParams.get("q")?.match(/npub[0-9a-zA-Z]+/g)![0];
+      const userPk = userNpub ? nip19.decode(userNpub).data.toString() : "";
+      const cleanSearch = searchParams
+        .get("q")
+        ?.split(" ")
+        .filter((str) => !str.match(/by:npub[0-9a-zA-Z]+/g))
+        .join(" ");
+
+      const postsFilter = cleanSearch
+        ? {
+            kinds: [1],
+            search: cleanSearch,
+            authors: [userPk],
+            limit: limitPosts,
+          }
+        : { kinds: [1], authors: [userPk], limit: limitPosts };
+
+      const posts = Array.from(await ndk.fetchEvents(postsFilter));
+
+      const postsCount = await ndk.fetchCount(postsFilter);
+      setPostsCount(postsCount?.count ? postsCount.count : 0);
+
+      const postsAuthorsPks = posts.map((post) => post.pubkey);
+      const postsAuthors = Array.from(
+        await ndk.fetchEvents({
+          kinds: [0],
+          authors: postsAuthorsPks,
+          limit: limitPosts,
+        })
+      );
+      setPosts(posts);
+      setPostsAuthors(postsAuthors);
+      setIsLoading(false);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const getFollowingPosts = async () => {
     try {
