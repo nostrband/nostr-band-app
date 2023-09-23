@@ -1,10 +1,11 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import cl from "./Posts.module.css";
 import NDK, { NDKEvent } from "@nostrband/ndk";
 import Search from "../../../components/Search/Search";
 import { useSearchParams } from "react-router-dom";
 import PostCard from "../../../components/PostCard/PostCard";
 import { useAppSelector } from "../../../hooks/redux";
+import { nip19 } from "@nostrband/nostr-tools";
 
 const Posts = () => {
   const ndk = useAppSelector((store) => store.connectionReducer.ndk);
@@ -50,18 +51,68 @@ const Posts = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isBottom]);
 
-  useLayoutEffect(() => {
-    fetchPostsCount(ndk);
-  }, []);
-
   useEffect(() => {
     if (ndk instanceof NDK) {
-      getPosts(ndk);
+      if (searchParams.get("q")?.startsWith("following:")) {
+        getFollowingPosts();
+      } else {
+        getPosts(ndk);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("q"), limitPosts]);
 
-  const fetchPostsCount = async (ndk: NDK) => {
+  const getFollowingPosts = async () => {
+    try {
+      setIsLoading(true);
+      const userNpub = searchParams.get("q")?.match(/npub[0-9a-zA-Z]+/g)![0];
+      const userPk = userNpub ? nip19.decode(userNpub).data : "";
+      const cleanSearch = searchParams
+        .get("q")
+        ?.split(" ")
+        .filter((str) => !str.match(/following:npub[0-9a-zA-Z]+/g))
+        .join(" ");
+
+      //@ts-ignore
+      const userContacts = await ndk.fetchEvent({
+        kinds: [3],
+        authors: [userPk],
+      });
+      const followingPubkeys = userContacts
+        ? userContacts?.tags.slice(0, 500).map((contact) => contact[1])
+        : [];
+
+      const postsFilter = cleanSearch
+        ? {
+            kinds: [1],
+            search: cleanSearch,
+            authors: followingPubkeys,
+            limit: limitPosts,
+          }
+        : { kinds: [1], authors: followingPubkeys, limit: limitPosts };
+
+      const posts = Array.from(await ndk.fetchEvents(postsFilter));
+
+      const postsCount = await ndk.fetchCount(postsFilter);
+      setPostsCount(postsCount?.count ? postsCount.count : 0);
+
+      const postsAuthorsPks = posts.map((post) => post.pubkey);
+      const postsAuthors = Array.from(
+        await ndk.fetchEvents({
+          kinds: [0],
+          authors: postsAuthorsPks,
+          limit: limitPosts,
+        })
+      );
+      setPosts(posts);
+      setPostsAuthors(postsAuthors);
+      setIsLoading(false);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const fetchPostsCount = async () => {
     if (ndk instanceof NDK) {
       const postsCount = await ndk.fetchCount({
         kinds: [1],
@@ -94,6 +145,7 @@ const Posts = () => {
         );
         setPosts(posts);
         setPostsAuthors(postsAuthors);
+        fetchPostsCount();
         setIsLoading(false);
       }
     } catch (e) {
