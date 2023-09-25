@@ -17,3 +17,23 @@
 a {
   font-size: 1rem;
 }
+#profile-drop-menu {
+  display: flex;
+  align-items: center;
+}
+.profile-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.profile-avatar {
+  margin-right: 0.2rem;
+  width: 30px;
+  height: 30px;
+}
+.profile-avatar img {
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

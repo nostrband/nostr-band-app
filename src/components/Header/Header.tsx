@@ -58,7 +58,7 @@ const Header: FC<headerType> = ({ onLogin }) => {
             <NavDropdown.Item href="#action/3.1">RSS feeds</NavDropdown.Item>
             <NavDropdown.Item href="#action/3.1">Search bots</NavDropdown.Item>
           </NavDropdown>
-          {!state.isAuth ? (
+          {/* {!state.isAuth ? (
             <NavDropdown title="About " id="basic-nav-dropdown">
               <Form.Check
                 style={{ marginLeft: "16px", cursor: "pointer" }}
@@ -86,11 +86,44 @@ const Header: FC<headerType> = ({ onLogin }) => {
               />
               <NavDropdown.Item onClick={logoutBtn}>Log Out</NavDropdown.Item>
             </NavDropdown>
-          )}
+          )} */}
           {!state.isAuth && (
             <Nav.Link onClick={() => onLogin(true)}>Login</Nav.Link>
           )}
         </Nav>
+        {state.isAuth && (
+          <Nav>
+            <NavDropdown
+              id="profile-drop-menu"
+              title={
+                <div className="profile-wrapper">
+                  {state.user?.picture && (
+                    <div className="profile-avatar">
+                      <img src={state.user?.picture} />
+                    </div>
+                  )}{" "}
+                  {state.user?.display_name
+                    ? state.user?.display_name
+                    : state.user?.name
+                    ? state.user?.name
+                    : ""}
+                </div>
+              }
+            >
+              <NavDropdown.Item href="#action/3.1">Profile</NavDropdown.Item>
+              <NavDropdown.Item href="#action/3.1">Home feed</NavDropdown.Item>
+              <NavDropdown.Item href="#action/3.1">Posts</NavDropdown.Item>
+              <NavDropdown.Item href="#action/3.1">Following</NavDropdown.Item>
+              <Form.Check
+                style={{ marginLeft: "16px", cursor: "pointer" }}
+                type="switch"
+                id="custom-switch"
+                label="Dark mode"
+              />
+              <NavDropdown.Item onClick={logoutBtn}>Log Out</NavDropdown.Item>
+            </NavDropdown>
+          </Nav>
+        )}
       </Navbar.Collapse>
     </Navbar>
   );

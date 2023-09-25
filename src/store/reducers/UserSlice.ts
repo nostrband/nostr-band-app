@@ -7,6 +7,7 @@ interface IUserState {
   contacts: profileType;
   lists: NDKEvent[];
   labels: NDKEvent[];
+  user: profileType;
 }
 
 const initialState: IUserState = {
@@ -14,6 +15,7 @@ const initialState: IUserState = {
   contacts: {},
   lists: [],
   labels: [],
+  user: {},
 };
 
 export const userSlice = createSlice({
@@ -34,6 +36,10 @@ export const userSlice = createSlice({
     },
     setLabels(state, action) {
       state = { ...state, labels: action.payload };
+      return state;
+    },
+    setUser(state, action) {
+      state = { ...state, user: action.payload };
       return state;
     },
   },
