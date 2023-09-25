@@ -24,21 +24,26 @@ const relayUrls = ["wss://relay.nostr.band"];
 const App = () => {
   const [isModal, setIsModal] = useState<boolean>(false);
   const closeModal = (): void => setIsModal(false);
-  const store = useAppSelector((store: any) => store.userReducer);
+  const store = useAppSelector((store) => store.userReducer);
   const ndk = useAppSelector((store) => store.connectionReducer.ndk);
 
   const dispatch = useAppDispatch();
-  const { setIsAuth, setContacts, setLists, setLabels } = userSlice.actions;
+  const { setIsAuth, setContacts, setLists, setLabels, setUser } =
+    userSlice.actions;
 
   useLayoutEffect(() => {
     ndk.connect();
   }, []);
 
   const getUser = async (pubkey: string): Promise<void> => {
+    //@ts-ignore
+    const user = await ndk.fetchEvent({ kinds: [0], authors: [pubkey] });
+    const userContent = user?.content ? JSON.parse(user.content) : {};
+    dispatch(setUser(userContent));
+
     const contacts = Array.from(
       await ndk.fetchEvents({ kinds: [3], authors: [pubkey] })
     )[0];
-
     dispatch(setContacts(contacts));
 
     const lists = Array.from(
