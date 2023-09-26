@@ -18,7 +18,10 @@ const Gallery: FC<galleryType> = ({ contents, isBannerVisible }) => {
   };
 
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleShow = (index: number) => {
+    setShow(true);
+    setCarouselIndex(index);
+  };
 
   const windowSize = useRef(window.innerWidth);
 
@@ -62,7 +65,7 @@ const Gallery: FC<galleryType> = ({ contents, isBannerVisible }) => {
                   width="100%"
                   className="content-image"
                   src={content.url}
-                  onClick={handleShow}
+                  onClick={() => handleShow(index)}
                 />
                 <Modal
                   className={cl.modal}
