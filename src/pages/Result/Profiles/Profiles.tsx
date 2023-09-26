@@ -59,6 +59,7 @@ const Profiles = () => {
   useEffect(() => {
     if (ndk instanceof NDK) {
       fetchProfilesIds(ndk);
+      fetchProfilesCount();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("q")]);
@@ -167,7 +168,7 @@ const Profiles = () => {
           .slice()
           .sort((a, b) => compareByKeys(a, b, ids));
         setProfiles(sortedContentArray);
-        fetchProfilesCount();
+        // fetchProfilesCount();
       }
       setIsLoadingProfiles(false);
     } catch (e) {
