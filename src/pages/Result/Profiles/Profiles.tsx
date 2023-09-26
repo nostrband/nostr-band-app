@@ -6,6 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import ProfileItem from "../../../components/ProfileItem/ProfileItem";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 import { useAppSelector } from "../../../hooks/redux";
+import { nip19 } from "@nostrband/nostr-tools";
 
 const Profiles = () => {
   const ndk = useAppSelector((store) => store.connectionReducer.ndk);
@@ -51,9 +52,9 @@ const Profiles = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isBottom]);
 
-  useLayoutEffect(() => {
-    fetchProfilesCount();
-  }, []);
+  // useLayoutEffect(() => {
+  // fetchProfilesCount();
+  // }, []);
 
   useEffect(() => {
     if (ndk instanceof NDK) {
@@ -101,18 +102,55 @@ const Profiles = () => {
 
   const getProfiles = async (ndk: NDK, ids: string[]) => {
     try {
+      const search = searchParams.get("q");
       if (ndk instanceof NDK) {
         setIsLoadingProfiles(true);
-        const profiles = Array.from(
-          await ndk.fetchEvents({
+        if (search?.startsWith("following:")) {
+          const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
+          const userPk = userNpub ? nip19.decode(userNpub).data : "";
+          //@ts-ignore
+          const userContacts = await ndk.fetchEvent({
+            kinds: [3],
+            authors: [userPk],
+          });
+          const followingPubkeys = userContacts
+            ? userContacts?.tags.slice(0, 500).map((contact) => contact[1])
+            : [];
+
+          const profilesFilter = {
             kinds: [0],
             ids: ids.slice(0, limitProfiles),
-          })
-        );
-        const sortedContentArray = profiles
-          .slice()
-          .sort((a, b) => compareByKeys(a, b, ids));
-        setProfiles(sortedContentArray);
+            authors: followingPubkeys,
+          };
+
+          const profiles = Array.from(await ndk.fetchEvents(profilesFilter));
+          const sortedContentArray = profiles
+            .slice()
+            .sort((a, b) => compareByKeys(a, b, ids));
+          setProfiles(sortedContentArray);
+          setProfilesCount(
+            userContacts?.tags.length ? userContacts?.tags.length : 0
+          );
+        } else if (search?.startsWith("by:")) {
+          const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
+          const userPk = userNpub ? nip19.decode(userNpub).data : "";
+          //@ts-ignore
+          const user = await ndk.fetchEvent({ kinds: [0], authors: [userPk] });
+          setProfiles(user ? [user] : []);
+          setProfilesCount(1);
+        } else {
+          const profiles = Array.from(
+            await ndk.fetchEvents({
+              kinds: [0],
+              ids: ids.slice(0, limitProfiles),
+            })
+          );
+          const sortedContentArray = profiles
+            .slice()
+            .sort((a, b) => compareByKeys(a, b, ids));
+          setProfiles(sortedContentArray);
+          fetchProfilesCount();
+        }
         setIsLoadingProfiles(false);
       }
     } catch (e) {
@@ -125,7 +163,9 @@ const Profiles = () => {
       <Search isLoading={isLoadingProfiles} />
       <h2 className={cl.prTitle}>
         Profiles <br />
-        <span>found {profilesCount} profiles</span>
+        <span>
+          found {profilesCount} {profilesCount > 1 ? "profiles" : "profile"}
+        </span>
       </h2>
       {profiles.length !== 0 ? (
         profiles?.length ? (

@@ -7,6 +7,7 @@ import NDK, { NDKEvent } from "@nostrband/ndk";
 import { Link, useSearchParams } from "react-router-dom";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 import { useAppSelector } from "../../../hooks/redux";
+import { nip19 } from "@nostrband/nostr-tools";
 
 const AllResults = () => {
   const ndk = useAppSelector((store) => store.connectionReducer.ndk);
@@ -28,24 +29,69 @@ const AllResults = () => {
 
   const getProfiles = async (ndk: NDK) => {
     if (ndk instanceof NDK) {
+      const search = searchParams.get("q");
       setIsLoadingProfiles(true);
-      const topProfilesIds = await ndk.fetchTop({
-        kinds: [0],
+      if (search?.startsWith("following:")) {
+        const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
+        const userPk = userNpub ? nip19.decode(userNpub).data : "";
+        const cleanSearch = searchParams
+          .get("q")
+          ?.split(" ")
+          .filter((str) => !str.match(/following:npub[0-9a-zA-Z]+/g))
+          .join(" ");
         //@ts-ignore
-        search: searchParams.get("q"),
-        limit: 3,
-      });
-      const topProfiles = Array.from(
+        const userContacts = await ndk.fetchEvent({
+          kinds: [3],
+          authors: [userPk],
+        });
+        const followingPubkeys = userContacts
+          ? userContacts?.tags.slice(0, 500).map((contact) => contact[1])
+          : [];
+
+        const topProfilesFilter = cleanSearch
+          ? {
+              kinds: [0],
+              search: cleanSearch,
+              authors: followingPubkeys,
+              limit: 3,
+            }
+          : { kinds: [0], authors: followingPubkeys, limit: 3 };
+        const topProfilesIds = await ndk.fetchTop(topProfilesFilter);
+        const topProfiles = Array.from(
+          //@ts-ignore
+          await ndk.fetchEvents({ kinds: [0], ids: topProfilesIds.ids })
+        );
+        setProfiles(topProfiles);
+        setProfilesCount(
+          userContacts?.tags?.length ? userContacts?.tags?.length : 0
+        );
+      } else if (search?.startsWith("by:")) {
+        const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
+        const userPk = userNpub ? nip19.decode(userNpub).data : "";
         //@ts-ignore
-        await ndk.fetchEvents({ kinds: [0], ids: topProfilesIds.ids })
-      );
-      setProfiles(topProfiles);
-      const profilesCount = await ndk.fetchCount({
-        kinds: [0],
-        //@ts-ignore
-        search: searchParams.get("q"),
-      });
-      setProfilesCount(profilesCount?.count ? profilesCount.count : 0);
+        const user = await ndk.fetchEvent({ kinds: [0], authors: [userPk] });
+        setProfiles(user ? [user] : []);
+
+        setProfilesCount(1);
+      } else {
+        const topProfilesIds = await ndk.fetchTop({
+          kinds: [0],
+          //@ts-ignore
+          search: searchParams.get("q"),
+          limit: 3,
+        });
+        const topProfiles = Array.from(
+          //@ts-ignore
+          await ndk.fetchEvents({ kinds: [0], ids: topProfilesIds.ids })
+        );
+        setProfiles(topProfiles);
+        const profilesCount = await ndk.fetchCount({
+          kinds: [0],
+          //@ts-ignore
+          search: searchParams.get("q"),
+        });
+        setProfilesCount(profilesCount?.count ? profilesCount.count : 0);
+      }
       setIsLoadingProfiles(false);
     }
   };
@@ -53,26 +99,105 @@ const AllResults = () => {
   const getPosts = async (ndk: NDK) => {
     try {
       if (ndk instanceof NDK) {
-        const posts = Array.from(
-          await ndk.fetchEvents({
+        const search = searchParams.get("q");
+
+        if (search?.startsWith("following:")) {
+          const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
+          const userPk = userNpub ? nip19.decode(userNpub).data : "";
+          const cleanSearch = searchParams
+            .get("q")
+            ?.split(" ")
+            .filter((str) => !str.match(/following:npub[0-9a-zA-Z]+/g))
+            .join(" ");
+
+          //@ts-ignore
+          const userContacts = await ndk.fetchEvent({
+            kinds: [3],
+            authors: [userPk],
+          });
+          const followingPubkeys = userContacts
+            ? userContacts?.tags.slice(0, 500).map((contact) => contact[1])
+            : [];
+
+          const postsFilter = cleanSearch
+            ? {
+                kinds: [1],
+                search: cleanSearch,
+                authors: followingPubkeys,
+                limit: 10,
+              }
+            : { kinds: [1], authors: followingPubkeys, limit: 10 };
+
+          const posts = Array.from(await ndk.fetchEvents(postsFilter));
+
+          const postsCount = await ndk.fetchCount(postsFilter);
+          setPostsCount(postsCount?.count ? postsCount.count : 0);
+
+          const postsAuthorsPks = posts.map((post) => post.pubkey);
+          const postsAuthors = Array.from(
+            await ndk.fetchEvents({
+              kinds: [0],
+              authors: postsAuthorsPks,
+              limit: 10,
+            })
+          );
+          setPosts(posts);
+          setPostsAuthors(postsAuthors);
+        } else if (search?.startsWith("by:")) {
+          const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
+          const userPk = userNpub ? nip19.decode(userNpub).data.toString() : "";
+          const cleanSearch = searchParams
+            .get("q")
+            ?.split(" ")
+            .filter((str) => !str.match(/by:npub[0-9a-zA-Z]+/g))
+            .join(" ");
+
+          const postsFilter = cleanSearch
+            ? {
+                kinds: [1],
+                search: cleanSearch,
+                authors: [userPk],
+                limit: 10,
+              }
+            : { kinds: [1], authors: [userPk], limit: 10 };
+
+          const posts = Array.from(await ndk.fetchEvents(postsFilter));
+
+          const postsCount = await ndk.fetchCount(postsFilter);
+          setPostsCount(postsCount?.count ? postsCount.count : 0);
+
+          const postsAuthorsPks = posts.map((post) => post.pubkey);
+          const postsAuthors = Array.from(
+            await ndk.fetchEvents({
+              kinds: [0],
+              authors: postsAuthorsPks,
+              limit: 10,
+            })
+          );
+          setPosts(posts);
+          setPostsAuthors(postsAuthors);
+        } else {
+          const posts = Array.from(
+            await ndk.fetchEvents({
+              kinds: [1],
+              //@ts-ignore
+              search: search,
+              limit: 10,
+            })
+          );
+          const postsAuthorsPks = posts.map((post) => post.pubkey);
+          const postsAuthors = Array.from(
+            await ndk.fetchEvents({ kinds: [0], authors: postsAuthorsPks })
+          );
+          setPosts(posts);
+          setPostsAuthors(postsAuthors);
+          const postsCount = await ndk.fetchCount({
             kinds: [1],
             //@ts-ignore
-            search: searchParams.get("q"),
-            limit: 10,
-          })
-        );
-        const postsAuthorsPks = posts.map((post) => post.pubkey);
-        const postsAuthors = Array.from(
-          await ndk.fetchEvents({ kinds: [0], authors: postsAuthorsPks })
-        );
-        setPosts(posts);
-        setPostsAuthors(postsAuthors);
-        const postsCount = await ndk.fetchCount({
-          kinds: [1],
-          //@ts-ignore
-          search: searchParams.get("q"),
-        });
-        setPostsCount(postsCount?.count ? postsCount.count : 0);
+            search: search,
+          });
+          setPostsCount(postsCount?.count ? postsCount.count : 0);
+        }
       }
     } catch (e) {
       console.log(e);
