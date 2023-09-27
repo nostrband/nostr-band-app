@@ -131,7 +131,9 @@ const Header: FC<headerType> = ({ onLogin }) => {
               <NavDropdown.Item href={`/?q=by:${userNpub}&type=posts`}>
                 Posts
               </NavDropdown.Item>
-              <NavDropdown.Item href={`/?q=following:${userNpub}&type=profiles`}>
+              <NavDropdown.Item
+                href={`/?q=following:${userNpub}&type=profiles`}
+              >
                 Following
               </NavDropdown.Item>
               <Form.Check

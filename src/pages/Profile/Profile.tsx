@@ -635,10 +635,10 @@ const Profile = () => {
           <div className={cl.profile}>
             <div className={cl.profileTitle}>
               <div className={cl.profileTitleAvatar}>
-                {!imgError && profile.image ? (
+                {!imgError ? (
                   <img
                     onClick={() => setIsFullAvatar(true)}
-                    src={profile.image}
+                    src={profile.image ? profile.image : profile.picture}
                     alt="Profile icon"
                     onError={() => setImgError(true)}
                   />
