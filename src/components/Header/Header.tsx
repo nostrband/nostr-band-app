@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { userSlice } from "../../store/reducers/UserSlice";
 import { FC } from "react";
 import { useAppSelector } from "../../hooks/redux";
+import { nip19 } from "@nostrband/nostr-tools";
 
 type headerType = {
   onLogin: (a: boolean) => void;
@@ -17,6 +18,19 @@ const Header: FC<headerType> = ({ onLogin }) => {
   const dispatch = useDispatch();
   const { setIsAuth } = userSlice.actions;
   const state = useAppSelector((state) => state.userReducer);
+
+  const getNpub = () => {
+    try {
+      const npub = state.user?.pubkey
+        ? nip19.npubEncode(state.user?.pubkey)
+        : "";
+      return npub ? npub : "";
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const userNpub = getNpub();
 
   const logoutBtn = () => {
     localStorage.removeItem("login");
@@ -110,10 +124,16 @@ const Header: FC<headerType> = ({ onLogin }) => {
                 </div>
               }
             >
-              <NavDropdown.Item href="#action/3.1">Profile</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.1">Home feed</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.1">Posts</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.1">Following</NavDropdown.Item>
+              <NavDropdown.Item href={`/${userNpub}`}>Profile</NavDropdown.Item>
+              <NavDropdown.Item href={`/?q=following:${userNpub}&type=posts`}>
+                Home feed
+              </NavDropdown.Item>
+              <NavDropdown.Item href={`/?q=by:${userNpub}&type=posts`}>
+                Posts
+              </NavDropdown.Item>
+              <NavDropdown.Item href={`/?q=following:${userNpub}&type=profiles`}>
+                Following
+              </NavDropdown.Item>
               <Form.Check
                 style={{ marginLeft: "16px", cursor: "pointer" }}
                 type="switch"
