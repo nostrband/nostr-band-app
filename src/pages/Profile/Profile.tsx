@@ -635,10 +635,10 @@ const Profile = () => {
           <div className={cl.profile}>
             <div className={cl.profileTitle}>
               <div className={cl.profileTitleAvatar}>
-                {!imgError && profile.image ? (
+                {!imgError ? (
                   <img
                     onClick={() => setIsFullAvatar(true)}
-                    src={profile.image}
+                    src={profile.image ? profile.image : profile.picture}
                     alt="Profile icon"
                     onError={() => setImgError(true)}
                   />
@@ -701,7 +701,12 @@ const Profile = () => {
             <div className={cl.profileStats}>
               <p>
                 <span>{stats.pub_following_pubkey_count}</span> Following
-                &nbsp;&nbsp;<span>{stats.followers_pubkey_count}</span>{" "}
+                &nbsp;&nbsp;
+                <span>
+                  {stats.followers_pubkey_count
+                    ? stats.followers_pubkey_count
+                    : 0}
+                </span>{" "}
                 Followers
               </p>
             </div>

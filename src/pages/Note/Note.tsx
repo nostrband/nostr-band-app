@@ -165,7 +165,7 @@ const Note = () => {
   useEffect(() => {
     if (taggedProfiles) {
       taggedProfiles.map((profile) => {
-        if (profile instanceof Object) {
+        if (profile instanceof NDKEvent) {
           const profileContent = JSON.parse(profile.content);
           const npub = nip19.npubEncode(profile.pubkey);
           setContent(
@@ -229,7 +229,20 @@ const Note = () => {
       //@ts-ignore
       const note = await ndk.fetchEvent({ ids: [noteId] });
       const links = extractNostrStrings(note!.content);
-      setTaggedProfiles(links);
+      const pubkeys: string[] = links.map((link: string) => {
+        if (link.startsWith("npub")) {
+          return nip19.decode(link).data.toString();
+        }
+        return link;
+      });
+      const taggedUsers = pubkeys.length
+        ? Array.from(await ndk.fetchEvents({ kinds: [0], authors: pubkeys }))
+        : [];
+      const linksWithoutNpub = links.filter((link) => !link.startsWith("npub"));
+
+      const allTaggedEvents = [...linksWithoutNpub, ...taggedUsers];
+
+      setTaggedProfiles(allTaggedEvents);
 
       const tagsE = note?.tags ? getAllTags(note.tags, "e") : [];
 
