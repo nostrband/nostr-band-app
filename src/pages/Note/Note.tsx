@@ -93,6 +93,7 @@ const Note = () => {
   const [isEmbedModal, setIsEmbedModal] = useState(false);
   const [isBannerVisible, setIsBannerVisible] = useState(false);
   const [isVisibleLabelModal, setIsVisibleLabelModal] = useState(false);
+  const [repliesTagged, setRepliesTagged] = useState<(NDKEvent | string)[]>([]);
   const renderedLabel: string[] = [];
 
   const { setLabels } = userSlice.actions;
@@ -385,6 +386,21 @@ const Note = () => {
           }
           return reply;
         });
+
+        const replieLinks = replies
+          .map((event) => extractNostrStrings(event.content))
+          .flat();
+        const notNpubLinks = replieLinks.filter((r) => !r.startsWith("npub"));
+        const npubs = replieLinks.filter((r) => r.startsWith("npub"));
+        const pubkeys = npubs.map((npub) => nip19.decode(npub).data);
+
+        const repliesTaggedUsers = Array.from(
+          //@ts-ignore
+          await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
+        );
+        const allPostsTagged = [...notNpubLinks, ...repliesTaggedUsers];
+        setRepliesTagged(allPostsTagged);
+
         setReplies(replies);
 
         const authors = Array.from(
@@ -944,6 +960,7 @@ const Note = () => {
 
                       return reply ? (
                         <Reply
+                          taggedProfiles={repliesTagged}
                           key={index}
                           author={author}
                           content={reply?.content ? reply.content : ""}

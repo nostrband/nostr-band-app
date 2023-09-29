@@ -19,7 +19,7 @@ type replyTypes = {
   eventId: string;
   createdDateAt: number;
   mode?: string;
-  ndk?: NDK;
+  taggedProfiles?: (NDKEvent | string)[];
 };
 
 const Reply: FC<replyTypes> = ({
@@ -28,7 +28,7 @@ const Reply: FC<replyTypes> = ({
   eventId,
   createdDateAt,
   mode,
-  ndk,
+  taggedProfiles,
 }) => {
   const authorContent = author?.content ? JSON.parse(author.content) : "";
   const [imgError, setImgError] = useState<boolean>(false);
@@ -39,54 +39,49 @@ const Reply: FC<replyTypes> = ({
   const nprofile = pk ? nip19.nprofileEncode({ pubkey: pk }) : "";
   const npub = pk ? nip19.npubEncode(pk) : "";
   const agoTime = formatAMPM(createdDateAt * 1000);
-  const [taggedProfiles, setTaggedProfiles] = useState<(NDKEvent | string)[]>(
-    []
-  );
   const [aboutContent, setAboutContent] = useState(content);
 
-  const links = useMemo(() => extractNostrStrings(content), [content]);
-
   useEffect(() => {
-    setTaggedProfiles(links);
-  }, [links]);
+    const contentLinks = extractNostrStrings(content);
+    let newContent = content;
 
-  useEffect(() => {
-    if (taggedProfiles) {
-      taggedProfiles.map((profile) => {
-        if (profile instanceof Object) {
-          // const profileContent = JSON.parse(profile.content);
-          const npub = nip19.npubEncode(profile.pubkey);
-          setAboutContent(
-            replaceNostrLinks(
-              aboutContent,
-              npub && `@${npub.slice(0, 4)}...${npub.slice(-4)}`,
+    if (taggedProfiles && contentLinks.length) {
+      contentLinks.map((link) => {
+        if (link.startsWith("npub")) {
+          const pk = nip19.decode(link).data;
+          const findUser = taggedProfiles.find((profile) => {
+            if (profile instanceof NDKEvent) {
+              return profile.pubkey === pk;
+            }
+          });
+          if (findUser instanceof NDKEvent) {
+            const profileContent = JSON.parse(findUser.content);
+            const npub = nip19.npubEncode(findUser.pubkey);
+            newContent = replaceNostrLinks(
+              newContent,
+              profileContent?.display_name
+                ? `@${profileContent?.display_name}`
+                : `@${profileContent?.name}`,
               `nostr:${npub}`
-            )
-          );
-        } else if (profile.toString().startsWith("note")) {
-          setAboutContent(
-            replaceNostrLinks(
-              aboutContent,
-              `${profile.toString().slice(0, 10)}...${profile
-                .toString()
-                .slice(-4)}`,
-              `nostr:${profile}`
-            )
-          );
+            );
+          } else {
+            newContent = replaceNostrLinks(
+              newContent,
+              `${link.toString().slice(0, 12)}...${link.toString().slice(-4)}`,
+              `nostr:${link}`
+            );
+          }
         } else {
-          setAboutContent(
-            replaceNostrLinks(
-              aboutContent,
-              `${profile.toString().slice(0, 12)}...${profile
-                .toString()
-                .slice(-4)}`,
-              `nostr:${profile}`
-            )
+          newContent = replaceNostrLinks(
+            newContent,
+            `${link.toString().slice(0, 10)}...${link.toString().slice(-4)}`,
+            `nostr:${link}`
           );
         }
       });
     }
-  }, [taggedProfiles]);
+    setAboutContent(newContent);
+  }, []);
 
   useEffect(() => {
     if (eventId) {

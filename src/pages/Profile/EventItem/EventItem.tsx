@@ -24,7 +24,7 @@ import UserIcon from "../../../assets/user.png";
 import { nip19 } from "nostr-tools";
 import { copyUrl } from "../../../utils/copy-funtions/copyFuntions";
 import { useNavigate } from "react-router-dom";
-import NDK, { NDKEvent } from "@nostrband/ndk";
+import { NDKEvent } from "@nostrband/ndk";
 import { statsType } from "../../../types/types";
 
 type eventItemTypes = {
@@ -34,6 +34,7 @@ type eventItemTypes = {
   pubkey: string;
   createdDate: number;
   eventId: string;
+  taggedProfiles?: (NDKEvent | string)[];
 };
 
 const EventItem: FC<eventItemTypes> = ({
@@ -43,6 +44,7 @@ const EventItem: FC<eventItemTypes> = ({
   pubkey,
   createdDate,
   eventId,
+  taggedProfiles,
 }) => {
   const [imgError, setImgError] = useState(false);
   const [stats, setStats] = useState<statsType>();
@@ -51,64 +53,49 @@ const EventItem: FC<eventItemTypes> = ({
   const [show, setShow] = useState(false);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const navigate = useNavigate();
-  const [taggedProfiles, setTaggedProfiles] = useState<(NDKEvent | string)[]>(
-    []
-  );
   const [content, setContent] = useState(about);
 
-  const links = useMemo(() => extractNostrStrings(content), [content]);
-
   useEffect(() => {
-    setTaggedProfiles(links);
-  }, [links]);
+    const contentLinks = extractNostrStrings(about);
+    let newContent = about;
 
-  useEffect(() => {
-    if (taggedProfiles) {
-      taggedProfiles.map((profile) => {
-        if (profile instanceof Object) {
-          // const profileContent = JSON.parse(profile.content);
-          const npub = nip19.npubEncode(profile.pubkey);
-          setContent(
-            replaceNostrLinks(
-              content,
-              npub && `@${npub.slice(0, 4)}...${npub.slice(-4)}`,
+    if (taggedProfiles && contentLinks.length) {
+      contentLinks.map((link) => {
+        if (link.startsWith("npub")) {
+          const pk = nip19.decode(link).data;
+          const findUser = taggedProfiles.find((profile) => {
+            if (profile instanceof NDKEvent) {
+              return profile.pubkey === pk;
+            }
+          });
+          if (findUser instanceof NDKEvent) {
+            const profileContent = JSON.parse(findUser.content);
+            const npub = nip19.npubEncode(findUser.pubkey);
+            newContent = replaceNostrLinks(
+              newContent,
+              profileContent?.display_name
+                ? `@${profileContent?.display_name}`
+                : `@${profileContent?.name}`,
               `nostr:${npub}`
-            )
-          );
-        } else if (profile.toString().startsWith("note")) {
-          setContent(
-            replaceNostrLinks(
-              content,
-              `${profile.toString().slice(0, 10)}...${profile
-                .toString()
-                .slice(-4)}`,
-              `nostr:${profile}`
-            )
-          );
-        } else if (profile.toString().startsWith("npub")) {
-          setContent(
-            replaceNostrLinks(
-              content,
-              `${profile.toString().slice(0, 7)}...${profile
-                .toString()
-                .slice(-4)}`,
-              `nostr:${profile}`
-            )
-          );
+            );
+          } else {
+            newContent = replaceNostrLinks(
+              newContent,
+              `${link.toString().slice(0, 12)}...${link.toString().slice(-4)}`,
+              `nostr:${link}`
+            );
+          }
         } else {
-          setContent(
-            replaceNostrLinks(
-              content,
-              `${profile.toString().slice(0, 12)}...${profile
-                .toString()
-                .slice(-4)}`,
-              `nostr:${profile}`
-            )
+          newContent = replaceNostrLinks(
+            newContent,
+            `${link.toString().slice(0, 10)}...${link.toString().slice(-4)}`,
+            `nostr:${link}`
           );
         }
       });
     }
-  }, [taggedProfiles]);
+    setContent(newContent);
+  }, []);
 
   const npub = pubkey ? nip19.npubEncode(pubkey) : "";
   const nprofile = pubkey ? nip19.nprofileEncode({ pubkey: pubkey }) : "";
