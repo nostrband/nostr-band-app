@@ -76,14 +76,15 @@ export const defineTypeLink = (link: string) => {
 };
 
 export function extractNostrStrings(inputString: string) {
-  const nostrPattern = /nostr:[a-zA-Z0-9]+/;
-  const matches = inputString.match(nostrPattern);
+  const nostrPattern = /nostr:[a-zA-Z0-9]+/g;
+  const matches = [];
+  let match;
 
-  if (matches) {
-    return matches.map((match) => match.slice("nostr:".length));
-  } else {
-    return [];
+  while ((match = nostrPattern.exec(inputString)) !== null) {
+    matches.push(match[0].slice("nostr:".length));
   }
+
+  return matches;
 }
 
 export function replaceNostrLinks(

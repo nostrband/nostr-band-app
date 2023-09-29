@@ -93,6 +93,13 @@ const Note = () => {
   const [isEmbedModal, setIsEmbedModal] = useState(false);
   const [isBannerVisible, setIsBannerVisible] = useState(false);
   const [isVisibleLabelModal, setIsVisibleLabelModal] = useState(false);
+  const [repliesTagged, setRepliesTagged] = useState<(NDKEvent | string)[]>([]);
+  const [rootPostTaggedProfiles, setRootPostTaggedProfiles] = useState<
+    (NDKEvent | string)[]
+  >([]);
+  const [threadPostTaggedProfiles, setThreadPostTaggedProfiles] = useState<
+    (NDKEvent | string)[]
+  >([]);
   const renderedLabel: string[] = [];
 
   const { setLabels } = userSlice.actions;
@@ -163,44 +170,48 @@ const Note = () => {
   // }
 
   useEffect(() => {
-    if (taggedProfiles) {
-      taggedProfiles.map((profile) => {
-        if (profile instanceof NDKEvent) {
-          const profileContent = JSON.parse(profile.content);
-          const npub = nip19.npubEncode(profile.pubkey);
-          setContent(
-            replaceNostrLinks(
-              content,
+    const contentLinks = event?.content
+      ? extractNostrStrings(event?.content)
+      : [];
+    let newContent = event?.content ? event?.content : "";
+
+    if (taggedProfiles && contentLinks.length) {
+      contentLinks.map((link) => {
+        if (link.startsWith("npub")) {
+          const pk = nip19.decode(link).data;
+          const findUser = taggedProfiles.find((profile) => {
+            if (profile instanceof NDKEvent) {
+              return profile.pubkey === pk;
+            }
+          });
+          if (findUser instanceof NDKEvent) {
+            const profileContent = JSON.parse(findUser.content);
+            const npub = nip19.npubEncode(findUser.pubkey);
+            newContent = replaceNostrLinks(
+              newContent,
               profileContent?.display_name
                 ? `@${profileContent?.display_name}`
                 : `@${profileContent?.name}`,
               `nostr:${npub}`
-            )
-          );
-        } else if (profile.toString().startsWith("note")) {
-          setContent(
-            replaceNostrLinks(
-              content,
-              `${profile.toString().slice(0, 10)}...${profile
-                .toString()
-                .slice(-4)}`,
-              `nostr:${profile}`
-            )
-          );
+            );
+          } else {
+            newContent = replaceNostrLinks(
+              newContent,
+              `${link.toString().slice(0, 12)}...${link.toString().slice(-4)}`,
+              `nostr:${link}`
+            );
+          }
         } else {
-          setContent(
-            replaceNostrLinks(
-              content,
-              `${profile.toString().slice(0, 12)}...${profile
-                .toString()
-                .slice(-4)}`,
-              `nostr:${profile}`
-            )
+          newContent = replaceNostrLinks(
+            newContent,
+            `${link.toString().slice(0, 10)}...${link.toString().slice(-4)}`,
+            `nostr:${link}`
           );
         }
       });
     }
-  }, [taggedProfiles]);
+    setContent(newContent);
+  }, [event]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
@@ -251,6 +262,20 @@ const Note = () => {
       if (rootId) {
         //@ts-ignore
         const rootPost = await ndk.fetchEvent({ ids: [rootId] });
+        const postLinks = rootPost?.content
+          ? extractNostrStrings(rootPost?.content)
+          : [];
+        const notNpubLinks = postLinks.filter((r) => !r.startsWith("npub"));
+        const npubs = postLinks.filter((r) => r.startsWith("npub"));
+        const pubkeys = npubs.map((npub) => nip19.decode(npub).data);
+
+        const postsTaggedUsers = Array.from(
+          //@ts-ignore
+          await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
+        );
+        const allPostsTagged = [...notNpubLinks, ...postsTaggedUsers];
+        setRootPostTaggedProfiles(allPostsTagged);
+
         setRootPost(rootPost);
 
         const rootPostAuthor = rootPost
@@ -283,7 +308,21 @@ const Note = () => {
         const authorContent = threadPostAuthor
           ? JSON.parse(threadPostAuthor.content)
           : {};
+
         setThreadPost(threadPost);
+        const postLinks = threadPostAuthor?.content
+          ? extractNostrStrings(threadPostAuthor?.content)
+          : [];
+        const notNpubLinks = postLinks.filter((r) => !r.startsWith("npub"));
+        const npubs = postLinks.filter((r) => r.startsWith("npub"));
+        const pubkeys = npubs.map((npub) => nip19.decode(npub).data);
+
+        const postsTaggedUsers = Array.from(
+          //@ts-ignore
+          await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
+        );
+        const allPostsTagged = [...notNpubLinks, ...postsTaggedUsers];
+        setThreadPostTaggedProfiles(allPostsTagged);
 
         setThreadPostAuthor(authorContent);
       }
@@ -385,6 +424,21 @@ const Note = () => {
           }
           return reply;
         });
+
+        const replieLinks = replies
+          .map((event) => extractNostrStrings(event.content))
+          .flat();
+        const notNpubLinks = replieLinks.filter((r) => !r.startsWith("npub"));
+        const npubs = replieLinks.filter((r) => r.startsWith("npub"));
+        const pubkeys = npubs.map((npub) => nip19.decode(npub).data);
+
+        const repliesTaggedUsers = Array.from(
+          //@ts-ignore
+          await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
+        );
+        const allPostsTagged = [...notNpubLinks, ...repliesTaggedUsers];
+        setRepliesTagged(allPostsTagged);
+
         setReplies(replies);
 
         const authors = Array.from(
@@ -616,6 +670,7 @@ const Note = () => {
       <Search isLoading={isLoading} />
       {rootPost && rootPostAuthor ? (
         <PostCard
+          taggedProfiles={rootPostTaggedProfiles}
           name={
             rootPostAuthor.display_name
               ? rootPostAuthor.display_name
@@ -628,7 +683,6 @@ const Note = () => {
           about={rootPost.content}
           pubkey={rootPost.pubkey}
           createdDate={rootPost.created_at ? rootPost.created_at : 0}
-          ndk={ndk}
           thread={""}
         />
       ) : (
@@ -636,6 +690,7 @@ const Note = () => {
       )}
       {threadPost && threadPostAuthor && rootPostAuthor ? (
         <PostCard
+          taggedProfiles={threadPostTaggedProfiles}
           name={
             threadPostAuthor.display_name
               ? threadPostAuthor.display_name
@@ -944,6 +999,7 @@ const Note = () => {
 
                       return reply ? (
                         <Reply
+                          taggedProfiles={repliesTagged}
                           key={index}
                           author={author}
                           content={reply?.content ? reply.content : ""}

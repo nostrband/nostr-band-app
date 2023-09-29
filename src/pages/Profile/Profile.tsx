@@ -39,6 +39,7 @@ import { useNostr, dateToUnix } from "nostr-react";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { profileType, statsType } from "../../types/types";
 import AddModal from "../../components/AddModal/AddModal";
+import { extractNostrStrings } from "../../utils/formatLink";
 
 const Profile = () => {
   const store = useAppSelector((store) => store.userReducer);
@@ -84,6 +85,7 @@ const Profile = () => {
   const [isEmbedModal, setIsEmbedModal] = useState(false);
   const [isAddListModal, setIsAddListModal] = useState(false);
   const [isFullAvatar, setIsFullAvatar] = useState(false);
+  const [postsTagged, setPostsTagged] = useState<(NDKEvent | string)[]>([]);
 
   const location = useLocation();
   const { setContacts, setLists } = userSlice.actions;
@@ -207,11 +209,28 @@ const Profile = () => {
     if (ndk instanceof NDK) {
       try {
         setIsZapLoading(true);
-        const events = await ndk.fetchEvents({
-          kinds: [1],
-          authors: [pk],
-          limit: limitPosts,
-        });
+        const events = Array.from(
+          await ndk.fetchEvents({
+            kinds: [1],
+            authors: [pk],
+            limit: limitPosts,
+          })
+        );
+
+        const postsLinks = events
+          .map((event) => extractNostrStrings(event.content))
+          .flat();
+        const notNpubLinks = postsLinks.filter((r) => !r.startsWith("npub"));
+        const npubs = postsLinks.filter((r) => r.startsWith("npub"));
+        const pubkeys = npubs.map((npub) => nip19.decode(npub).data);
+
+        const postsTaggedUsers = Array.from(
+          //@ts-ignore
+          await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
+        );
+        const allPostsTagged = [...notNpubLinks, ...postsTaggedUsers];
+        setPostsTagged(allPostsTagged);
+
         setEvents(Array.from(events));
         setIsZapLoading(false);
       } catch (e) {
@@ -954,6 +973,7 @@ const Profile = () => {
                               ? profile.picture
                               : ""
                           }
+                          taggedProfiles={postsTagged}
                           name={
                             profile.display_name
                               ? profile.display_name
