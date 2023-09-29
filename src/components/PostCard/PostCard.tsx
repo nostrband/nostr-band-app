@@ -31,8 +31,8 @@ type postItemType = {
   pubkey: string;
   createdDate: number;
   eventId: string;
-  ndk?: NDK;
   thread: string;
+  taggedProfiles?: (NDKEvent | string)[];
 };
 
 const PostItem: FC<postItemType> = ({
@@ -43,7 +43,7 @@ const PostItem: FC<postItemType> = ({
   createdDate,
   eventId,
   thread,
-  ndk,
+  taggedProfiles,
 }) => {
   const [imgError, setImgError] = useState(false);
   const [stats, setStats] = useState<statsType>({});
@@ -51,56 +51,49 @@ const PostItem: FC<postItemType> = ({
   const createdDateAt = new Date(createdDate * 1000);
   const [npubKey, setNpubKey] = useState("");
   const [nprofile, setNprofile] = useState("");
-  const [taggedProfiles, setTaggedProfiles] = useState<(NDKEvent | string)[]>(
-    []
-  );
   const [content, setContent] = useState(about);
 
-  const links = useMemo(() => extractNostrStrings(content), [content]);
-
   useEffect(() => {
-    setTaggedProfiles(links);
-  }, [links]);
+    const contentLinks = extractNostrStrings(about);
+    let newContent = about;
 
-  useEffect(() => {
-    if (taggedProfiles) {
-      taggedProfiles.map((profile) => {
-        if (profile instanceof NDKEvent) {
-          const profileContent = JSON.parse(profile.content);
-          const npub = nip19.npubEncode(profile.pubkey);
-          setContent(
-            replaceNostrLinks(
-              content,
+    if (taggedProfiles && contentLinks.length) {
+      contentLinks.map((link) => {
+        if (link.startsWith("npub")) {
+          const pk = nip19.decode(link).data;
+          const findUser = taggedProfiles.find((profile) => {
+            if (profile instanceof NDKEvent) {
+              return profile.pubkey === pk;
+            }
+          });
+          if (findUser instanceof NDKEvent) {
+            const profileContent = JSON.parse(findUser.content);
+            const npub = nip19.npubEncode(findUser.pubkey);
+            newContent = replaceNostrLinks(
+              newContent,
               profileContent?.display_name
                 ? `@${profileContent?.display_name}`
                 : `@${profileContent?.name}`,
               `nostr:${npub}`
-            )
-          );
-        } else if (profile.toString().startsWith("note")) {
-          setContent(
-            replaceNostrLinks(
-              content,
-              `${profile.toString().slice(0, 10)}...${profile
-                .toString()
-                .slice(-4)}`,
-              `nostr:${profile}`
-            )
-          );
+            );
+          } else {
+            newContent = replaceNostrLinks(
+              newContent,
+              `${link.toString().slice(0, 12)}...${link.toString().slice(-4)}`,
+              `nostr:${link}`
+            );
+          }
         } else {
-          setContent(
-            replaceNostrLinks(
-              content,
-              `${profile.toString().slice(0, 12)}...${profile
-                .toString()
-                .slice(-4)}`,
-              `nostr:${profile}`
-            )
+          newContent = replaceNostrLinks(
+            newContent,
+            `${link.toString().slice(0, 10)}...${link.toString().slice(-4)}`,
+            `nostr:${link}`
           );
         }
       });
     }
-  }, [taggedProfiles]);
+    setContent(newContent);
+  }, []);
 
   const navigate = useNavigate();
 
