@@ -22,7 +22,7 @@ import { copyUrl } from "../../utils/copy-funtions/copyFuntions";
 import NDK, { NDKEvent } from "@nostrband/ndk";
 import { statsType } from "../../types/types";
 import Gallery from "../Gallery/Gallery";
-import { formatContent } from "../../utils/formatContent";
+import { formatContent, formatNostrContent } from "../../utils/formatContent";
 
 type postItemType = {
   name: string;
@@ -54,44 +54,10 @@ const PostItem: FC<postItemType> = ({
   const [content, setContent] = useState(about);
 
   useEffect(() => {
-    const contentLinks = extractNostrStrings(about);
-    let newContent = about;
-
-    if (taggedProfiles && contentLinks.length) {
-      contentLinks.map((link) => {
-        if (link.startsWith("npub")) {
-          const pk = nip19.decode(link).data;
-          const findUser = taggedProfiles.find((profile) => {
-            if (profile instanceof NDKEvent) {
-              return profile.pubkey === pk;
-            }
-          });
-          if (findUser instanceof NDKEvent) {
-            const profileContent = JSON.parse(findUser.content);
-            const npub = nip19.npubEncode(findUser.pubkey);
-            newContent = replaceNostrLinks(
-              newContent,
-              profileContent?.display_name
-                ? `@${profileContent?.display_name}`
-                : `@${profileContent?.name}`,
-              `nostr:${npub}`
-            );
-          } else {
-            newContent = replaceNostrLinks(
-              newContent,
-              `${link.toString().slice(0, 12)}...${link.toString().slice(-4)}`,
-              `nostr:${link}`
-            );
-          }
-        } else {
-          newContent = replaceNostrLinks(
-            newContent,
-            `${link.toString().slice(0, 10)}...${link.toString().slice(-4)}`,
-            `nostr:${link}`
-          );
-        }
-      });
-    }
+    const newContent = formatNostrContent(
+      about,
+      taggedProfiles ? taggedProfiles : []
+    );
     setContent(newContent);
   }, []);
 
