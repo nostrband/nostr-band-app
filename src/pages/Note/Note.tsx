@@ -37,7 +37,7 @@ import ReactModal from "react-modal";
 import EmbedModal from "../../components/EmbedModal/EmbedModal";
 import { profileType, statsType } from "../../types/types.js";
 import Gallery from "../../components/Gallery/Gallery";
-import { formatContent } from "../../utils/formatContent";
+import { formatContent, formatNostrContent } from "../../utils/formatContent";
 import { extractNostrStrings, replaceNostrLinks } from "../../utils/formatLink";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import AddModal from "../../components/AddModal/AddModal";
@@ -170,46 +170,10 @@ const Note = () => {
   // }
 
   useEffect(() => {
-    const contentLinks = event?.content
-      ? extractNostrStrings(event?.content)
-      : [];
-    let newContent = event?.content ? event?.content : "";
-
-    if (taggedProfiles && contentLinks.length) {
-      contentLinks.map((link) => {
-        if (link.startsWith("npub")) {
-          const pk = nip19.decode(link).data;
-          const findUser = taggedProfiles.find((profile) => {
-            if (profile instanceof NDKEvent) {
-              return profile.pubkey === pk;
-            }
-          });
-          if (findUser instanceof NDKEvent) {
-            const profileContent = JSON.parse(findUser.content);
-            const npub = nip19.npubEncode(findUser.pubkey);
-            newContent = replaceNostrLinks(
-              newContent,
-              profileContent?.display_name
-                ? `@${profileContent?.display_name}`
-                : `@${profileContent?.name}`,
-              `nostr:${npub}`
-            );
-          } else {
-            newContent = replaceNostrLinks(
-              newContent,
-              `${link.toString().slice(0, 12)}...${link.toString().slice(-4)}`,
-              `nostr:${link}`
-            );
-          }
-        } else {
-          newContent = replaceNostrLinks(
-            newContent,
-            `${link.toString().slice(0, 10)}...${link.toString().slice(-4)}`,
-            `nostr:${link}`
-          );
-        }
-      });
-    }
+    const newContent = formatNostrContent(
+      event?.content ? event?.content : "",
+      taggedProfiles
+    );
     setContent(newContent);
   }, [event]);
 
