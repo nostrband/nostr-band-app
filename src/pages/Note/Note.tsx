@@ -835,7 +835,10 @@ const Note = () => {
                   <BoxArrowUpRight /> Open
                 </Button>
               </a>
-              <Link to={`https://zapper.nostrapps.org/zap?id=${note}`}>
+              <Link
+                target="_blanc"
+                to={`https://zapper.nostrapps.org/zap?id=${note}`}
+              >
                 <Button variant="outline-secondary">
                   <Lightning /> Zap
                 </Button>
