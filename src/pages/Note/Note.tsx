@@ -45,6 +45,7 @@ import { dateToUnix, useNostr } from "nostr-react";
 import { userSlice } from "../../store/reducers/UserSlice";
 import { noteHexToNoteId } from "../../utils/decodeFunctions";
 import NotFound from "../NotFound/NotFound";
+import { compareByTagName } from "../../utils/sortFunctions";
 
 const Note = () => {
   const store = useAppSelector((store) => store.userReducer);
@@ -859,25 +860,28 @@ const Note = () => {
                 <Dropdown.Menu>
                   {store.labels &&
                     store.isAuth &&
-                    store.labels.map((label) => {
-                      const listLabel = getAllTags(label.tags, "l").flat();
-                      if (renderedLabel.includes(listLabel[1])) {
-                        return null;
-                      }
-                      renderedLabel.push(listLabel[1]);
-                      const idsOfLabel = getAllTags(label.tags, "e").map(
-                        (e) => e[1]
-                      );
-                      return (
-                        <Dropdown.Item
-                          key={label.id}
-                          onClick={() => handleLabel(label.id)}
-                        >
-                          {idsOfLabel.includes(noteId) && <Check />}{" "}
-                          {listLabel[1]}
-                        </Dropdown.Item>
-                      );
-                    })}
+                    store.labels
+                      .slice()
+                      .sort(compareByTagName)
+                      .map((label) => {
+                        const listLabel = getAllTags(label.tags, "l").flat();
+                        if (renderedLabel.includes(listLabel[1])) {
+                          return null;
+                        }
+                        renderedLabel.push(listLabel[1]);
+                        const idsOfLabel = getAllTags(label.tags, "e").map(
+                          (e) => e[1]
+                        );
+                        return (
+                          <Dropdown.Item
+                            key={label.id}
+                            onClick={() => handleLabel(label.id)}
+                          >
+                            {idsOfLabel.includes(noteId) && <Check />}{" "}
+                            {listLabel[1]}
+                          </Dropdown.Item>
+                        );
+                      })}
                   <Dropdown.Divider />
                   <Dropdown.Item onClick={() => setIsVisibleLabelModal(true)}>
                     New Label
