@@ -835,9 +835,11 @@ const Note = () => {
                   <BoxArrowUpRight /> Open
                 </Button>
               </a>
-              <Button variant="outline-secondary" onClick={() => zapBtn()}>
-                <Lightning /> Zap
-              </Button>
+              <Link to={`https://zapper.nostrapps.org/zap?id=${note}`}>
+                <Button variant="outline-secondary">
+                  <Lightning /> Zap
+                </Button>
+              </Link>
               <Dropdown>
                 <Dropdown.Toggle
                   variant={`${

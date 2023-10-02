@@ -22,6 +22,7 @@ import { useNostr, dateToUnix } from "nostr-react";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { profileType, statsType } from "../../types/types";
 import AddModal from "../AddModal/AddModal";
+import { compareByTagName } from "../../utils/sortFunctions";
 
 type profileItemTypes = {
   img: string;
@@ -361,48 +362,54 @@ const ProfileItem: FC<profileItemTypes> = ({
           <Dropdown.Menu>
             {store.lists &&
               store.isAuth &&
-              store.lists.map((list, index) => {
-                const listLabel = getAllTags(list.tags, "d").flat();
-                const pksOfList = getAllTags(list.tags, "p").map((p) => p[1]);
-                if (
-                  pksOfList.includes(pubKey) &&
-                  !listLabel[1].startsWith("notifications") &&
-                  !listLabel[1].startsWith("chats")
-                ) {
-                  return (
-                    <Dropdown.Item
-                      key={index}
-                      onClick={() => handleList(list.id)}
-                    >
-                      {pksOfList.includes(pubKey) && <Check />} {listLabel[1]}{" "}
-                      <strong>{pksOfList.length}</strong>
-                    </Dropdown.Item>
-                  );
-                }
-                return null;
-              })}
+              store.lists
+                .slice()
+                .sort(compareByTagName)
+                .map((list, index) => {
+                  const listLabel = getAllTags(list.tags, "d").flat();
+                  const pksOfList = getAllTags(list.tags, "p").map((p) => p[1]);
+                  if (
+                    pksOfList.includes(pubKey) &&
+                    !listLabel[1].startsWith("notifications") &&
+                    !listLabel[1].startsWith("chats")
+                  ) {
+                    return (
+                      <Dropdown.Item
+                        key={index}
+                        onClick={() => handleList(list.id)}
+                      >
+                        {pksOfList.includes(pubKey) && <Check />} {listLabel[1]}{" "}
+                        <strong>{pksOfList.length}</strong>
+                      </Dropdown.Item>
+                    );
+                  }
+                  return null;
+                })}
             {store.lists &&
               store.isAuth &&
-              store.lists.map((list, index) => {
-                const listLabel = getAllTags(list.tags, "d").flat();
-                const pksOfList = getAllTags(list.tags, "p").map((p) => p[1]);
-                if (
-                  !pksOfList.includes(pubKey) &&
-                  !listLabel[1].startsWith("notifications") &&
-                  !listLabel[1].startsWith("chats")
-                ) {
-                  return (
-                    <Dropdown.Item
-                      key={index}
-                      onClick={() => handleList(list.id)}
-                    >
-                      {pksOfList.includes(pubKey) && <Check />} {listLabel[1]}{" "}
-                      <strong>{pksOfList.length}</strong>
-                    </Dropdown.Item>
-                  );
-                }
-                return null;
-              })}
+              store.lists
+                .slice()
+                .sort(compareByTagName)
+                .map((list, index) => {
+                  const listLabel = getAllTags(list.tags, "d").flat();
+                  const pksOfList = getAllTags(list.tags, "p").map((p) => p[1]);
+                  if (
+                    !pksOfList.includes(pubKey) &&
+                    !listLabel[1].startsWith("notifications") &&
+                    !listLabel[1].startsWith("chats")
+                  ) {
+                    return (
+                      <Dropdown.Item
+                        key={index}
+                        onClick={() => handleList(list.id)}
+                      >
+                        {pksOfList.includes(pubKey) && <Check />} {listLabel[1]}{" "}
+                        <strong>{pksOfList.length}</strong>
+                      </Dropdown.Item>
+                    );
+                  }
+                  return null;
+                })}
             {/* {store.lists &&
               store.isAuth &&
               store.lists.map((list, index) => {
