@@ -767,7 +767,10 @@ const Profile = () => {
                   <BoxArrowUpRight /> Open
                 </Button>
               </a>
-              <Link to={`https://zapper.nostrapps.org/zap?id=${npub}`}>
+              <Link
+                target="_blanc"
+                to={`https://zapper.nostrapps.org/zap?id=${npub}`}
+              >
                 <Button variant="outline-secondary">
                   <Lightning /> Zap
                 </Button>
