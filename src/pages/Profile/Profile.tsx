@@ -1,4 +1,4 @@
-import { useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import cl from "./Profile.module.css";
 import NDK, { NDKEvent, NDKUserProfile } from "@nostrband/ndk";
 import { useEffect, useState } from "react";
@@ -767,9 +767,11 @@ const Profile = () => {
                   <BoxArrowUpRight /> Open
                 </Button>
               </a>
-              <Button variant="outline-secondary" onClick={() => zapBtn()}>
-                <Lightning /> Zap
-              </Button>
+              <Link to={`https://zapper.nostrapps.org/zap?id=${npub}`}>
+                <Button variant="outline-secondary">
+                  <Lightning /> Zap
+                </Button>
+              </Link>
               <Button
                 variant={`${
                   followedPubkeys.includes(pubkey)
