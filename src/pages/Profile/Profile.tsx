@@ -40,6 +40,7 @@ import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { profileType, statsType } from "../../types/types";
 import AddModal from "../../components/AddModal/AddModal";
 import { extractNostrStrings } from "../../utils/formatLink";
+import { compareByTagName } from "../../utils/sortFunctions";
 
 const Profile = () => {
   const store = useAppSelector((store) => store.userReducer);
@@ -802,52 +803,58 @@ const Profile = () => {
                 <Dropdown.Menu>
                   {store.lists &&
                     store.isAuth &&
-                    store.lists.map((list, index) => {
-                      const listLabel = getAllTags(list.tags, "d").flat();
-                      const pksOfList = getAllTags(list.tags, "p").map(
-                        (p) => p[1]
-                      );
-                      if (
-                        pksOfList.includes(pubkey) &&
-                        !listLabel[1].startsWith("notifications") &&
-                        !listLabel[1].startsWith("chats")
-                      ) {
-                        return (
-                          <Dropdown.Item
-                            key={index}
-                            onClick={() => handleList(list.id)}
-                          >
-                            {pksOfList.includes(pubkey) && <Check />}{" "}
-                            {listLabel[1]} <strong>{pksOfList.length}</strong>
-                          </Dropdown.Item>
+                    store.lists
+                      .slice()
+                      .sort(compareByTagName)
+                      .map((list, index) => {
+                        const listLabel = getAllTags(list.tags, "d").flat();
+                        const pksOfList = getAllTags(list.tags, "p").map(
+                          (p) => p[1]
                         );
-                      }
-                      return null;
-                    })}
+                        if (
+                          pksOfList.includes(pubkey) &&
+                          !listLabel[1].startsWith("notifications") &&
+                          !listLabel[1].startsWith("chats")
+                        ) {
+                          return (
+                            <Dropdown.Item
+                              key={index}
+                              onClick={() => handleList(list.id)}
+                            >
+                              {pksOfList.includes(pubkey) && <Check />}{" "}
+                              {listLabel[1]} <strong>{pksOfList.length}</strong>
+                            </Dropdown.Item>
+                          );
+                        }
+                        return null;
+                      })}
                   {store.lists &&
                     store.isAuth &&
-                    store.lists.map((list, index) => {
-                      const listLabel = getAllTags(list.tags, "d").flat();
-                      const pksOfList = getAllTags(list.tags, "p").map(
-                        (p) => p[1]
-                      );
-                      if (
-                        !pksOfList.includes(pubkey) &&
-                        !listLabel[1].startsWith("notifications") &&
-                        !listLabel[1].startsWith("chats")
-                      ) {
-                        return (
-                          <Dropdown.Item
-                            key={index}
-                            onClick={() => handleList(list.id)}
-                          >
-                            {pksOfList.includes(pubkey) && <Check />}{" "}
-                            {listLabel[1]} <strong>{pksOfList.length}</strong>
-                          </Dropdown.Item>
+                    store.lists
+                      .slice()
+                      .sort(compareByTagName)
+                      .map((list, index) => {
+                        const listLabel = getAllTags(list.tags, "d").flat();
+                        const pksOfList = getAllTags(list.tags, "p").map(
+                          (p) => p[1]
                         );
-                      }
-                      return null;
-                    })}
+                        if (
+                          !pksOfList.includes(pubkey) &&
+                          !listLabel[1].startsWith("notifications") &&
+                          !listLabel[1].startsWith("chats")
+                        ) {
+                          return (
+                            <Dropdown.Item
+                              key={index}
+                              onClick={() => handleList(list.id)}
+                            >
+                              {pksOfList.includes(pubkey) && <Check />}{" "}
+                              {listLabel[1]} <strong>{pksOfList.length}</strong>
+                            </Dropdown.Item>
+                          );
+                        }
+                        return null;
+                      })}
                   {/* {store.lists &&
                     store.isAuth &&
                     store.lists.map((list, index) => {
