@@ -3,6 +3,7 @@
   --link-color: #0a58ca;
   --nav-link-color: rgba(0, 0, 0, 0.65);
   --bg-secondary-color: #6c757d;
+  --ztr-font-size: 1rem;
 }
 
 html {
@@ -56,5 +57,8 @@ body::-webkit-scrollbar-button {
 @media screen and (max-width: 600px) {
   html {
     font-size: 14px;
+  }
+  :root {
+    --ztr-font-size: 0.85rem;
   }
 }
