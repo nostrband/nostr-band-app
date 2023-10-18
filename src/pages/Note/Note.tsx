@@ -102,16 +102,6 @@ const Note = () => {
     (NDKEvent | string)[]
   >([]);
   const renderedLabel: string[] = [];
-  const userPubkey = localStorage.getItem("login");
-  const userNpub = getUserNpub(userPubkey ?? "");
-
-  function getUserNpub(pk: string) {
-    try {
-      return nip19.npubEncode(pk);
-    } catch (e) {
-      console.log(e);
-    }
-  }
 
   const { setLabels } = userSlice.actions;
   const dispatch = useAppDispatch();
@@ -920,7 +910,7 @@ const Note = () => {
               >
                 {noteId && (
                   <div className={cl.repliesWrapper}>
-                    <Thread anchor={note} npub={userNpub} />
+                    <Thread anchor={note} />
                   </div>
                 )}
               </Tab>
