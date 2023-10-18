@@ -46,6 +46,7 @@ import { userSlice } from "../../store/reducers/UserSlice";
 import { noteHexToNoteId } from "../../utils/decodeFunctions";
 import NotFound from "../NotFound/NotFound";
 import { compareByTagName } from "../../utils/sortFunctions";
+import Thread from "../../components/Thread/Thread";
 
 const Note = () => {
   const store = useAppSelector((store) => store.userReducer);
@@ -94,7 +95,6 @@ const Note = () => {
   const [isEmbedModal, setIsEmbedModal] = useState(false);
   const [isBannerVisible, setIsBannerVisible] = useState(false);
   const [isVisibleLabelModal, setIsVisibleLabelModal] = useState(false);
-  const [repliesTagged, setRepliesTagged] = useState<(NDKEvent | string)[]>([]);
   const [rootPostTaggedProfiles, setRootPostTaggedProfiles] = useState<
     (NDKEvent | string)[]
   >([]);
@@ -102,6 +102,16 @@ const Note = () => {
     (NDKEvent | string)[]
   >([]);
   const renderedLabel: string[] = [];
+  const userPubkey = localStorage.getItem("login");
+  const userNpub = getUserNpub(userPubkey ?? "");
+
+  function getUserNpub(pk: string) {
+    try {
+      return nip19.npubEncode(pk);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   const { setLabels } = userSlice.actions;
   const dispatch = useAppDispatch();
@@ -335,7 +345,6 @@ const Note = () => {
       );
       fetchStats();
       // console.log(JSON.parse(author.content));
-      // fetchReplies(ndk);
       setIsLoading(false);
     } catch (e) {
       console.log(e);
@@ -360,65 +369,6 @@ const Note = () => {
       );
     } catch (e) {
       console.log(e);
-    }
-  };
-
-  const fetchReplies = async (ndk?: NDK | {}) => {
-    if (ndk instanceof NDK) {
-      try {
-        setIsLoading(true);
-        const repliesArr = Array.from(
-          await ndk.fetchEvents({
-            kinds: [1],
-            "#e": [noteId],
-            limit: limitReplies,
-          })
-        );
-
-        const authorPks = repliesArr.map((author) => author.pubkey);
-        const replies: NDKEvent[] = repliesArr.map((reply) => {
-          const tagsE = getAllTags(reply.tags, "e");
-
-          const eTag = tagsE.find((r: NDKTag) => r[0] === "e");
-          if (eTag && !eTag.includes("mention") && tagsE.length === 1) {
-            return reply;
-          } else if (eTag && eTag.includes("root")) {
-            return reply;
-          } else if (eTag && eTag.length <= 3) {
-            return reply;
-          }
-          return reply;
-        });
-
-        const replieLinks = replies
-          .map((event) => extractNostrStrings(event.content))
-          .flat();
-        const notNpubLinks = replieLinks.filter((r) => !r.startsWith("npub"));
-        const npubs = replieLinks.filter((r) => r.startsWith("npub"));
-        const pubkeys = npubs.map((npub) => nip19.decode(npub).data);
-
-        const repliesTaggedUsers = Array.from(
-          //@ts-ignore
-          await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
-        );
-        const allPostsTagged = [...notNpubLinks, ...repliesTaggedUsers];
-        setRepliesTagged(allPostsTagged);
-
-        setReplies(replies);
-
-        const authors = Array.from(
-          await ndk.fetchEvents({
-            kinds: [0],
-            authors: authorPks,
-            limit: limitReplies,
-          })
-        );
-
-        setAuthors(authors);
-        setIsLoading(false);
-      } catch (e) {
-        console.log(e);
-      }
     }
   };
 
@@ -505,9 +455,7 @@ const Note = () => {
   };
 
   useEffect(() => {
-    if (tabKey === "replies") {
-      fetchReplies(ndk);
-    } else if (tabKey === "zaps") {
+    if (tabKey === "zaps") {
       fetchZaps(noteId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -964,28 +912,11 @@ const Note = () => {
                   </span>
                 }
               >
-                {replies.length
-                  ? replies.map((reply, index) => {
-                      const author = authors.find(
-                        (author) => author.pubkey === reply.pubkey
-                      );
-
-                      return reply ? (
-                        <Reply
-                          taggedProfiles={repliesTagged}
-                          key={index}
-                          author={author}
-                          content={reply?.content ? reply.content : ""}
-                          eventId={reply?.id ? reply.id : ""}
-                          createdDateAt={
-                            reply.created_at ? reply.created_at : 0
-                          }
-                        />
-                      ) : (
-                        ""
-                      );
-                    })
-                  : ""}
+                {noteId && (
+                  <div className={cl.repliesWrapper}>
+                    <Thread anchor={note} npub={userNpub} />
+                  </div>
+                )}
               </Tab>
               <Tab
                 eventKey="zaps"
