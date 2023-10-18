@@ -62,7 +62,7 @@ const Note = () => {
   const [author, setAuthor] = useState<profileType>({});
   const [imgError, setImgError] = useState(false);
   const [createdTime, setCreatedTime] = useState(0);
-  const [repliesCount, setRepliesCount] = useState(0);
+  const [repliesCount, setRepliesCount] = useState<number>(0);
   const [stats, setStats] = useState<statsType>({});
   const [authors, setAuthors] = useState<NDKEvent[]>([]);
   const [replies, setReplies] = useState<NDKEvent[]>([]);
@@ -344,6 +344,7 @@ const Note = () => {
         })
       );
       fetchStats();
+      fetchCount();
       // console.log(JSON.parse(author.content));
       setIsLoading(false);
     } catch (e) {
@@ -355,18 +356,23 @@ const Note = () => {
     setLimitZaps((prevState) => prevState + 10);
   };
 
+  const fetchCount = async () => {
+    try {
+      const repliesCount = await ndk.fetchCount({ kinds: [1], "#e": [noteId] });
+      setRepliesCount(repliesCount?.count ?? 0);
+      const zapsCount = await ndk.fetchCount({ kinds: [9735], "#e": [noteId] });
+      setCountOfZaps(zapsCount?.count ?? 0);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const fetchStats = async () => {
     try {
       const { data } = await axios.get(
         `${process.env.REACT_APP_API_URL}/stats/event/${noteId}`
       );
       setStats(data.stats[noteId]);
-      setRepliesCount(
-        data.stats[noteId]?.reply_count ? data.stats[noteId]?.reply_count : 0
-      );
-      setCountOfZaps(
-        data.stats[noteId]?.zaps?.count ? data.stats[noteId]?.zaps?.count : 0
-      );
     } catch (e) {
       console.log(e);
     }

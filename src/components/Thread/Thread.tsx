@@ -4,7 +4,7 @@ import "zapthreads";
 const Thread = ({ anchor, npub }: { anchor?: string; npub?: string }) => {
   const style = document.createElement("style");
   style.innerHTML =
-    ".ztr-comment-new { display: none; } #ztr-title {display: none;}";
+    ".ztr-comment-new { display: none; } #ztr-title {display: none;} #ztr-root {margin-top: 0}";
   document.querySelector("zap-threads")?.shadowRoot &&
     document.querySelector("zap-threads")?.shadowRoot!.appendChild(style);
 
