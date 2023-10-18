@@ -1,17 +1,16 @@
 import { ZapThreadsAttributes } from "zapthreads";
 import "zapthreads";
 
-const Thread = ({ anchor, npub }: { anchor?: string; npub?: string }) => {
+const Thread = ({ anchor }: { anchor?: string; }) => {
   const style = document.createElement("style");
   style.innerHTML =
-    ".ztr-comment-new { display: none; } #ztr-title {display: none;} #ztr-root {margin-top: 0}";
+    ".ztr-comment-new { display: none; } #ztr-title {display: none;} #ztr-root {margin-top: 0} .ztr-comment-actions {display: none !important;}";
   document.querySelector("zap-threads")?.shadowRoot &&
     document.querySelector("zap-threads")?.shadowRoot!.appendChild(style);
 
   return (
     <zap-threads
       anchor={anchor ?? ""}
-      npub={npub ?? ""}
       relays={"wss://relay.nostr.band"}
     />
   );
