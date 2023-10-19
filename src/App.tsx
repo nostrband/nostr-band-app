@@ -34,6 +34,9 @@ const App = () => {
   useLayoutEffect(() => {
     ndk.connect();
     ndkAll.connect();
+    if (store.theme === "dark") {
+      document.querySelector("body")?.setAttribute("data-theme", "dark");
+    }
   }, []);
 
   const getUser = async (pubkey: string): Promise<void> => {

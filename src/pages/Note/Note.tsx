@@ -672,7 +672,9 @@ const Note = () => {
                   size="sm"
                   id="dropdown-basic"
                 ></Dropdown.Toggle>
-                <Dropdown.Menu>
+                <Dropdown.Menu
+                  variant={store.theme === "dark" ? "dark" : "light"}
+                >
                   <Dropdown.Item
                     target="_blanc"
                     href={`https://nostrapp.link/#${npubKey}`}
@@ -699,14 +701,14 @@ const Note = () => {
                 isBannerVisible ? (
                   <Button
                     onClick={() => setIsBannerVisible(false)}
-                    variant="light"
+                    variant={store.theme === "dark" ? "dark" : "light"}
                   >
                     Hide
                   </Button>
                 ) : (
                   <Button
                     onClick={() => setIsBannerVisible(true)}
-                    variant="light"
+                    variant={store.theme === "dark" ? "dark" : "light"}
                   >
                     {isSameType() ? (
                       contents[0].type === "PictureType" ? (
@@ -806,7 +808,9 @@ const Note = () => {
                   <TagsFill /> Label
                 </Dropdown.Toggle>
 
-                <Dropdown.Menu>
+                <Dropdown.Menu
+                  variant={store.theme === "dark" ? "dark" : "light"}
+                >
                   {store.labels &&
                     store.isAuth &&
                     store.labels
@@ -846,7 +850,10 @@ const Note = () => {
                   Menu
                 </Dropdown.Toggle>
 
-                <Dropdown.Menu id={cl["menu-id"]}>
+                <Dropdown.Menu
+                  variant={store.theme === "dark" ? "dark" : "light"}
+                  id={cl["menu-id"]}
+                >
                   <Dropdown.Item
                     target="_blanc"
                     href={`https://nostrapp.link/#${note}?select=true`}
@@ -924,47 +931,51 @@ const Note = () => {
                   </span>
                 }
               >
-                {receivedZaps.length && createdTimes.length
-                  ? receivedZaps.map((rzap, index) => {
-                      const cleanJSON = rzap.tags
-                        .find((item) => item[0] === "description")![1]
-                        .replace(/[^\x20-\x7E]/g, "");
-                      const pk = JSON.parse(cleanJSON).pubkey;
-                      const sender = sentAuthors.find((item) => {
-                        return item.pubkey === pk;
-                      });
-                      const senderContent = sender
-                        ? JSON.parse(sender.content)
+                {receivedZaps.length && createdTimes.length ? (
+                  receivedZaps.map((rzap, index) => {
+                    const cleanJSON = rzap.tags
+                      .find((item) => item[0] === "description")![1]
+                      .replace(/[^\x20-\x7E]/g, "");
+                    const pk = JSON.parse(cleanJSON).pubkey;
+                    const sender = sentAuthors.find((item) => {
+                      return item.pubkey === pk;
+                    });
+                    const senderContent = sender
+                      ? JSON.parse(sender.content)
+                      : "";
+
+                    const zappedPost = zappedPosts.find((item) => {
+                      const e = rzap.tags.find((item) => item[0] === "e")
+                        ? rzap.tags.find((item) => item[0] === "e")![1]
                         : "";
+                      return item.id === e;
+                    });
 
-                      const zappedPost = zappedPosts.find((item) => {
-                        const e = rzap.tags.find((item) => item[0] === "e")
-                          ? rzap.tags.find((item) => item[0] === "e")![1]
-                          : "";
-                        return item.id === e;
-                      });
-
-                      const pr = providers.find(
-                        (provider) => provider.pubkey === rzap.pubkey
-                      );
-                      const provider = pr ? JSON.parse(pr.content) : "";
-                      return (
-                        <ZapTransfer
-                          key={index}
-                          created={createdTimes[index]}
-                          sender={senderContent}
-                          amount={amountReceivedZaps[index]}
-                          receiver={author}
-                          comment={sendersComments[index]}
-                          zappedPost={zappedPost ? zappedPost.content : ""}
-                          provider={provider}
-                          eventId={zappedPost ? zappedPost?.id : ""}
-                          senderPubkey={pk}
-                          mode={""}
-                        />
-                      );
-                    })
-                  : "No received zaps"}
+                    const pr = providers.find(
+                      (provider) => provider.pubkey === rzap.pubkey
+                    );
+                    const provider = pr ? JSON.parse(pr.content) : "";
+                    return (
+                      <ZapTransfer
+                        key={index}
+                        created={createdTimes[index]}
+                        sender={senderContent}
+                        amount={amountReceivedZaps[index]}
+                        receiver={author}
+                        comment={sendersComments[index]}
+                        zappedPost={zappedPost ? zappedPost.content : ""}
+                        provider={provider}
+                        eventId={zappedPost ? zappedPost?.id : ""}
+                        senderPubkey={pk}
+                        mode={""}
+                      />
+                    );
+                  })
+                ) : (
+                  <span style={{ color: "var(--body-color)" }}>
+                    No received zaps
+                  </span>
+                )}
               </Tab>
             </Tabs>
           </div>

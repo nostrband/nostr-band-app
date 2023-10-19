@@ -13,18 +13,26 @@ const CardSkeleton = ({ cards }: { cards: number }) => {
           <div className="card-skeleton" key={index}>
             <div className="card-skeleton-header">
               <div className="left-col">
-                <Skeleton circle width="5.3rem" height="5.3rem" />
+                <Skeleton
+                  baseColor="var(--body-skeleton-color)"
+                  circle
+                  width="5.3rem"
+                  height="5.3rem"
+                />
               </div>
               <div className="right-col">
                 <Skeleton
+                  baseColor="var(--body-skeleton-color)"
                   width={windowSize.current <= 1000 ? "50%" : "30%"}
                   style={{ marginBottom: "5px" }}
                 />
                 <Skeleton
+                  baseColor="var(--body-skeleton-color)"
                   width={windowSize.current <= 1000 ? "55%" : "35%"}
                   style={{ marginBottom: "5px" }}
                 />
                 <Skeleton
+                  baseColor="var(--body-skeleton-color)"
                   width={windowSize.current <= 1000 ? "60%" : "40%"}
                   style={{ marginBottom: "5px" }}
                 />
@@ -32,6 +40,7 @@ const CardSkeleton = ({ cards }: { cards: number }) => {
             </div>
             <div>
               <Skeleton
+                baseColor="var(--body-skeleton-color)"
                 width="100%"
                 style={{ marginBottom: "5px" }}
                 count={3}

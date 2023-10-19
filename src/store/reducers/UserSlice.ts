@@ -8,6 +8,7 @@ interface IUserState {
   lists: NDKEvent[];
   labels: NDKEvent[];
   user: profileType;
+  theme: string;
 }
 
 const initialState: IUserState = {
@@ -16,6 +17,7 @@ const initialState: IUserState = {
   lists: [],
   labels: [],
   user: {},
+  theme: localStorage.getItem("theme") ?? "light",
 };
 
 export const userSlice = createSlice({
@@ -40,6 +42,10 @@ export const userSlice = createSlice({
     },
     setUser(state, action) {
       state = { ...state, user: action.payload };
+      return state;
+    },
+    setTheme(state, action) {
+      state = { ...state, theme: action.payload };
       return state;
     },
   },

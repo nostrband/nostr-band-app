@@ -11,6 +11,7 @@ import {
   createSearchParams,
 } from "react-router-dom";
 import React from "react";
+import { useAppSelector } from "../../hooks/redux";
 
 type searchTypes = {
   isLoading: boolean;
@@ -19,6 +20,7 @@ type searchTypes = {
 
 const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   const navigate = useNavigate();
+  const theme = useAppSelector((state) => state.userReducer.theme);
   const [searchParams] = useSearchParams();
   const [inputValue, setInputValue] = useState(
     searchParams.get("q") ? searchParams.get("q") : ""
@@ -60,6 +62,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
     <>
       <InputGroup className="mb-3" id="search-input">
         <Form.Control
+          className="searchInput"
           value={inputValue ? inputValue : ""}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder={
@@ -73,12 +76,17 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
         />
         {isLoading && (
           <div className="loader">
-            <Spinner size="sm" animation="border" />
+            <Spinner size="sm" animation="border" color="var(--body-color)" />
           </div>
         )}
 
-        <div id="dropdown-basic">
+        <div
+          id="dropdown-basic"
+          style={{ borderColor: theme === "dark" ? "white" : "#6c757d" }}
+        >
           <Form.Select
+            className="seachSelect"
+            color="white"
             onChange={(e) => setSelectValue(e.currentTarget.value)}
             value={selectValue ? selectValue : ""}
           >
@@ -91,10 +99,12 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
         <Button
           className="btn"
           id="search-btn"
-          variant="secondary"
+          variant={theme === "dark" ? "light" : "outline-secondary"}
           onClick={searchHandle}
         >
-          <SearchIcon />
+          <SearchIcon
+            color={theme === "dark" ? "var(--body-color)" : "black"}
+          />
         </Button>
       </InputGroup>
     </>

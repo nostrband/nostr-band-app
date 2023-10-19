@@ -649,7 +649,7 @@ const Profile = () => {
         </div>
       </ReactModal>
       <Search isLoading={isZapLoading} />
-      <h2>Profile</h2>
+      <h2 style={{ color: "var(--body-color)" }}>Profile</h2>
       {profile ? (
         <>
           <div className={cl.profile}>
@@ -805,7 +805,9 @@ const Profile = () => {
                   List
                 </Dropdown.Toggle>
 
-                <Dropdown.Menu>
+                <Dropdown.Menu
+                  variant={store.theme === "dark" ? "dark" : "light"}
+                >
                   {store.lists &&
                     store.isAuth &&
                     store.lists
@@ -896,7 +898,10 @@ const Profile = () => {
                   Menu
                 </Dropdown.Toggle>
 
-                <Dropdown.Menu id={cl["menu-id"]}>
+                <Dropdown.Menu
+                  id={cl["menu-id"]}
+                  variant={store.theme === "dark" ? "dark" : "light"}
+                >
                   <Dropdown.Item
                     target="_blanc"
                     href={`https://nostrapp.link/#${npub}?select=true`}
@@ -969,34 +974,36 @@ const Profile = () => {
                   </span>
                 }
               >
-                {events && events.length
-                  ? events.map((event) => {
-                      return (
-                        <EventItem
-                          key={event.id}
-                          createdDate={event.created_at ? event.created_at : 0}
-                          about={event.content}
-                          pubkey={event.pubkey}
-                          eventId={event.id}
-                          picture={
-                            profile.image
-                              ? profile.image
-                              : profile.picture
-                              ? profile.picture
-                              : ""
-                          }
-                          taggedProfiles={postsTagged}
-                          name={
-                            profile.display_name
-                              ? profile.display_name
-                              : profile.name
-                              ? profile.name
-                              : ""
-                          }
-                        />
-                      );
-                    })
-                  : "No posts"}
+                {events && events.length ? (
+                  events.map((event) => {
+                    return (
+                      <EventItem
+                        key={event.id}
+                        createdDate={event.created_at ? event.created_at : 0}
+                        about={event.content}
+                        pubkey={event.pubkey}
+                        eventId={event.id}
+                        picture={
+                          profile.image
+                            ? profile.image
+                            : profile.picture
+                            ? profile.picture
+                            : ""
+                        }
+                        taggedProfiles={postsTagged}
+                        name={
+                          profile.display_name
+                            ? profile.display_name
+                            : profile.name
+                            ? profile.name
+                            : ""
+                        }
+                      />
+                    );
+                  })
+                ) : (
+                  <span style={{ color: "var(--body-color)" }}>No posts</span>
+                )}
               </Tab>
               <Tab
                 eventKey="zaps"
@@ -1009,48 +1016,52 @@ const Profile = () => {
                 }
                 onClick={() => fetchZaps(pubkey)}
               >
-                {receivedZaps.length && createdTimes.length
-                  ? receivedZaps.map((author, index) => {
-                      const cleanJSON = author.tags
-                        .find((item) => item[0] === "description")![1]
-                        .replace(/[^\x20-\x7E]/g, "");
-                      const pk = JSON.parse(cleanJSON).pubkey;
-                      const sender = sentAuthors.find((item) => {
-                        return item.pubkey === pk;
-                      });
-                      const senderContent = sender
-                        ? JSON.parse(sender.content)
+                {receivedZaps.length && createdTimes.length ? (
+                  receivedZaps.map((author, index) => {
+                    const cleanJSON = author.tags
+                      .find((item) => item[0] === "description")![1]
+                      .replace(/[^\x20-\x7E]/g, "");
+                    const pk = JSON.parse(cleanJSON).pubkey;
+                    const sender = sentAuthors.find((item) => {
+                      return item.pubkey === pk;
+                    });
+                    const senderContent = sender
+                      ? JSON.parse(sender.content)
+                      : "";
+
+                    const zappedPost = zappedPosts.find((item) => {
+                      const e = author.tags.find((item) => item[0] === "e")
+                        ? author.tags.find((item) => item[0] === "e")![1]
                         : "";
+                      return item.id === e;
+                    });
 
-                      const zappedPost = zappedPosts.find((item) => {
-                        const e = author.tags.find((item) => item[0] === "e")
-                          ? author.tags.find((item) => item[0] === "e")![1]
-                          : "";
-                        return item.id === e;
-                      });
+                    const pr = providers.find(
+                      (provider) => provider.pubkey === author.pubkey
+                    );
+                    const provider = pr ? JSON.parse(pr.content) : "";
 
-                      const pr = providers.find(
-                        (provider) => provider.pubkey === author.pubkey
-                      );
-                      const provider = pr ? JSON.parse(pr.content) : "";
-
-                      return (
-                        <ZapTransfer
-                          key={index}
-                          created={createdTimes[index]}
-                          sender={senderContent}
-                          amount={amountReceivedZaps[index]}
-                          receiver={profile}
-                          comment={sendersComments[index]}
-                          zappedPost={zappedPost ? zappedPost.content : ""}
-                          provider={provider}
-                          eventId={zappedPost ? zappedPost?.id : ""}
-                          senderPubkey={pk}
-                          mode={""}
-                        />
-                      );
-                    })
-                  : "No received zaps"}
+                    return (
+                      <ZapTransfer
+                        key={index}
+                        created={createdTimes[index]}
+                        sender={senderContent}
+                        amount={amountReceivedZaps[index]}
+                        receiver={profile}
+                        comment={sendersComments[index]}
+                        zappedPost={zappedPost ? zappedPost.content : ""}
+                        provider={provider}
+                        eventId={zappedPost ? zappedPost?.id : ""}
+                        senderPubkey={pk}
+                        mode={""}
+                      />
+                    );
+                  })
+                ) : (
+                  <span style={{ color: "var(--body-color)" }}>
+                    No received zaps
+                  </span>
+                )}
               </Tab>
               <Tab
                 eventKey="zaps-sent"
@@ -1062,49 +1073,51 @@ const Profile = () => {
                   </div>
                 }
               >
-                {sentZaps.length && sentCreatedTimes.length
-                  ? sentZaps.map((author, index) => {
-                      const pk = author.tags.find(
-                        (item) => item[0] === "p"
-                      )![1];
+                {sentZaps.length && sentCreatedTimes.length ? (
+                  sentZaps.map((author, index) => {
+                    const pk = author.tags.find((item) => item[0] === "p")![1];
 
-                      const receiver = receiverAuthors.find(
-                        (item) => item.pubkey === pk
-                      );
+                    const receiver = receiverAuthors.find(
+                      (item) => item.pubkey === pk
+                    );
 
-                      const receiverContent = receiver
-                        ? JSON.parse(receiver.content)
+                    const receiverContent = receiver
+                      ? JSON.parse(receiver.content)
+                      : "";
+
+                    const zappedPost = sentZappedPosts.find((item) => {
+                      const e = author.tags.find((item) => item[0] === "e")
+                        ? author.tags.find((item) => item[0] === "e")![1]
                         : "";
+                      return item.id === e;
+                    });
 
-                      const zappedPost = sentZappedPosts.find((item) => {
-                        const e = author.tags.find((item) => item[0] === "e")
-                          ? author.tags.find((item) => item[0] === "e")![1]
-                          : "";
-                        return item.id === e;
-                      });
+                    const pr = sentProviders.find(
+                      (provider) => provider.pubkey === author.pubkey
+                    );
+                    const provider = pr ? JSON.parse(pr.content) : "";
 
-                      const pr = sentProviders.find(
-                        (provider) => provider.pubkey === author.pubkey
-                      );
-                      const provider = pr ? JSON.parse(pr.content) : "";
-
-                      return (
-                        <ZapTransfer
-                          key={index}
-                          created={sentCreatedTimes[index]}
-                          sender={profile}
-                          amount={amountSentZaps[index]}
-                          receiver={receiverContent}
-                          comment={sentComments[index]}
-                          zappedPost={zappedPost ? zappedPost.content : ""}
-                          provider={provider}
-                          senderPubkey={pk}
-                          eventId={zappedPost ? zappedPost?.id : ""}
-                          mode="sent"
-                        />
-                      );
-                    })
-                  : "No sent zaps"}
+                    return (
+                      <ZapTransfer
+                        key={index}
+                        created={sentCreatedTimes[index]}
+                        sender={profile}
+                        amount={amountSentZaps[index]}
+                        receiver={receiverContent}
+                        comment={sentComments[index]}
+                        zappedPost={zappedPost ? zappedPost.content : ""}
+                        provider={provider}
+                        senderPubkey={pk}
+                        eventId={zappedPost ? zappedPost?.id : ""}
+                        mode="sent"
+                      />
+                    );
+                  })
+                ) : (
+                  <span style={{ color: "var(--body-color)" }}>
+                    No sent zaps
+                  </span>
+                )}
               </Tab>
             </Tabs>
           </div>

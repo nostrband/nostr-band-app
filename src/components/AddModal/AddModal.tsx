@@ -103,7 +103,7 @@ const AddModal: FC<addModalTypes> = ({
         onRequestClose={closeModal}
         ariaHideApp={false}
         className={cl.addListModal}
-        style={{ overlay: { zIndex: 6 } }}
+        style={{ overlay: { zIndex: 6, background: "rgba(0,0,0,0.4)" } }}
       >
         <div className={cl.modalHeader}>
           <h4>Add to list</h4>
@@ -112,7 +112,7 @@ const AddModal: FC<addModalTypes> = ({
             style={{ fontSize: "1.8rem", color: "black" }}
             onClick={closeModal}
           >
-            <X />
+            <X color="var(--body-color)" />
           </Button>
         </div>
         <hr />
@@ -121,7 +121,7 @@ const AddModal: FC<addModalTypes> = ({
             <strong>Select list:</strong>
           </Form.Label>
           <Form.Select
-            id="select-list"
+            id={cl["select-list"]}
             aria-label="Default select example"
             value={selectedList}
             onChange={(e) => setSelectedList(e.target.value)}
@@ -145,7 +145,7 @@ const AddModal: FC<addModalTypes> = ({
               value={nameValue}
               onChange={(e) => setNameValue(e.target.value)}
               type="text"
-              id="inputListName"
+              id={cl["inputListName"]}
               placeholder="Enter List Name"
             />
           </>
@@ -207,7 +207,7 @@ const AddModal: FC<addModalTypes> = ({
         onRequestClose={closeModal}
         ariaHideApp={false}
         className={cl.addListModal}
-        style={{ overlay: { zIndex: 6 } }}
+        style={{ overlay: { zIndex: 6, background: "rgba(0,0,0,0.4)" } }}
       >
         <div className={cl.modalHeader}>
           <h4>New Label</h4>
@@ -216,7 +216,7 @@ const AddModal: FC<addModalTypes> = ({
             style={{ fontSize: "1.8rem", color: "black" }}
             onClick={closeModal}
           >
-            <X />
+            <X color="var(--body-color)" />
           </Button>
         </div>
         <hr />
@@ -233,7 +233,7 @@ const AddModal: FC<addModalTypes> = ({
             value={nameValue}
             onChange={(e) => setNameValue(e.target.value)}
             type="text"
-            id="inputListName"
+            id={cl["inputListName"]}
             placeholder={`I.e. "epic fails" or "best quotes"`}
           />
         </div>

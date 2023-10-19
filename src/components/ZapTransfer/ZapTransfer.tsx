@@ -80,7 +80,7 @@ const ZapTransfer: FC<zapTypes> = ({
               </Link>
             )
           ) : (
-            "Unknown"
+            <span className={cl.unknownUser}>Unknown</span>
           )}
         </div>
         <div className={cl.zapsAmount}>
@@ -140,7 +140,7 @@ const ZapTransfer: FC<zapTypes> = ({
               </Link>
             )
           ) : (
-            "Unknown"
+            <span className={cl.unknownUser}>Unknown</span>
           )}
         </div>
       </div>

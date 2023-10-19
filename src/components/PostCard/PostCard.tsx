@@ -11,7 +11,6 @@ import {
   PlayBtnFill,
   X,
 } from "react-bootstrap-icons";
-import { extractNostrStrings, replaceNostrLinks } from "../../utils/formatLink";
 import { Button } from "react-bootstrap";
 import { formatAMPM } from "../../utils/formatDate";
 import MarkdownComponent from "../MarkdownComponent/MarkdownComponent";
@@ -19,10 +18,11 @@ import UserIcon from "../../assets/user.png";
 import { Link, useNavigate } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import { copyUrl } from "../../utils/copy-funtions/copyFuntions";
-import NDK, { NDKEvent } from "@nostrband/ndk";
+import { NDKEvent } from "@nostrband/ndk";
 import { statsType } from "../../types/types";
 import Gallery from "../Gallery/Gallery";
 import { formatContent, formatNostrContent } from "../../utils/formatContent";
+import { useAppSelector } from "../../hooks/redux";
 
 type postItemType = {
   name: string;
@@ -52,6 +52,7 @@ const PostItem: FC<postItemType> = ({
   const [npubKey, setNpubKey] = useState("");
   const [nprofile, setNprofile] = useState("");
   const [content, setContent] = useState(about);
+  const theme = useAppSelector((store) => store.userReducer.theme);
 
   useEffect(() => {
     const newContent = formatNostrContent(
@@ -127,7 +128,7 @@ const PostItem: FC<postItemType> = ({
         </Link>
         <Dropdown id="profile-dropdown" className="profile-dropdown">
           <Dropdown.Toggle size="sm" id="dropdown-basic"></Dropdown.Toggle>
-          <Dropdown.Menu>
+          <Dropdown.Menu variant={theme === "dark" ? "dark" : "light"}>
             <Dropdown.Item target="_blanc">
               <Link to={`/${npubKey}`} style={{ all: "unset" }}>
                 Open
@@ -202,11 +203,17 @@ const PostItem: FC<postItemType> = ({
       <div className={cl.btnLink}>
         {contents && contents.length ? (
           isBannerVisible ? (
-            <Button onClick={() => setIsBannerVisible(false)} variant="light">
+            <Button
+              onClick={() => setIsBannerVisible(false)}
+              variant={theme === "dark" ? "dark" : "light"}
+            >
               Hide
             </Button>
           ) : (
-            <Button onClick={() => setIsBannerVisible(true)} variant="light">
+            <Button
+              onClick={() => setIsBannerVisible(true)}
+              variant={theme === "dark" ? "dark" : "light"}
+            >
               {isSameType() ? (
                 contents[0].type === "PictureType" ? (
                   <>
