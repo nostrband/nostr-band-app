@@ -25,7 +25,7 @@ const App = () => {
   const [isModal, setIsModal] = useState<boolean>(false);
   const closeModal = (): void => setIsModal(false);
   const store = useAppSelector((store) => store.userReducer);
-  const ndk = useAppSelector((store) => store.connectionReducer.ndk);
+  const { ndk, ndkAll } = useAppSelector((store) => store.connectionReducer);
 
   const dispatch = useAppDispatch();
   const { setIsAuth, setContacts, setLists, setLabels, setUser } =
@@ -33,6 +33,7 @@ const App = () => {
 
   useLayoutEffect(() => {
     ndk.connect();
+    ndkAll.connect();
   }, []);
 
   const getUser = async (pubkey: string): Promise<void> => {
