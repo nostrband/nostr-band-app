@@ -3,7 +3,7 @@ import Search from "../../components/Search/Search";
 import cl from "./Note.module.css";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { nip19 } from "nostr-tools";
-import NDK, { NDKEvent, NDKTag } from "@nostrband/ndk";
+import NDK, { NDKEvent } from "@nostrband/ndk";
 import UserIcon from "../../assets/user.png";
 import {
   ArrowRepeat,
@@ -13,7 +13,6 @@ import {
   BoxArrowUpRight,
   Share,
   FileEarmarkPlus,
-  Tags,
   Reply as ReplyIcon,
   LightningFill,
   X,
@@ -28,7 +27,6 @@ import MarkdownComponent from "../../components/MarkdownComponent/MarkdownCompon
 import { formatAMPM } from "../../utils/formatDate";
 import axios from "axios";
 import NoteSkeleton from "./NoteSkeleton/NoteSkeleton";
-import Reply from "../../components/Reply/Reply";
 import PostCard from "../../components/PostCard/PostCard";
 import { getAllTags, getReplyTag, getRootTag } from "../../utils/getTags";
 import { getZapAmount } from "../../utils/zapFunctions";
@@ -50,7 +48,7 @@ import Thread from "../../components/Thread/Thread";
 
 const Note = () => {
   const store = useAppSelector((store) => store.userReducer);
-  const ndk = useAppSelector((store) => store.connectionReducer.ndk);
+  const { ndk, ndkAll } = useAppSelector((store) => store.connectionReducer);
   const { publish } = useNostr();
   const [event, setEvent] = useState<NDKEvent | null>(null);
   const [tabKey, setTabKey] = useState("replies");
@@ -373,7 +371,7 @@ const Note = () => {
       if (ndk instanceof NDK) {
         setIsLoading(true);
         const zaps = Array.from(
-          await ndk.fetchEvents({
+          await ndkAll.fetchEvents({
             kinds: [9735],
             "#e": [eventId],
             limit: limitZaps,
@@ -639,29 +637,31 @@ const Note = () => {
               </p>
             )}
             <div className={cl.noteAuthor}>
-              <div className={cl.noteAuthorAvatar}>
-                {!imgError && author ? (
-                  author.picture ? (
-                    <img
-                      src={author.picture}
-                      alt="avatar"
-                      onError={() => setImgError(true)}
-                    />
+              <Link to={`/${npubKey}`}>
+                <div className={cl.noteAuthorAvatar}>
+                  {!imgError && author ? (
+                    author.picture ? (
+                      <img
+                        src={author.picture}
+                        alt="avatar"
+                        onError={() => setImgError(true)}
+                      />
+                    ) : (
+                      <img alt="avatar" src={UserIcon} />
+                    )
                   ) : (
-                    <img alt="avatar" src={UserIcon} />
-                  )
-                ) : (
-                  <img
-                    src={`https://media.nostr.band/thumbs/${pubkey.slice(
-                      -4
-                    )}/${pubkey}-picture-64`}
-                    alt="avatar"
-                    onError={({ currentTarget }) => {
-                      currentTarget.srcset = UserIcon;
-                    }}
-                  />
-                )}
-              </div>
+                    <img
+                      src={`https://media.nostr.band/thumbs/${pubkey.slice(
+                        -4
+                      )}/${pubkey}-picture-64`}
+                      alt="avatar"
+                      onError={({ currentTarget }) => {
+                        currentTarget.srcset = UserIcon;
+                      }}
+                    />
+                  )}
+                </div>
+              </Link>
               {author && (
                 <Link className={cl.noteNameLink} to={`/${npubKey}`}>
                   {author.display_name ? author.display_name : author.name}
