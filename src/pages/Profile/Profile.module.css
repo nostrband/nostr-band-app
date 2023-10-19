@@ -4,7 +4,7 @@
   width: 100%;
   margin-bottom: 2rem;
   padding: 1rem;
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  box-shadow: var(--body-boxshadow);
   border-radius: 16px;
 }
 .profile p {
@@ -55,6 +55,7 @@
   overflow: hidden;
 }
 .profileInfoName {
+  color: var(--body-mute-color);
   font-size: 1.5rem;
   text-decoration: none;
   font-weight: 500;
@@ -76,9 +77,11 @@
   font-weight: 700;
 }
 .profileStats p {
+  color: var(--body-color);
   position: relative;
 }
 .profileZaps {
+  color: var(--body-color);
   display: flex;
   font-size: 1rem;
 }
@@ -138,11 +141,11 @@
 }
 .tab li button {
   border-radius: 50px !important;
-  background-color: white;
-  color: black;
+  background-color: var(--body-tab-bg);
+  color: var(--body-tab-color);
 }
 .tab li button:hover {
-  color: black;
+  color: var(--body-tab-color);
 }
 
 .moreBtn {

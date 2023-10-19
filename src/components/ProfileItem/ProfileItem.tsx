@@ -230,7 +230,9 @@ const ProfileItem: FC<profileItemTypes> = ({
             </Link>
             <Dropdown id="profile-dropdown" className="profile-dropdown">
               <Dropdown.Toggle size="sm" id="dropdown-basic"></Dropdown.Toggle>
-              <Dropdown.Menu>
+              <Dropdown.Menu
+                variant={store.theme === "dark" ? "dark" : "light"}
+              >
                 <Dropdown.Item
                   target="_blanc"
                   href={`https://nostrapp.link/#${npubKey}`}
@@ -359,7 +361,7 @@ const ProfileItem: FC<profileItemTypes> = ({
             List
           </Dropdown.Toggle>
 
-          <Dropdown.Menu>
+          <Dropdown.Menu variant={store.theme === "dark" ? "dark" : "light"}>
             {store.lists &&
               store.isAuth &&
               store.lists

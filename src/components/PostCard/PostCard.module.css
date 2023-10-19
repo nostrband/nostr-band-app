@@ -4,7 +4,7 @@
   max-width: 100%;
   margin-bottom: 2rem;
   padding: 0.9rem;
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  box-shadow: var(--body-boxshadow);
   border-radius: 16px;
 }
 .postName {
@@ -30,7 +30,7 @@
 .postNameLink {
   text-decoration: none;
   font-size: 1.2rem;
-  color: var(--bg-secondary-color);
+  color: var(--body-mute-color);
   cursor: pointer;
   transition: all 0.4s;
 }

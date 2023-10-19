@@ -1,10 +1,12 @@
 .postAbout {
   font-size: 1rem;
+  color: var(--body-color);
   word-wrap: break-word;
 }
 
 .postMoreBtn {
   all: unset;
+  color: var(--body-mute-color);
   margin-bottom: 5px;
   cursor: pointer;
   opacity: 0.8;

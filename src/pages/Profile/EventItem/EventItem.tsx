@@ -27,6 +27,7 @@ import { useNavigate } from "react-router-dom";
 import { NDKEvent } from "@nostrband/ndk";
 import { statsType } from "../../../types/types";
 import { formatNostrContent } from "../../../utils/formatContent";
+import { useAppSelector } from "../../../hooks/redux";
 
 type eventItemTypes = {
   name: string;
@@ -55,6 +56,7 @@ const EventItem: FC<eventItemTypes> = ({
   const [carouselIndex, setCarouselIndex] = useState(0);
   const navigate = useNavigate();
   const [content, setContent] = useState(about);
+  const theme = useAppSelector((store) => store.userReducer.theme);
 
   useEffect(() => {
     const newContent = formatNostrContent(
@@ -149,7 +151,7 @@ const EventItem: FC<eventItemTypes> = ({
         <p className={cl.eventAuthorName}>{name}</p>
         <Dropdown id="profile-dropdown" className="profile-dropdown">
           <Dropdown.Toggle size="sm" id="dropdown-basic"></Dropdown.Toggle>
-          <Dropdown.Menu>
+          <Dropdown.Menu variant={theme === "dark" ? "dark" : "light"}>
             <Dropdown.Item
               href={`https://nostrapp.link/#${npub}`}
               target="_blanc"
@@ -218,11 +220,17 @@ const EventItem: FC<eventItemTypes> = ({
       <div className={cl.btnLink}>
         {contents && contents.length ? (
           isBannerVisible ? (
-            <Button onClick={() => setIsBannerVisible(false)} variant="light">
+            <Button
+              onClick={() => setIsBannerVisible(false)}
+              variant={theme === "dark" ? "dark" : "light"}
+            >
               Hide
             </Button>
           ) : (
-            <Button onClick={() => setIsBannerVisible(true)} variant="light">
+            <Button
+              onClick={() => setIsBannerVisible(true)}
+              variant={theme === "dark" ? "dark" : "light"}
+            >
               {isSameType(contents) ? (
                 contents[0].type === "PictureType" ? (
                   <>

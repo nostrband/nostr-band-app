@@ -4,12 +4,14 @@ a {
 }
 
 .profile {
+  background-color: var(--body-background);
+  color: var(--body-color);
   display: flex;
   flex-direction: column;
   max-width: 100%;
   margin-bottom: 2rem;
   padding: 1rem;
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  box-shadow: var(--body-boxshadow);
   border-radius: 16px;
 }
 .profile a {
@@ -49,7 +51,7 @@ a {
 .profile-info__hero-name {
   text-decoration: none;
   font-size: 1.2rem;
-  color: var(--bg-secondary-color);
+  color: var(--body-mute-color);
   margin-right: 0.45rem;
   transition: all 0.3s;
   overflow: hidden;
@@ -65,10 +67,10 @@ a {
   justify-content: center;
   width: 25px;
   height: 26px;
-  border: none;
+  /* border: none; */
   border: 1px solid transparent;
 }
-#profile-dropdown button:hover {
+/* #profile-dropdown button:hover {
   color: black;
   background-color: white;
 }
@@ -76,7 +78,7 @@ a {
   color: black;
   background-color: white;
   border-color: black;
-}
+} */
 .profile-info {
   display: flex;
   align-items: center;

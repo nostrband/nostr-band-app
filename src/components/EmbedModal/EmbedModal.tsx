@@ -6,6 +6,7 @@ import { X } from "react-bootstrap-icons";
 import ReactModal from "react-modal";
 import { Button } from "react-bootstrap";
 import { copyUrl } from "../../utils/copy-funtions/copyFuntions";
+import { useAppSelector } from "../../hooks/redux";
 
 type ModalType = {
   setIsModal: (a: boolean) => void;
@@ -14,6 +15,7 @@ type ModalType = {
 };
 
 const EmbedModal: FC<ModalType> = ({ setIsModal, isModal, str }) => {
+  const theme = useAppSelector((store) => store.userReducer.theme);
   const closeModal = () => setIsModal(false);
   const [embedValue] = useState<string>(
     `<div id="nostr-embed-${str}"></div><script>  !(function () {    const n=document.createElement('script');n.type='text/javascript';n.async=!0;n.src='https://cdn.jsdelivr.net/gh/nostrband/nostr-embed@0.1.16/dist/nostr-embed.js';    n.onload=function () {      nostrEmbed.init(        '${str}',        '#nostr-embed-${str}',        '',        {showZaps: true, showFollowing: true}      );    };const a=document.getElementsByTagName('script')[0];a.parentNode.insertBefore(n, a);  })();</script>`
@@ -30,7 +32,7 @@ const EmbedModal: FC<ModalType> = ({ setIsModal, isModal, str }) => {
       }}
       ariaHideApp={false}
       className={cl.modal}
-      style={{ overlay: { zIndex: 6 } }}
+      style={{ overlay: { zIndex: 6, background: "rgba(0,0,0,0.4)" } }}
       contentLabel="Embed"
       isOpen={isModal}
       onRequestClose={closeModal}
@@ -42,19 +44,20 @@ const EmbedModal: FC<ModalType> = ({ setIsModal, isModal, str }) => {
           style={{ fontSize: "1.5rem", color: "black" }}
           onClick={closeModal}
         >
-          <X />
+          <X color="var(--body-color)" />
         </Button>
       </div>
       <div className={cl.modalBody}>
         <p className={cl.embedLabel}>Embed as widget:</p>
         <InputGroup className="mb-3">
           <Form.Control
+            id={cl["frameInput"]}
             aria-describedby="basic-addon2"
             readOnly
             value={embedValue}
           />
           <Button
-            variant="outline-primary"
+            variant={theme === "dark" ? "outline-secondary" : "outline-primary"}
             id="button-addon2"
             onClick={() => copyUrl(embedValue)}
           >
@@ -86,12 +89,13 @@ const EmbedModal: FC<ModalType> = ({ setIsModal, isModal, str }) => {
         <p className={cl.embedLabel}>Embed in iframe (for Notion, etc.):</p>
         <InputGroup className="mb-3">
           <Form.Control
+            id={cl["frameInput"]}
             aria-describedby="basic-addon2"
             readOnly
             value={frameEmbedValue}
           />
           <Button
-            variant="outline-primary"
+            variant={theme === "dark" ? "outline-secondary" : "outline-primary"}
             id="button-addon2"
             onClick={() => copyUrl(frameEmbedValue)}
           >

@@ -1,6 +1,6 @@
 .home-hero-title {
   font-size: 2.4rem;
-  color: black;
+  color: var(--body-color);
   font-weight: 500;
 }
 .home-hero {
@@ -12,7 +12,7 @@
 }
 .home-hero-subtitle {
   font-size: 1.2rem;
-  color: black;
+  color: var(--body-color);
   font-weight: 500;
 }
 .home-hero__links {
@@ -25,11 +25,11 @@
 }
 
 .yesterday-trending {
-  color: rgba(0, 0, 255, 0.754);
+  color: var(--body-link-color);
   font-size: 1rem;
   cursor: pointer;
   transition: 0.3s;
 }
 .yesterday-trending:hover {
-  color: blue;
+  color: var(--body-link-color-hover);
 }

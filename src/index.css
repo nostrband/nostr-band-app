@@ -1,19 +1,50 @@
 :root {
+  --body-background: #fff;
+  --body-color: black;
+  --body-boxshadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  --body-mute-color: #6c757d;
+  --body-skeleton-color: #dddddd;
+  --body-tab-bg: #fff;
+  --body-loader-bg: #6c757d17;
+  --body-tab-color: #000;
   --accent-color: #5a3c90;
   --link-color: #0a58ca;
   --nav-link-color: rgba(0, 0, 0, 0.65);
   --bg-secondary-color: #6c757d;
   --ztr-font-size: 1rem;
+  --ztr-text-color: black;
+  --ztr-background-color: transparent;
+  --body-mute-color-hover: #545b61;
+  --body-link-color: rgba(0, 0, 255, 0.754);
+  --body-link-color-hover: rgba(0, 0, 255, 0.809);
+}
+
+[data-theme="dark"] {
+  --body-background: #212529;
+  --body-color: #adb5bd;
+  --body-boxshadow: rgba(177, 177, 212, 0.16) 0px 7px 29px 0px;
+  --body-mute-color: #adb5bd;
+  --body-skeleton-color: #393939;
+  --body-tab-bg: transparent;
+  --body-tab-color: #adb5bd;
+  --body-loader-bg: #adb5bd;
+  --ztr-text-color: #adb5bd;
+  --body-mute-color-hover: #949aa0;
+  --body-link-color: #7154a8;
+  --body-link-color-hover: #7e67a8;
 }
 
 html {
   font-size: 16px;
 }
-
+body {
+  background-color: var(--body-background) !important;
+}
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  transition: all 0.1s;
 }
 
 .youtube-fram {

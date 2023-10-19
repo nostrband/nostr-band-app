@@ -13,6 +13,8 @@
   z-index: 4;
 }
 #dropdown-basic select {
+  background-color: var(--body-background) !important;
+  color: var(--body-color) !important;
   cursor: pointer;
   border-radius: 0;
   border: none;
@@ -40,8 +42,16 @@
 
 .loader {
   width: 35px;
-  background-color: #6c757d17;
+  background-color: var(--body-loader-bg);
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.searchInput {
+  background-color: var(--body-background) !important;
+  color: var(--body-color) !important;
+}
+.searchInput::placeholder {
+  color: var(--body-color) !important;
 }

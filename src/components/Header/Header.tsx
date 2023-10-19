@@ -16,7 +16,7 @@ type headerType = {
 
 const Header: FC<headerType> = ({ onLogin }) => {
   const dispatch = useDispatch();
-  const { setIsAuth } = userSlice.actions;
+  const { setIsAuth, setTheme } = userSlice.actions;
   const state = useAppSelector((state) => state.userReducer);
 
   const getNpub = () => {
@@ -37,8 +37,30 @@ const Header: FC<headerType> = ({ onLogin }) => {
     dispatch(setIsAuth(false));
   };
 
+  const setDarkMode = () => {
+    document.querySelector("body")?.setAttribute("data-theme", "dark");
+    localStorage.setItem("theme", "dark");
+    dispatch(setTheme("dark"));
+  };
+  const setLightMode = () => {
+    document.querySelector("body")?.setAttribute("data-theme", "light");
+    localStorage.setItem("theme", "light");
+    dispatch(setTheme("light"));
+  };
+
+  const toggleTheme = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setDarkMode();
+    } else {
+      setLightMode();
+    }
+  };
+
   return (
-    <Navbar expand="lg">
+    <Navbar
+      expand="lg"
+      data-bs-theme={`${state.theme === "dark" ? "dark" : "light"}`}
+    >
       <Link className="header-logo" to="/">
         <img
           alt="logo"
@@ -137,10 +159,12 @@ const Header: FC<headerType> = ({ onLogin }) => {
                 Following
               </NavDropdown.Item>
               <Form.Check
+                checked={state.theme === "dark" ? true : false}
                 style={{ marginLeft: "16px", cursor: "pointer" }}
                 type="switch"
                 id="custom-switch"
                 label="Dark mode"
+                onChange={toggleTheme}
               />
               <NavDropdown.Item onClick={logoutBtn}>Log Out</NavDropdown.Item>
             </NavDropdown>

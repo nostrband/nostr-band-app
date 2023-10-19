@@ -95,11 +95,11 @@
 }
 .tab li button {
   border-radius: 50px !important;
-  background-color: white;
-  color: black;
+  background-color: var(--body-tab-bg);
+  color: var(--body-tab-color);
 }
 .tab li button:hover {
-  color: black;
+  color: var(--body-tab-color);
 }
 
 .modal {
@@ -137,6 +137,8 @@
 }
 
 .repliesWrapper {
+  box-shadow: var(--body-boxshadow);
+  border-radius: 16px;
   overflow: hidden;
 }
 

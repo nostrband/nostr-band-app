@@ -1,6 +1,6 @@
 .header-logo {
   text-decoration: none;
-  color: black;
+  color: var(--body-color);
   display: flex;
   align-items: center;
   font-size: 1.25rem;
@@ -20,6 +20,7 @@ a {
 #profile-drop-menu {
   display: flex;
   align-items: center;
+  color: var(--body-color);
 }
 .profile-wrapper {
   display: flex;
