@@ -102,7 +102,7 @@ const App = () => {
           onRequestClose={closeModal}
           ariaHideApp={false}
           className="login-modal"
-          style={{ overlay: { zIndex: 6 } }}
+          style={{ overlay: { zIndex: 6, background: "rgba(0,0,0,.4)" } }}
         >
           <div className="modal-header">
             <h4>Login</h4>
@@ -111,7 +111,7 @@ const App = () => {
               style={{ fontSize: "1.8rem", color: "black" }}
               onClick={closeModal}
             >
-              <X />
+              <X color="var(--body-color)" />
             </Button>
           </div>
           <hr />

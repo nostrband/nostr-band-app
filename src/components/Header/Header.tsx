@@ -93,6 +93,16 @@ const Header: FC<headerType> = ({ onLogin }) => {
             <NavDropdown.Item href="#action/3.1">Trust rank</NavDropdown.Item>
             <NavDropdown.Item href="#action/3.1">RSS feeds</NavDropdown.Item>
             <NavDropdown.Item href="#action/3.1">Search bots</NavDropdown.Item>
+            {!state.isAuth && (
+              <Form.Check
+                checked={state.theme === "dark" ? true : false}
+                style={{ marginLeft: "16px", cursor: "pointer" }}
+                type="switch"
+                id="custom-switch"
+                label="Dark mode"
+                onChange={toggleTheme}
+              />
+            )}
           </NavDropdown>
           {/* {!state.isAuth ? (
             <NavDropdown title="About " id="basic-nav-dropdown">
