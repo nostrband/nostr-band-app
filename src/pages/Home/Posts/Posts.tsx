@@ -2,6 +2,7 @@ import { FC } from "react";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 import PostCard from "../../../components/PostCard/PostCard";
 import { nostrApiType } from "../../../types/types.js";
+import { Link } from "react-router-dom";
 
 type postsTypes = {
   posts: nostrApiType[];
@@ -35,6 +36,9 @@ const Posts: FC<postsTypes> = ({ posts }) => {
       ) : (
         <CardSkeleton cards={8} />
       )}
+      <Link className="yesterday-trending" to={`/trending/notes/2023-21-10`}>
+        See what was trending yesterday →
+      </Link>
     </>
   );
 };

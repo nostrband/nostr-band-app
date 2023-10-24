@@ -131,9 +131,6 @@ const Home = () => {
         ) : (
           ""
         )}
-        <a className="yesterday-trending" href="http://localhost:3000/">
-          See who was trending yesterday →
-        </a>
       </div>
     </div>
   );
