@@ -93,30 +93,24 @@ const Header: FC<headerType> = ({ onLogin }) => {
             <NavDropdown.Item href="#action/3.1">Trust rank</NavDropdown.Item>
             <NavDropdown.Item href="#action/3.1">RSS feeds</NavDropdown.Item>
             <NavDropdown.Item href="#action/3.1">Search bots</NavDropdown.Item>
-            {!state.isAuth && (
-              <Form.Check
-                checked={state.theme === "dark" ? true : false}
-                style={{ marginLeft: "16px", cursor: "pointer" }}
-                type="switch"
-                id="custom-switch"
-                label="Dark mode"
-                onChange={toggleTheme}
-              />
-            )}
           </NavDropdown>
-          {/* {!state.isAuth ? (
-            <NavDropdown title="About " id="basic-nav-dropdown">
-              <Form.Check
-                style={{ marginLeft: "16px", cursor: "pointer" }}
-                type="switch"
-                id="custom-switch"
-                label="Dark mode"
-              />
-              <NavDropdown.Item href="#action/3.1">About</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.1">Terms</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.1">Privacy</NavDropdown.Item>
-            </NavDropdown>
-          ) : (
+          {
+            !state.isAuth && (
+              <NavDropdown title="About " id="basic-nav-dropdown">
+                <NavDropdown.Item href="#action/3.1">About</NavDropdown.Item>
+                <NavDropdown.Item href="#action/3.1">Terms</NavDropdown.Item>
+                <NavDropdown.Item href="#action/3.1">Privacy</NavDropdown.Item>
+                <Form.Check
+                  checked={state.theme === "dark" ? true : false}
+                  style={{ marginLeft: "16px", cursor: "pointer" }}
+                  type="switch"
+                  id="custom-switch"
+                  label="Dark mode"
+                  onChange={toggleTheme}
+                />
+              </NavDropdown>
+            )
+            /* : (
             <NavDropdown
               title={`${localStorage.getItem("login")!.slice(0, 8)}`}
             >
@@ -132,7 +126,8 @@ const Header: FC<headerType> = ({ onLogin }) => {
               />
               <NavDropdown.Item onClick={logoutBtn}>Log Out</NavDropdown.Item>
             </NavDropdown>
-          )} */}
+          )} */
+          }
           {!state.isAuth && (
             <Nav.Link onClick={() => onLogin(true)}>Login</Nav.Link>
           )}

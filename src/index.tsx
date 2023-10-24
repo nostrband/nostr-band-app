@@ -6,6 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import "react-loading-skeleton/dist/skeleton.css";
 import { Provider } from "react-redux";
 import { setupStore } from "./store/store";
+import "react-datepicker/dist/react-datepicker.css";
 
 const store = setupStore();
 

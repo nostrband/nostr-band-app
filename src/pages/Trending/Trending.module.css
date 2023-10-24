@@ -1,0 +1,15 @@
+.trending h2 {
+  color: var(--body-color);
+}
+.datePicker {
+  display: flex;
+  margin: 1rem 0;
+}
+.datePickerInput {
+  background: var(--body-background) !important;
+  color: var(--body-color);
+  border: 1px solid var(--body-mute-color);
+  padding: 0.4rem 0.4rem;
+  border-radius: 10px;
+  margin: 0 0.3rem;
+}

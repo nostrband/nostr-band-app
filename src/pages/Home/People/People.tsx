@@ -4,6 +4,8 @@ import axios from "axios";
 import ProfileItem from "../../../components/ProfileItem/ProfileItem";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 import { nostrPeopleType } from "../../../types/types";
+import { Link } from "react-router-dom";
+import { formatDate } from "../../../utils/formatDate";
 
 type peopleTypes = {
   setIsLoading: (a: boolean) => void;
@@ -11,6 +13,7 @@ type peopleTypes = {
 
 const People: FC<peopleTypes> = ({ setIsLoading }) => {
   const [profiles, setProfiles] = useState<nostrPeopleType[]>([]);
+  const today = new Date();
   const fetchProfiles = async () => {
     try {
       setIsLoading(true);
@@ -57,6 +60,14 @@ const People: FC<peopleTypes> = ({ setIsLoading }) => {
       ) : (
         <CardSkeleton cards={8} />
       )}
+      <Link
+        className="yesterday-trending"
+        to={`/trending/profiles/${formatDate(
+          new Date(today.setDate(today.getDate() - 1))
+        )}`}
+      >
+        See who was trending yesterday →
+      </Link>
     </>
   );
 };

@@ -57,3 +57,7 @@ export function formatAMPM(date: number): string {
 
   return agoTime ? agoTime : formattedTime;
 }
+
+export function formatDate(d: Date) {
+  return d.toISOString().split("T")[0];
+}
