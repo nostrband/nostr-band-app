@@ -9,6 +9,7 @@ import { userSlice } from "../../store/reducers/UserSlice";
 import { FC } from "react";
 import { useAppSelector } from "../../hooks/redux";
 import { nip19 } from "@nostrband/nostr-tools";
+import { formatDate } from "../../utils/formatDate";
 
 type headerType = {
   onLogin: (a: boolean) => void;
@@ -18,6 +19,7 @@ const Header: FC<headerType> = ({ onLogin }) => {
   const dispatch = useDispatch();
   const { setIsAuth, setTheme } = userSlice.actions;
   const state = useAppSelector((state) => state.userReducer);
+  const today = new Date();
 
   const getNpub = () => {
     try {
@@ -74,11 +76,21 @@ const Header: FC<headerType> = ({ onLogin }) => {
         <Nav className="me-auto">
           <Nav.Link href="#home">Stats</Nav.Link>
           <NavDropdown title="Top " id="basic-nav-dropdown">
-            <NavDropdown.Item href="#action/3.1">People</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.2">Posts</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.3">Images</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.4">Video</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.4">Audio</NavDropdown.Item>
+            <NavDropdown.Item>
+              <Link to={`/trending/profiles/${formatDate(today)}`}>People</Link>
+            </NavDropdown.Item>
+            <NavDropdown.Item>
+              <Link to={`/trending/notes/${formatDate(today)}`}>Posts</Link>
+            </NavDropdown.Item>
+            <NavDropdown.Item>
+              <Link to={`/trending/images/${formatDate(today)}`}>Images</Link>
+            </NavDropdown.Item>
+            <NavDropdown.Item>
+              <Link to={`/trending/videos/${formatDate(today)}`}>Video</Link>
+            </NavDropdown.Item>
+            <NavDropdown.Item>
+              <Link to={`/trending/audios/${formatDate(today)}`}>Audio</Link>
+            </NavDropdown.Item>
           </NavDropdown>
           <NavDropdown title="Products " id="basic-nav-dropdown">
             <NavDropdown.Item href="#action/3.1">Stats</NavDropdown.Item>

@@ -1,9 +1,4 @@
-import {
-  useLocation,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Search from "../../components/Search/Search";
 import cl from "./Trending.module.css";
 import axios from "axios";
@@ -21,8 +16,12 @@ const Trending = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [posts, setPosts] = useState<nostrApiType[]>([]);
   const [videos, setVideos] = useState<nostrApiType[]>([]);
+  const [images, setImages] = useState<nostrApiType[]>([]);
+  const [audios, setAudios] = useState<nostrApiType[]>([]);
   const [profiles, setProfiles] = useState<nostrPeopleType[]>([]);
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(
+    date ? new Date(date) : new Date()
+  );
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -30,7 +29,9 @@ const Trending = () => {
     try {
       setIsLoading(true);
       const { data } = await axios.get(
-        `${process.env.REACT_APP_API_URL}/trending/${type}?date=${date}`
+        `${process.env.REACT_APP_API_URL}/trending/${type}?date=${formatDate(
+          startDate
+        )}`
       );
       if (type === "profiles") {
         setProfiles(data.profiles);
@@ -38,6 +39,10 @@ const Trending = () => {
         setPosts(data.notes);
       } else if (type === "videos") {
         setVideos(data.videos);
+      } else if (type === "images") {
+        setImages(data.images);
+      } else if (type === "audios") {
+        setAudios(data.audios);
       }
     } catch (e) {
       console.log(e);
@@ -46,7 +51,16 @@ const Trending = () => {
     }
   };
 
+  const clear = () => {
+    setPosts([]);
+    setProfiles([]);
+    setVideos([]);
+    setAudios([]);
+    setImages([]);
+  };
+
   useEffect(() => {
+    clear();
     const day = formatDate(startDate);
     navigate(`/trending/${type}/${day}`);
     getTrending(type, day);
@@ -71,7 +85,7 @@ const Trending = () => {
         Trending {type} on {startDate.toDateString()}
       </h2>
       <div className={cl.datePicker}>
-        {startDate.getDate() > new Date("2023-01-01").getDate() && (
+        {startDate > new Date("2023-01-02") && (
           <Button variant="outline-primary" onClick={goToPrevDay}>
             Previous Day
           </Button>
@@ -84,7 +98,7 @@ const Trending = () => {
           maxDate={new Date()}
           minDate={new Date("2023-01-01")}
         />
-        {startDate.getDate() < today.getDate() && (
+        {startDate < new Date(today.setDate(today.getDate() - 1)) && (
           <Button variant="outline-primary" onClick={goToNextDay}>
             Next Day
           </Button>
@@ -163,6 +177,58 @@ const Trending = () => {
           })
         : // <CardSkeleton cards={8} />
           ""}
+
+      {images && images.length
+        ? images.map((image) => {
+            const authorContent = image?.author?.content
+              ? JSON.parse(image.author?.content)
+              : {};
+            return (
+              <PostCard
+                key={image.id}
+                eventId={image.event.id}
+                name={
+                  authorContent.display_name
+                    ? authorContent.display_name
+                    : authorContent.name
+                }
+                picture={authorContent.picture}
+                pubkey={image.pubkey}
+                about={image.event.content}
+                createdDate={image.event.created_at}
+                thread={""}
+              />
+            );
+          })
+        : ""
+          // <CardSkeleton cards={8} />
+      }
+
+      {audios && audios.length
+        ? audios.map((image) => {
+            const authorContent = image?.author?.content
+              ? JSON.parse(image?.author?.content)
+              : {};
+            return (
+              <PostCard
+                eventId={image.event.id}
+                key={image.id}
+                name={
+                  authorContent.display_name
+                    ? authorContent.display_name
+                    : authorContent.name
+                }
+                picture={authorContent.picture}
+                pubkey={image.pubkey}
+                about={image.event.content}
+                createdDate={image.event.created_at}
+                thread={""}
+              />
+            );
+          })
+        : ""
+          // <CardSkeleton cards={8} />
+      }
     </div>
   );
 };
