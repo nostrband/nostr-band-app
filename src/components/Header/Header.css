@@ -14,8 +14,10 @@
   height: 26px;
 }
 
-a {
+#basic-navbar-nav a {
+  color: var(--body-color) !important;
   font-size: 1rem;
+  text-decoration: none !important;
 }
 #profile-drop-menu {
   display: flex;
