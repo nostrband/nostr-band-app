@@ -10,6 +10,8 @@ import PostCard from "../../components/PostCard/PostCard";
 import DatePicker from "react-datepicker";
 import { formatDate } from "../../utils/formatDate";
 import { Button } from "react-bootstrap";
+import useWindowDimensions from "../../hooks/screen";
+import { ArrowLeft, ArrowRight } from "react-bootstrap-icons";
 
 const Trending = () => {
   const { type, date } = useParams();
@@ -24,6 +26,7 @@ const Trending = () => {
   );
   const navigate = useNavigate();
   const location = useLocation();
+  const { width } = useWindowDimensions();
 
   const d = new Date(startDate);
   const monthNames = [
@@ -163,7 +166,7 @@ const Trending = () => {
       <div className={cl.datePicker}>
         {startDate > new Date("2023-01-02") && (
           <Button variant="outline-primary" onClick={goToPrevDay}>
-            Previous Day
+            <ArrowLeft /> {width >= 700 && "Previous Day"}
           </Button>
         )}
         <DatePicker
@@ -176,7 +179,7 @@ const Trending = () => {
         />
         {startDate < new Date(today.setDate(today.getDate() - 1)) && (
           <Button variant="outline-primary" onClick={goToNextDay}>
-            Next Day
+            {width >= 700 && "Next Day"} <ArrowRight />
           </Button>
         )}
       </div>
@@ -313,13 +316,21 @@ const Trending = () => {
           <p>
             <strong>{monthNames[d.getMonth()]}: </strong>
           </p>
-          <div>{getAvaibleDays().map((i) => i)}</div>
+          <div>
+            {getAvaibleDays().map((i, index) => (
+              <span key={index}>{i}</span>
+            ))}
+          </div>
         </div>
         <div className={cl.monthPickerMonth}>
           <p>
             <strong>{d.getFullYear()}: </strong>
           </p>
-          <div>{getAvaibleMonths().map((i) => i)}</div>
+          <div>
+            {getAvaibleMonths().map((i, index) => (
+              <span key={index}>{i}</span>
+            ))}
+          </div>
         </div>
       </div>
     </div>
