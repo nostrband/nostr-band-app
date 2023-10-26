@@ -13,3 +13,28 @@
   border-radius: 10px;
   margin: 0 0.3rem;
 }
+
+.dayPickerMonth {
+  display: flex;
+  color: var(--body-color);
+}
+.dayPickerMonth p {
+  font-size: 1.1rem;
+}
+.dayPickerMonth div {
+  width: 80%;
+  margin-left: 0.5rem !important;
+  display: flex;
+  flex-wrap: wrap;
+}
+.monthPickerMonth {
+  margin-top: 0.7rem;
+  display: flex;
+  color: var(--body-color);
+}
+.monthPickerMonth div {
+  margin-left: 0.5rem;
+}
+.monthPickerMonth p {
+  font-size: 1.1rem;
+}

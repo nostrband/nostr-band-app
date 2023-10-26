@@ -10,6 +10,8 @@ import PostCard from "../../components/PostCard/PostCard";
 import DatePicker from "react-datepicker";
 import { formatDate } from "../../utils/formatDate";
 import { Button } from "react-bootstrap";
+import useWindowDimensions from "../../hooks/screen";
+import { ArrowLeft, ArrowRight } from "react-bootstrap-icons";
 
 const Trending = () => {
   const { type, date } = useParams();
@@ -24,6 +26,34 @@ const Trending = () => {
   );
   const navigate = useNavigate();
   const location = useLocation();
+  const { width } = useWindowDimensions();
+
+  const d = new Date(startDate);
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const max_month_date = new Date(
+    Date.UTC(d.getFullYear(), d.getMonth() + 1, 0)
+  ).getDate();
+  const md = new Date(
+    Math.min(
+      new Date(
+        Date.UTC(d.getFullYear(), d.getMonth(), max_month_date)
+      ).getTime(),
+      new Date().getTime()
+    )
+  );
 
   const getTrending = async (type?: string, date?: string) => {
     try {
@@ -78,6 +108,55 @@ const Trending = () => {
     setStartDate(new Date(prevDay));
   };
 
+  const getAvaibleDays = (): JSX.Element[] => {
+    const days = [];
+    for (let i = 1; i <= md.getDate(); i++) {
+      const dt = formatDate(
+        new Date(Date.UTC(d.getFullYear(), d.getMonth(), i))
+      );
+      const cur = i == d.getDate();
+      days.push(
+        <a
+          className={`btn btn-sm btn-outline-${
+            cur ? "secondary" : "primary"
+          } text-center dates`}
+          data-date={`${dt}`}
+          href={`/trending/${type}/${dt}`}
+          style={{ width: "2.5rem", marginRight: ".2rem" }}
+        >
+          {i}
+        </a>
+      );
+    }
+    return days;
+  };
+
+  const getAvaibleMonths = (): JSX.Element[] => {
+    const months = [];
+    const mm = new Date(
+      Math.min(
+        new Date(Date.UTC(d.getFullYear(), 11)).getTime(),
+        new Date().getTime()
+      )
+    );
+    for (let i = 0; i <= mm.getMonth(); i++) {
+      const dt = formatDate(new Date(Date.UTC(d.getFullYear(), i)));
+      const cur = i == d.getMonth();
+      months.push(
+        <a
+          style={{ marginRight: ".3rem" }}
+          className={`btn btn-sm btn-outline-${
+            cur ? "secondary" : "primary"
+          } dates' data-date='${dt}`}
+          href={`/trending/${type}/${dt}`}
+        >
+          {monthNames[i]}
+        </a>
+      );
+    }
+    return months;
+  };
+
   return (
     <div className={cl.trending}>
       <Search isLoading={isLoading} />
@@ -87,7 +166,7 @@ const Trending = () => {
       <div className={cl.datePicker}>
         {startDate > new Date("2023-01-02") && (
           <Button variant="outline-primary" onClick={goToPrevDay}>
-            Previous Day
+            <ArrowLeft /> {width >= 700 && "Previous Day"}
           </Button>
         )}
         <DatePicker
@@ -100,7 +179,7 @@ const Trending = () => {
         />
         {startDate < new Date(today.setDate(today.getDate() - 1)) && (
           <Button variant="outline-primary" onClick={goToNextDay}>
-            Next Day
+            {width >= 700 && "Next Day"} <ArrowRight />
           </Button>
         )}
       </div>
@@ -178,57 +257,82 @@ const Trending = () => {
         : // <CardSkeleton cards={8} />
           ""}
 
-      {images && images.length
-        ? images.map((image) => {
-            const authorContent = image?.author?.content
-              ? JSON.parse(image.author?.content)
-              : {};
-            return (
-              <PostCard
-                key={image.id}
-                eventId={image.event.id}
-                name={
-                  authorContent.display_name
-                    ? authorContent.display_name
-                    : authorContent.name
-                }
-                picture={authorContent.picture}
-                pubkey={image.pubkey}
-                about={image.event.content}
-                createdDate={image.event.created_at}
-                thread={""}
-              />
-            );
-          })
-        : ""
-          // <CardSkeleton cards={8} />
+      {
+        images && images.length
+          ? images.map((image) => {
+              const authorContent = image?.author?.content
+                ? JSON.parse(image.author?.content)
+                : {};
+              return (
+                <PostCard
+                  key={image.id}
+                  eventId={image.event.id}
+                  name={
+                    authorContent.display_name
+                      ? authorContent.display_name
+                      : authorContent.name
+                  }
+                  picture={authorContent.picture}
+                  pubkey={image.pubkey}
+                  about={image.event.content}
+                  createdDate={image.event.created_at}
+                  thread={""}
+                />
+              );
+            })
+          : ""
+        // <CardSkeleton cards={8} />
       }
 
-      {audios && audios.length
-        ? audios.map((image) => {
-            const authorContent = image?.author?.content
-              ? JSON.parse(image?.author?.content)
-              : {};
-            return (
-              <PostCard
-                eventId={image.event.id}
-                key={image.id}
-                name={
-                  authorContent.display_name
-                    ? authorContent.display_name
-                    : authorContent.name
-                }
-                picture={authorContent.picture}
-                pubkey={image.pubkey}
-                about={image.event.content}
-                createdDate={image.event.created_at}
-                thread={""}
-              />
-            );
-          })
-        : ""
-          // <CardSkeleton cards={8} />
+      {
+        audios && audios.length
+          ? audios.map((image) => {
+              const authorContent = image?.author?.content
+                ? JSON.parse(image?.author?.content)
+                : {};
+              return (
+                <PostCard
+                  eventId={image.event.id}
+                  key={image.id}
+                  name={
+                    authorContent.display_name
+                      ? authorContent.display_name
+                      : authorContent.name
+                  }
+                  picture={authorContent.picture}
+                  pubkey={image.pubkey}
+                  about={image.event.content}
+                  createdDate={image.event.created_at}
+                  thread={""}
+                />
+              );
+            })
+          : ""
+        // <CardSkeleton cards={8} />
       }
+
+      <div className={cl.dayPicker}>
+        <div className={cl.dayPickerMonth}>
+          <p>
+            <strong>{monthNames[d.getMonth()]}: </strong>
+          </p>
+          <div>
+            {getAvaibleDays().map((i, index) => (
+              <span key={index}>{i}</span>
+            ))}
+          </div>
+        </div>
+        <div className={cl.monthPickerMonth}>
+          <p>
+            <strong>{d.getFullYear()}: </strong>
+          </p>
+          <div>
+            {getAvaibleMonths().map((i, index) => (
+              <span key={index}>{i}</span>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
