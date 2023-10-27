@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import Search from "../../components/Search/Search";
 import cl from "./Note.module.css";
-import { Link, useLocation, useParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import NDK, { NDKEvent } from "@nostrband/ndk";
 import UserIcon from "../../assets/user.png";
@@ -36,7 +41,7 @@ import EmbedModal from "../../components/EmbedModal/EmbedModal";
 import { profileType, statsType } from "../../types/types.js";
 import Gallery from "../../components/Gallery/Gallery";
 import { formatContent, formatNostrContent } from "../../utils/formatContent";
-import { extractNostrStrings, replaceNostrLinks } from "../../utils/formatLink";
+import { extractNostrStrings } from "../../utils/formatLink";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import AddModal from "../../components/AddModal/AddModal";
 import { dateToUnix, useNostr } from "nostr-react";
@@ -99,6 +104,7 @@ const Note = () => {
   const [threadPostTaggedProfiles, setThreadPostTaggedProfiles] = useState<
     (NDKEvent | string)[]
   >([]);
+  const [searchParams, setSearchParams] = useSearchParams();
   const renderedLabel: string[] = [];
 
   const { setLabels } = userSlice.actions;
@@ -136,6 +142,14 @@ const Note = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isBottom]);
+
+  useEffect(() => {
+    if (searchParams.get("overview") === "zaps-received") {
+      setTabKey("zaps");
+    } else {
+      setTabKey("replies");
+    }
+  }, [searchParams.get("overview")]);
 
   // const fetchProfiles = async (pubkeys: string[]) => {
   //   if (ndk instanceof NDK) {
@@ -527,6 +541,16 @@ const Note = () => {
     }
   };
 
+  const changeTabKey = (k: string | null) => {
+    setTabKey(k ? k : "");
+    if (k === "zaps") {
+      setSearchParams("overview=zaps-received");
+    } else {
+      searchParams.delete("overview");
+      setSearchParams(searchParams);
+    }
+  };
+
   return noteId ? (
     <div className={cl.noteContainer}>
       <AddModal
@@ -544,7 +568,7 @@ const Note = () => {
         bodyOpenClassName={cl.modalBody}
         ariaHideApp={false}
         className={cl.modal}
-        style={{ overlay: { zIndex: 6 } }}
+        style={{ overlay: { zIndex: 6, background: "rgba(0,0,0,0.4)" } }}
         contentLabel="Event Json"
         isOpen={isModal}
         onRequestClose={closeModal}
@@ -556,11 +580,12 @@ const Note = () => {
             style={{ fontSize: "2.2rem", color: "black" }}
             onClick={closeModal}
           >
-            <X />
+            <X color="var(--body-color)" />
           </Button>
         </div>
         {modalContent && (
           <textarea
+            className={cl.modalTextArea}
             style={{ width: "100%" }}
             rows={16}
             cols={50}
@@ -898,7 +923,7 @@ const Note = () => {
           <div className={cl.userEvents}>
             <Tabs
               activeKey={tabKey}
-              onSelect={(k) => setTabKey(k ? k : "")}
+              onSelect={(k) => changeTabKey(k)}
               defaultActiveKey="profile"
               id="justify-tab-example"
               className={`mb-3 ${cl.tab}`}
