@@ -279,15 +279,17 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    if (tabKey === "zaps") {
-      fetchZaps(pubkey);
-    } else if (tabKey === "zaps-sent") {
-      fetchSentZaps(pubkey);
-    } else {
-      fetchPosts(pubkey, ndk);
+    if (pubkey) {
+      if (tabKey === "zaps") {
+        fetchZaps(pubkey);
+      } else if (tabKey === "zaps-sent") {
+        fetchSentZaps(pubkey);
+      } else {
+        fetchPosts(pubkey, ndk);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabKey]);
+  }, [tabKey, pubkey]);
 
   const fetchSentZaps = async (pk: string) => {
     try {
