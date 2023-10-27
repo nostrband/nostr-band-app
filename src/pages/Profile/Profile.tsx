@@ -1,6 +1,11 @@
-import { Link, useLocation, useParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import cl from "./Profile.module.css";
-import NDK, { NDKEvent, NDKUserProfile } from "@nostrband/ndk";
+import NDK, { NDKEvent } from "@nostrband/ndk";
 import { useEffect, useState } from "react";
 import Search from "../../components/Search/Search";
 import {
@@ -44,7 +49,7 @@ import { compareByTagName } from "../../utils/sortFunctions";
 
 const Profile = () => {
   const store = useAppSelector((store) => store.userReducer);
-  const ndk = useAppSelector((store) => store.connectionReducer.ndk);
+  const { ndk, ndkAll } = useAppSelector((store) => store.connectionReducer);
   const { publish } = useNostr();
   const [pubkey, setPubkey] = useState("");
   const [lastEvent, setLastEvent] = useState<NDKEvent | null>(null);
@@ -87,6 +92,7 @@ const Profile = () => {
   const [isAddListModal, setIsAddListModal] = useState(false);
   const [isFullAvatar, setIsFullAvatar] = useState(false);
   const [postsTagged, setPostsTagged] = useState<(NDKEvent | string)[]>([]);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const location = useLocation();
   const { setContacts, setLists } = userSlice.actions;
@@ -106,8 +112,17 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    if (ndk instanceof NDK) {
+    if (searchParams.get("overview") === "zaps-sent") {
+      setTabKey("zaps-sent");
+    } else if (searchParams.get("overview") === "zaps-received") {
+      setTabKey("zaps");
+    } else {
       setTabKey("posts");
+    }
+  }, [searchParams.get("overview")]);
+
+  useEffect(() => {
+    if (ndk instanceof NDK) {
       fetchUser(ndk);
     }
   }, [location.pathname]);
@@ -268,6 +283,8 @@ const Profile = () => {
       fetchZaps(pubkey);
     } else if (tabKey === "zaps-sent") {
       fetchSentZaps(pubkey);
+    } else {
+      fetchPosts(pubkey, ndk);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tabKey]);
@@ -277,7 +294,7 @@ const Profile = () => {
       if (ndk instanceof NDK) {
         setIsZapLoading(true);
         const zaps = Array.from(
-          await ndk.fetchEvents({
+          await ndkAll.fetchEvents({
             kinds: [9735],
             //@ts-ignore
             "@zs": [pk],
@@ -288,7 +305,7 @@ const Profile = () => {
 
         const providersPubkyes = zaps.map((zap) => zap.pubkey);
         const providers = Array.from(
-          await ndk.fetchEvents({
+          await ndkAll.fetchEvents({
             kinds: [0],
             authors: providersPubkyes,
             limit: limitSentZaps,
@@ -307,7 +324,7 @@ const Profile = () => {
             : "";
         });
         const zappedPosts = Array.from(
-          await ndk.fetchEvents({
+          await ndkAll.fetchEvents({
             kinds: [1],
             ids: postsIds,
             limit: limitSentZaps,
@@ -333,7 +350,7 @@ const Profile = () => {
         });
 
         const receiversArr = Array.from(
-          await ndk.fetchEvents({
+          await ndkAll.fetchEvents({
             kinds: [0],
             authors: receiversPubkeys,
             limit: limitSentZaps,
@@ -356,7 +373,7 @@ const Profile = () => {
       if (ndk instanceof NDK) {
         setIsZapLoading(true);
         const zaps = Array.from(
-          await ndk.fetchEvents({
+          await ndkAll.fetchEvents({
             kinds: [9735],
             "#p": [pk],
             limit: limitZaps,
@@ -366,7 +383,7 @@ const Profile = () => {
 
         const providersPubkyes = zaps.map((zap) => zap.pubkey);
         const providers = Array.from(
-          await ndk.fetchEvents({
+          await ndkAll.fetchEvents({
             kinds: [0],
             authors: providersPubkyes,
             limit: limitZaps,
@@ -385,7 +402,11 @@ const Profile = () => {
             : "";
         });
         const zappedPosts = Array.from(
-          await ndk.fetchEvents({ kinds: [1], ids: postsIds, limit: limitZaps })
+          await ndkAll.fetchEvents({
+            kinds: [1],
+            ids: postsIds,
+            limit: limitZaps,
+          })
         );
         setZappedPosts(zappedPosts);
 
@@ -411,7 +432,7 @@ const Profile = () => {
         setCreatedTimes(createdTimes);
 
         const sendersArr = Array.from(
-          await ndk.fetchEvents({
+          await ndkAll.fetchEvents({
             kinds: [0],
             authors: sendersPubkeys,
             limit: limitZaps,
@@ -580,6 +601,17 @@ const Profile = () => {
       console.log(e);
     }
   };
+  const changeTabKey = (k: string | null) => {
+    setTabKey(k ? k : "");
+    if (k === "zaps") {
+      setSearchParams("overview=zaps-received");
+    } else if (k === "zaps-sent") {
+      setSearchParams("overview=zaps-sent");
+    } else {
+      searchParams.delete("overview");
+      setSearchParams(searchParams);
+    }
+  };
 
   return (
     <div className={cl.profileContainer}>
@@ -616,7 +648,7 @@ const Profile = () => {
       />
       <ReactModal
         bodyOpenClassName={cl.modalBody}
-        style={{ overlay: { zIndex: 6 } }}
+        style={{ overlay: { zIndex: 6, background: "rgba(0,0,0,0.4)" } }}
         ariaHideApp={false}
         className={cl.modal}
         contentLabel="Event Json"
@@ -630,11 +662,12 @@ const Profile = () => {
             style={{ fontSize: "2.2rem", color: "black" }}
             onClick={closeModal}
           >
-            <X />
+            <X color="var(--body-color)" />
           </Button>
         </div>
         {modalContent && (
           <textarea
+            className={cl.modalTextArea}
             style={{ width: "100%" }}
             rows={16}
             cols={50}
@@ -957,7 +990,7 @@ const Profile = () => {
           <div className={cl.userEvents}>
             <Tabs
               activeKey={tabKey}
-              onSelect={(k) => setTabKey(k ? k : "")}
+              onSelect={(k) => changeTabKey(k)}
               defaultActiveKey="profile"
               id="justify-tab-example"
               className={`mb-3 ${cl.tab}`}
@@ -1014,7 +1047,6 @@ const Profile = () => {
                     {countOfZaps}
                   </span>
                 }
-                onClick={() => fetchZaps(pubkey)}
               >
                 {receivedZaps.length && createdTimes.length ? (
                   receivedZaps.map((author, index) => {
