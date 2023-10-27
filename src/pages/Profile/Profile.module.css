@@ -163,9 +163,14 @@
   transform: translate(-50%, -50%);
   z-index: 6;
   padding: 1rem 2.5rem;
-  background-color: white;
+  background-color: var(--body-background);
+  color: var(--body-color);
   border: 1px solid rgb(204, 204, 204);
   border-radius: 16px;
+}
+.modalTextArea {
+  background-color: var(--body-background);
+  color: var(--body-color);
 }
 .modalHeader {
   display: flex;
