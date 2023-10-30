@@ -40,6 +40,22 @@ export type statsType = {
   reply_pubkey_count?: number;
   repost_count?: number;
   repost_pubkey_count?: number;
+  pub_reaction_ref_event_count?: number;
+  pub_long_note_count?: number;
+  pub_bookmark_ref_event_count?: number;
+  pub_note_ref_event_count?: number;
+  pub_note_ref_pubkey_count?: number;
+  pub_repost_ref_event_count?: number;
+  pub_repost_ref_pubkey_count?: number;
+  pub_post_count?: number;
+  pub_reply_count?: number;
+  pub_reaction_count?: number;
+  pub_reaction_ref_pubkey_count?: number;
+  pub_report_count?: number;
+  pub_report_ref_event_count?: number;
+  pub_report_ref_pubkey_count?: number;
+  report_count?: number;
+  report_pubkey_count?: number;
   zaps?: {
     avg_msats?: number;
     count?: number;
