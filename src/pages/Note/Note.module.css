@@ -147,6 +147,39 @@
   overflow: hidden;
 }
 
+.statsBar {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  box-shadow: var(--body-boxshadow);
+  color: var(--body-color);
+  border-radius: 16px;
+  font-size: 1.1rem;
+}
+
+.statsBar a {
+  color: var(--body-link-color);
+  font-size: 1rem;
+}
+.statsBarWrapper {
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--body-mutest-color);
+}
+.statsBarWrapper p {
+  margin-bottom: 0;
+}
+.statsBarWrapper span {
+  font-size: 1rem;
+  color: var(--body-mute-color);
+}
+.textMute {
+  color: var(--body-mute-color);
+  font-size: 0.9rem;
+  margin-bottom: 0;
+}
+
 @media screen and (max-width: 1000px) {
   .modal {
     width: 75%;

@@ -25,6 +25,7 @@ import {
   PlayBtnFill,
   Check,
   TagsFill,
+  DatabaseFill,
 } from "react-bootstrap-icons";
 import { copyLink, copyUrl } from "../../utils/copy-funtions/copyFuntions";
 import { Button, Dropdown, Tab, Tabs } from "react-bootstrap";
@@ -146,6 +147,8 @@ const Note = () => {
   useEffect(() => {
     if (searchParams.get("overview") === "zaps-received") {
       setTabKey("zaps");
+    } else if (searchParams.get("overview") === "stats") {
+      setTabKey("stats");
     } else {
       setTabKey("replies");
     }
@@ -545,6 +548,8 @@ const Note = () => {
     setTabKey(k ? k : "");
     if (k === "zaps") {
       setSearchParams("overview=zaps-received");
+    } else if (k === "stats") {
+      setSearchParams("overview=stats");
     } else {
       searchParams.delete("overview");
       setSearchParams(searchParams);
@@ -1001,6 +1006,92 @@ const Note = () => {
                     No received zaps
                   </span>
                 )}
+              </Tab>
+              <Tab
+                eventKey="stats"
+                title={
+                  <div className="d-flex align-items-center">
+                    <DatabaseFill />
+                    &nbsp;stats
+                  </div>
+                }
+              >
+                <div className={cl.statsBar}>
+                  <h4>Overview</h4>
+                  <p>
+                    Need these numbers in your client? Try our{" "}
+                    <a href="https://api.nostr.band/" target="_blanc">
+                      API
+                    </a>
+                    .
+                  </p>
+                  <h5>Published by profile:</h5>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Replies: <strong>{stats.reply_count ?? 0}</strong>
+                    </p>
+                    <span>
+                      Number of replies to this post.{" "}
+                      <Link to={`/${note}`}>View</Link>
+                    </span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Replying profiles:{" "}
+                      <strong>{stats.reply_pubkey_count ?? 0}</strong>
+                    </p>
+                    <span>Number of profiles that reply to this post.</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Reposts: <strong>{stats.repost_count ?? 0}</strong>
+                    </p>
+                    <span>Number of reposts of this post.</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Reposting profiles:{" "}
+                      <strong>{stats.repost_pubkey_count ?? 0}</strong>
+                    </p>
+                    <span>Number of profiles that reposted this post.</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Likes: <strong>{stats.reaction_count ?? 0}</strong>
+                    </p>
+                    <span>Number of likes of this post.</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Liking profiles:{" "}
+                      <strong>{stats.pub_reaction_count ?? 0}</strong>
+                    </p>
+                    <span>Number of profiles that like this post.</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Reports: <strong>{stats.report_count ?? 0}</strong>
+                    </p>
+                    <span>Number of reports of this post.</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Reporting profiles:{" "}
+                      <strong>{stats.report_pubkey_count ?? 0}</strong>
+                    </p>
+                    <span>Number of profiles that report this post.</span>
+                  </div>
+                  <h5>Zaps received:</h5>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Number of zaps: <strong>{stats.zaps?.count ?? 0}</strong>
+                    </p>
+                    <span>
+                      Number of zaps received by this post.{" "}
+                      <Link to={`/${note}?overview=zaps-received`}>View</Link>
+                    </span>
+                  </div>
+                </div>
               </Tab>
             </Tabs>
           </div>
