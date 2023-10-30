@@ -3,6 +3,7 @@
   --body-color: black;
   --body-boxshadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   --body-mute-color: #6c757d;
+  --body-mutest-color: #dee2e6;
   --body-skeleton-color: #dddddd;
   --body-tab-bg: #fff;
   --body-loader-bg: #6c757d17;
@@ -24,6 +25,7 @@
   --body-color: #adb5bd;
   --body-boxshadow: rgba(177, 177, 212, 0.16) 0px 7px 29px 0px;
   --body-mute-color: #adb5bd;
+  --body-mutest-color: #495057;
   --body-skeleton-color: #393939;
   --body-tab-bg: transparent;
   --body-tab-color: #adb5bd;

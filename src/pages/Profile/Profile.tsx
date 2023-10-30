@@ -20,6 +20,7 @@ import {
   LightningFill,
   X,
   Check,
+  DatabaseFill,
 } from "react-bootstrap-icons";
 import axios from "axios";
 import { formatAMPM } from "../../utils/formatDate";
@@ -116,6 +117,8 @@ const Profile = () => {
       setTabKey("zaps-sent");
     } else if (searchParams.get("overview") === "zaps-received") {
       setTabKey("zaps");
+    } else if (searchParams.get("overview") === "stats") {
+      setTabKey("stats");
     } else {
       setTabKey("posts");
     }
@@ -260,6 +263,8 @@ const Profile = () => {
       const { data } = await axios.get(
         `${process.env.REACT_APP_API_URL}/stats/profile/${pk}`
       );
+      console.log(data.stats[pk]);
+
       setStats(data.stats[pk]);
       setCountOfZaps(
         data.stats[pk]?.zaps_received?.count
@@ -609,6 +614,8 @@ const Profile = () => {
       setSearchParams("overview=zaps-received");
     } else if (k === "zaps-sent") {
       setSearchParams("overview=zaps-sent");
+    } else if (k === "stats") {
+      setSearchParams("overview=stats");
     } else {
       searchParams.delete("overview");
       setSearchParams(searchParams);
@@ -1152,6 +1159,383 @@ const Profile = () => {
                     No sent zaps
                   </span>
                 )}
+              </Tab>
+              <Tab
+                eventKey="stats"
+                title={
+                  <div className="d-flex align-items-center">
+                    <DatabaseFill />
+                    &nbsp;stats
+                  </div>
+                }
+              >
+                <div className={cl.statsBar}>
+                  <h4>Overview</h4>
+                  <p>
+                    Need these numbers in your client? Try our{" "}
+                    <a href="https://api.nostr.band/" target="_blanc">
+                      API
+                    </a>
+                    .
+                  </p>
+                  <h5>Published by profile:</h5>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Posts & replies: <strong>{countOfPosts ?? 0}</strong>
+                    </p>
+                    <span>
+                      Number of posts published by this profile.{" "}
+                      <Link to={`/${npub}`}>View</Link>
+                    </span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Posts: <strong>{stats.pub_post_count ?? 0}</strong>
+                    </p>
+                    <span>Number of posts published by this profile</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Replies: <strong>{stats.pub_reply_count ?? 0}</strong>
+                    </p>
+                    <span>Number of replies published by this profile</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Likes: <strong>{stats.pub_reaction_count ?? 0}</strong>
+                    </p>
+                    <span>Number of likes published by this profile</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Reports: <strong>{stats.pub_report_count}</strong>
+                    </p>
+                    <span>Number of reports published by this profile</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Mentioned events:{" "}
+                      <strong>{stats.pub_note_ref_event_count ?? 0}</strong>
+                    </p>
+                    <span>
+                      Number of events mentioned by posts of this profile
+                    </span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Mentioned profiles:{" "}
+                      <strong>{stats.pub_note_ref_pubkey_count ?? 0}</strong>
+                    </p>
+                    <span>
+                      Number of profiles mentioned by posts of this profile
+                    </span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Reposted events:{" "}
+                      <strong>{stats.pub_repost_ref_event_count ?? 0}</strong>
+                    </p>
+                    <span>Number of events reposted by this profile</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Reposted profiles:{" "}
+                      <strong>{stats.pub_repost_ref_pubkey_count ?? 0}</strong>
+                    </p>
+                    <span>Number of profiles reposted by this profile</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Liked events:{" "}
+                      <strong>{stats.pub_reaction_ref_event_count ?? 0}</strong>
+                    </p>
+                    <span>Number of events liked by this profile</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Liked profiles:{" "}
+                      <strong>
+                        {stats.pub_reaction_ref_pubkey_count ?? 0}
+                      </strong>
+                    </p>
+                    <span>Number of profiles liked by this profile</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Reported events:{" "}
+                      <strong>{stats.pub_report_ref_event_count ?? 0}</strong>
+                    </p>
+                    <span>Number of events reported by this profile</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Reported profiles:{" "}
+                      <strong>{stats.pub_report_ref_pubkey_count ?? 0}</strong>
+                    </p>
+                    <span>Number of profiles reported by this profile</span>
+                  </div>
+                  <h5 style={{ marginTop: ".5rem" }}>References to profile:</h5>
+                  <p className={cl.textMute}>
+                    All numbers include this profile's self-referencing events.
+                  </p>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Replies: <strong>{stats.reply_count ?? 0}</strong>
+                    </p>
+                    <span>Number of replies to posts of this profile.</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Replying profiles:{" "}
+                      <strong>{stats.reply_pubkey_count ?? 0}</strong>
+                    </p>
+                    <span>Number of profiles that reply to this profile.</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Reposts: <strong>{stats.repost_count ?? 0}</strong>
+                    </p>
+                    <span>Number of reposts of events of this profiles.</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Reposting profiles:{" "}
+                      <strong>{stats.repost_pubkey_count ?? 0}</strong>
+                    </p>
+                    <span>
+                      Number of profiles that repost events of this profile.
+                    </span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Likes: <strong>{stats.reaction_count ?? 0}</strong>
+                    </p>
+                    <span>Number of likes of events of this profile.</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Liking profiles:{" "}
+                      <strong>{stats.reaction_pubkey_count ?? 0}</strong>
+                    </p>
+                    <span>
+                      Number of profiles that like events of this profile.
+                    </span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Reports: <strong>{stats.report_count ?? 0}</strong>
+                    </p>
+                    <span>Number of reports of events of this profile.</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Reporting profiles:{" "}
+                      <strong>{stats.report_pubkey_count ?? 0}</strong>
+                    </p>
+                    <span>
+                      Number of profiles that report events of this profile.
+                    </span>
+                  </div>
+                  <h5 style={{ marginTop: ".5rem" }}>Zaps received:</h5>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Number of zaps:{" "}
+                      <strong>{stats.zaps_received?.count ?? 0}</strong>
+                    </p>
+                    <span>
+                      Number of zaps received by this profile.{" "}
+                      <Link to={`/${npub}?overview=zaps-received`}>View</Link>
+                    </span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Number of zappers:{" "}
+                      <strong>{stats.zaps_received?.zapper_count ?? 0}</strong>
+                    </p>
+                    <span>Number of profiles that zapped this profile.</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Total amount of zaps:{" "}
+                      <strong>
+                        {stats.zaps_received?.msats
+                          ? stats.zaps_received?.msats / 1000
+                          : 0}{" "}
+                        sats
+                      </strong>
+                    </p>
+                    <span>Total amount of zaps received by this profile.</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Min amount of zaps:{" "}
+                      <strong>
+                        {stats.zaps_received?.min_msats
+                          ? stats.zaps_received?.min_msats / 1000
+                          : 0}{" "}
+                        sats
+                      </strong>
+                    </p>
+                    <span>
+                      Minimal amount of zaps received by this profile.
+                    </span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Max amount of zaps:{" "}
+                      <strong>
+                        {stats.zaps_received?.max_msats
+                          ? stats.zaps_received?.max_msats / 1000
+                          : 0}{" "}
+                        sats
+                      </strong>
+                    </p>
+                    <span>
+                      Maximal amount of zaps received by this profile.
+                    </span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Average amount of zaps:{" "}
+                      <strong>
+                        {stats.zaps_received?.avg_msats
+                          ? stats.zaps_received?.avg_msats / 1000
+                          : 0}{" "}
+                        sats
+                      </strong>
+                    </p>
+                    <span>
+                      Average amount of zaps received by this profile.
+                    </span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Median amount of zaps:{" "}
+                      <strong>
+                        {stats.zaps_received?.median_msats
+                          ? stats.zaps_received?.median_msats / 1000
+                          : 0}{" "}
+                        sats
+                      </strong>
+                    </p>
+                    <span>Median amount of zaps received by this profile.</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Number of providers:{" "}
+                      <strong>
+                        {stats.zaps_received?.provider_count ?? 0}
+                      </strong>
+                    </p>
+                    <span>
+                      Number of providers that processed zaps received by this
+                      profile.
+                    </span>
+                  </div>
+                  <h5 style={{ marginTop: ".5rem" }}>Zaps sent:</h5>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Number of zaps:{" "}
+                      <strong>{stats.zaps_sent?.count ?? 0}</strong>
+                    </p>
+                    <span>
+                      Number of zaps sent by this profile.{" "}
+                      <Link to={`/${npub}?overview=zaps-sent`}>View</Link>
+                    </span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Number of zapped events:{" "}
+                      <strong>
+                        {stats.zaps_sent?.target_event_count ?? 0}
+                      </strong>
+                    </p>
+                    <span>
+                      Number of events that were zapped by this profile.
+                    </span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Number of zapped profiles:{" "}
+                      <strong>
+                        {stats.zaps_sent?.target_pubkey_count ?? 0}
+                      </strong>
+                    </p>
+                    <span>
+                      Number of profiles that received zaps from this profile.
+                    </span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Total amount of zaps:{" "}
+                      <strong>
+                        {stats.zaps_sent?.msats
+                          ? stats.zaps_sent?.msats / 1000
+                          : 0}{" "}
+                        sats
+                      </strong>
+                    </p>
+                    <span>Total amount of zaps sent by this profile.</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Min amount of zaps:{" "}
+                      <strong>
+                        {stats.zaps_sent?.min_msats
+                          ? stats.zaps_sent?.min_msats / 1000
+                          : 0}{" "}
+                        sats
+                      </strong>
+                    </p>
+                    <span>Minimal amount of zaps sent by this profile.</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Max amount of zaps:{" "}
+                      <strong>
+                        {stats.zaps_sent?.max_msats
+                          ? stats.zaps_sent?.max_msats / 1000
+                          : 0}{" "}
+                        sats
+                      </strong>
+                    </p>
+                    <span>Maximal amount of zaps sent by this profile.</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Average amount of zaps:{" "}
+                      <strong>
+                        {stats.zaps_sent?.avg_msats
+                          ? stats.zaps_sent?.avg_msats / 1000
+                          : 0}{" "}
+                        sats
+                      </strong>
+                    </p>
+                    <span>Average amount of zaps sent by this profile.</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Median amount of zaps:{" "}
+                      <strong>
+                        {stats.zaps_sent?.median_msats
+                          ? stats.zaps_sent?.median_msats / 1000
+                          : 0}{" "}
+                        sats
+                      </strong>
+                    </p>
+                    <span>Median amount of zaps sent by this profile.</span>
+                  </div>
+                  <div className={cl.statsBarWrapper}>
+                    <p>
+                      Number of providers:{" "}
+                      <strong>{stats.zaps_sent?.provider_count ?? 0}</strong>
+                    </p>
+                    <span>
+                      Number of providers that processed zaps sent by this
+                      profile.
+                    </span>
+                  </div>
+                </div>
               </Tab>
             </Tabs>
           </div>
