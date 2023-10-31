@@ -223,13 +223,19 @@ const Note = () => {
       const pubkeys: string[] = links.map((link: string) => {
         if (link.startsWith("npub")) {
           return nip19.decode(link).data.toString();
+        } else if (link.startsWith("nprofile")) {
+          //@ts-ignore
+          return nip19.decode(link).data.pubkey.toString();
         }
         return link;
       });
       const taggedUsers = pubkeys.length
         ? Array.from(await ndk.fetchEvents({ kinds: [0], authors: pubkeys }))
         : [];
-      const linksWithoutNpub = links.filter((link) => !link.startsWith("npub"));
+
+      const linksWithoutNpub = links.filter(
+        (link) => !link.startsWith("npub") && !link.startsWith("nprofile")
+      );
 
       const allTaggedEvents = [...linksWithoutNpub, ...taggedUsers];
 
