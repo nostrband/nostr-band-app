@@ -55,3 +55,20 @@
 .searchInput::placeholder {
   color: var(--body-color) !important;
 }
+
+.searchAdvanced {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  margin-bottom: 2rem;
+  padding: 0.9rem;
+  box-shadow: var(--body-boxshadow);
+  border-radius: 16px;
+}
+.searchAdvanced {
+  color: var(--body-color);
+}
+.form-label {
+  color: var(--body-mute-color);
+  font-size: 0.9rem;
+}
