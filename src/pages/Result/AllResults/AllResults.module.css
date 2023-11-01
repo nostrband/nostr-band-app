@@ -5,3 +5,9 @@
 .resPosts {
   margin-top: 1rem;
 }
+.result h2 {
+  color: var(--body-color);
+}
+.moreLink {
+  color: var(--body-link-color);
+}

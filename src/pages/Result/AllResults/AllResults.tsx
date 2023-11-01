@@ -31,7 +31,7 @@ const AllResults = () => {
     if (ndk instanceof NDK) {
       const search = searchParams.get("q");
       setIsLoadingProfiles(true);
-      if (search?.startsWith("following:")) {
+      if (search?.includes("following:")) {
         const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
         const userPk = userNpub ? nip19.decode(userNpub).data : "";
         const cleanSearch = searchParams
@@ -65,7 +65,7 @@ const AllResults = () => {
         setProfilesCount(
           userContacts?.tags?.length ? userContacts?.tags?.length : 0
         );
-      } else if (search?.startsWith("by:")) {
+      } else if (search?.includes("by:")) {
         const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
         const userPk = userNpub ? nip19.decode(userNpub).data : "";
         //@ts-ignore
@@ -101,7 +101,7 @@ const AllResults = () => {
       if (ndk instanceof NDK) {
         const search = searchParams.get("q");
 
-        if (search?.startsWith("following:")) {
+        if (search?.includes("following:")) {
           const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
           const userPk = userNpub ? nip19.decode(userNpub).data : "";
           const cleanSearch = searchParams
@@ -143,7 +143,7 @@ const AllResults = () => {
           );
           setPosts(posts);
           setPostsAuthors(postsAuthors);
-        } else if (search?.startsWith("by:")) {
+        } else if (search?.includes("by:")) {
           const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
           const userPk = userNpub ? nip19.decode(userNpub).data.toString() : "";
           const cleanSearch = searchParams
@@ -237,7 +237,10 @@ const AllResults = () => {
         <CardSkeleton cards={3} />
       )}
       {profilesCount >= 4 && (
-        <Link to={`/?q=${searchParams.get("q")}&type=profiles`}>
+        <Link
+          className={cl.moreLink}
+          to={`/?q=${searchParams.get("q")}&type=profiles`}
+        >
           And {profilesCount ? profilesCount : 0} more profiles →
         </Link>
       )}
@@ -274,7 +277,10 @@ const AllResults = () => {
         ""
       )}
       {postsCount >= 10 && (
-        <Link to={`/?q=${searchParams.get("q")}&type=posts`}>
+        <Link
+          className={cl.moreLink}
+          to={`/?q=${searchParams.get("q")}&type=posts`}
+        >
           And {postsCount ? postsCount : 0} more posts →
         </Link>
       )}

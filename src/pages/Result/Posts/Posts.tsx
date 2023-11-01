@@ -53,9 +53,9 @@ const Posts = () => {
 
   useEffect(() => {
     if (ndk instanceof NDK) {
-      if (searchParams.get("q")?.startsWith("following:")) {
+      if (searchParams.get("q")?.includes("following:")) {
         getFollowingPosts();
-      } else if (searchParams.get("q")?.startsWith("by:")) {
+      } else if (searchParams.get("q")?.includes("by:")) {
         getUserPosts();
       } else {
         getPosts(ndk);
