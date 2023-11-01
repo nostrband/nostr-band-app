@@ -237,7 +237,10 @@ const AllResults = () => {
         <CardSkeleton cards={3} />
       )}
       {profilesCount >= 4 && (
-        <Link to={`/?q=${searchParams.get("q")}&type=profiles`}>
+        <Link
+          className={cl.moreLink}
+          to={`/?q=${searchParams.get("q")}&type=profiles`}
+        >
           And {profilesCount ? profilesCount : 0} more profiles →
         </Link>
       )}
@@ -274,7 +277,10 @@ const AllResults = () => {
         ""
       )}
       {postsCount >= 10 && (
-        <Link to={`/?q=${searchParams.get("q")}&type=posts`}>
+        <Link
+          className={cl.moreLink}
+          to={`/?q=${searchParams.get("q")}&type=posts`}
+        >
           And {postsCount ? postsCount : 0} more posts →
         </Link>
       )}
