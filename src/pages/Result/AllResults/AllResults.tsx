@@ -30,15 +30,22 @@ const AllResults = () => {
   const getProfiles = async (ndk: NDK) => {
     if (ndk instanceof NDK) {
       const search = searchParams.get("q");
+      const tagsWithHash = search
+        ?.split(" ")
+        .filter((s) => s.match(/#[a-zA-Z0-9_]+/g)?.toString());
+      const tags = tagsWithHash?.map((tag) => tag.replace("#", ""));
+      search?.replace(/#[a-zA-Z0-9_]+/g, "");
+      const cleanSearch = searchParams
+        .get("q")
+        ?.split(" ")
+        .filter((str) => !str.match(/following:npub[0-9a-zA-Z]+/g))
+        .join(" ")
+        .replace(/#[a-zA-Z0-9_]+/g, "");
       setIsLoadingProfiles(true);
       if (search?.includes("following:")) {
         const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
         const userPk = userNpub ? nip19.decode(userNpub).data : "";
-        const cleanSearch = searchParams
-          .get("q")
-          ?.split(" ")
-          .filter((str) => !str.match(/following:npub[0-9a-zA-Z]+/g))
-          .join(" ");
+
         //@ts-ignore
         const userContacts = await ndk.fetchEvent({
           kinds: [3],
@@ -48,14 +55,23 @@ const AllResults = () => {
           ? userContacts?.tags.slice(0, 500).map((contact) => contact[1])
           : [];
 
-        const topProfilesFilter = cleanSearch
-          ? {
-              kinds: [0],
-              search: cleanSearch,
-              authors: followingPubkeys,
-              limit: 3,
-            }
-          : { kinds: [0], authors: followingPubkeys, limit: 3 };
+        const topProfilesFilter = {
+          kinds: [0],
+          authors: followingPubkeys,
+          limit: 3,
+        };
+        if (cleanSearch) {
+          Object.defineProperty(topProfilesFilter, "search", {
+            value: cleanSearch,
+          });
+        }
+
+        if (tags?.length) {
+          Object.defineProperty(topProfilesFilter, "#t", { value: tags });
+        }
+
+        console.log(topProfilesFilter);
+
         const topProfilesIds = await ndk.fetchTop(topProfilesFilter);
         const topProfiles = Array.from(
           //@ts-ignore
@@ -74,12 +90,25 @@ const AllResults = () => {
 
         setProfilesCount(1);
       } else {
-        const topProfilesIds = await ndk.fetchTop({
+        const search = searchParams
+          .get("q")
+          ?.toString()
+          .replace(/#[a-zA-Z0-9_]+/g, "");
+        const filter = {
           kinds: [0],
-          //@ts-ignore
-          search: searchParams.get("q"),
+          search: search,
           limit: 3,
-        });
+        };
+
+        if (tags?.length) {
+          Object.defineProperty(filter, "#t", { value: tags });
+        }
+        console.log(filter);
+        
+
+        //@ts-ignore
+        const topProfilesIds = await ndk.fetchTop(filter);
+
         const topProfiles = Array.from(
           //@ts-ignore
           await ndk.fetchEvents({ kinds: [0], ids: topProfilesIds.ids })
@@ -88,7 +117,7 @@ const AllResults = () => {
         const profilesCount = await ndk.fetchCount({
           kinds: [0],
           //@ts-ignore
-          search: searchParams.get("q"),
+          search: search,
         });
         setProfilesCount(profilesCount?.count ? profilesCount.count : 0);
       }
