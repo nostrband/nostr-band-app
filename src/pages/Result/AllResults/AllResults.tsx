@@ -62,13 +62,19 @@ const AllResults = () => {
         };
         if (cleanSearch) {
           Object.defineProperty(topProfilesFilter, "search", {
-            value: cleanSearch,
+            value: cleanSearch.trimStart().trimEnd(),
+            enumerable: true,
           });
         }
 
         if (tags?.length) {
-          Object.defineProperty(topProfilesFilter, "#t", { value: tags });
+          Object.defineProperty(topProfilesFilter, "t", {
+            value: tags,
+            enumerable: true,
+          });
         }
+
+        console.log("profilesFilter", topProfilesFilter);
 
         const topProfilesIds = await ndk.fetchTop(topProfilesFilter);
         const topProfiles = Array.from(
@@ -98,28 +104,49 @@ const AllResults = () => {
         };
 
         if (search?.trim()) {
-          Object.defineProperty(filter, "search", { value: search });
+          Object.defineProperty(filter, "search", {
+            value: search.trimStart().trimEnd(),
+            enumerable: true,
+          });
         }
 
         if (tags?.length) {
-          Object.defineProperty(filter, "#t", { value: tags });
+          Object.defineProperty(filter, "#t", {
+            value: tags,
+            enumerable: true,
+          });
         }
 
-        console.log(filter);
+        console.log("profilesFilter", filter);
 
         //@ts-ignore
         const topProfilesIds = await ndk.fetchTop(filter);
 
-        const topProfiles = Array.from(
-          //@ts-ignore
-          await ndk.fetchEvents({ kinds: [0], ids: topProfilesIds.ids })
-        );
+        const topProfiles = topProfilesIds
+          ? Array.from(
+              //@ts-ignore
+              await ndk.fetchEvents({ kinds: [0], ids: topProfilesIds.ids })
+            )
+          : [];
         setProfiles(topProfiles);
-        const profilesCount = await ndk.fetchCount({
+        const countFilter = {
           kinds: [0],
           //@ts-ignore
-          search: search,
-        });
+        };
+        if (search?.trim()) {
+          Object.defineProperty(countFilter, "search", {
+            value: search.trimStart().trimEnd(),
+            enumerable: true,
+          });
+        }
+
+        if (tags?.length) {
+          Object.defineProperty(countFilter, "#t", {
+            value: tags,
+            enumerable: true,
+          });
+        }
+        const profilesCount = await ndk.fetchCount(countFilter);
         setProfilesCount(profilesCount?.count ? profilesCount.count : 0);
       }
       setIsLoadingProfiles(false);
@@ -163,13 +190,19 @@ const AllResults = () => {
 
           if (cleanSearch?.trim()) {
             Object.defineProperty(postsFilter, "search", {
-              value: cleanSearch,
+              value: cleanSearch.trimStart().trimEnd(),
+              enumerable: true,
             });
           }
 
           if (tags?.length) {
-            Object.defineProperty(postsFilter, "#t", { value: tags });
+            Object.defineProperty(postsFilter, "#t", {
+              value: tags,
+              enumerable: true,
+            });
           }
+
+          console.log("postsFilter", postsFilter);
 
           const posts = Array.from(await ndk.fetchEvents(postsFilter));
 
@@ -200,13 +233,19 @@ const AllResults = () => {
 
           if (cleanSearch?.trim()) {
             Object.defineProperty(postsFilter, "search", {
-              value: cleanSearch,
+              value: cleanSearch.trimStart().trimEnd(),
+              enumerable: true,
             });
           }
 
           if (tags?.length) {
-            Object.defineProperty(postsFilter, "#t", { value: tags });
+            Object.defineProperty(postsFilter, "#t", {
+              value: tags,
+              enumerable: true,
+            });
           }
+
+          console.log("postsFilter", postsFilter);
 
           const posts = Array.from(await ndk.fetchEvents(postsFilter));
 
@@ -233,13 +272,18 @@ const AllResults = () => {
 
           if (cleanSearch?.trim()) {
             Object.defineProperty(postsFilter, "search", {
-              value: cleanSearch,
+              value: cleanSearch.trimStart().trimEnd(),
+              enumerable: true,
             });
           }
 
           if (tags?.length) {
-            Object.defineProperty(postsFilter, "#t", { value: tags });
+            Object.defineProperty(postsFilter, "#t", {
+              value: tags,
+              enumerable: true,
+            });
           }
+          console.log("postsFilter", postsFilter);
 
           const posts = Array.from(
             //@ts-ignore
