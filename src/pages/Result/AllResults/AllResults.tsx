@@ -70,8 +70,6 @@ const AllResults = () => {
           Object.defineProperty(topProfilesFilter, "#t", { value: tags });
         }
 
-        console.log(topProfilesFilter);
-
         const topProfilesIds = await ndk.fetchTop(topProfilesFilter);
         const topProfiles = Array.from(
           //@ts-ignore
@@ -96,15 +94,18 @@ const AllResults = () => {
           .replace(/#[a-zA-Z0-9_]+/g, "");
         const filter = {
           kinds: [0],
-          search: search,
           limit: 3,
         };
+
+        if (search?.trim()) {
+          Object.defineProperty(filter, "search", { value: search });
+        }
 
         if (tags?.length) {
           Object.defineProperty(filter, "#t", { value: tags });
         }
+
         console.log(filter);
-        
 
         //@ts-ignore
         const topProfilesIds = await ndk.fetchTop(filter);
@@ -129,6 +130,11 @@ const AllResults = () => {
     try {
       if (ndk instanceof NDK) {
         const search = searchParams.get("q");
+        const tagsWithHash = search
+          ?.split(" ")
+          .filter((s) => s.match(/#[a-zA-Z0-9_]+/g)?.toString());
+        const tags = tagsWithHash?.map((tag) => tag.replace("#", ""));
+        search?.replace(/#[a-zA-Z0-9_]+/g, "");
 
         if (search?.includes("following:")) {
           const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
@@ -137,7 +143,8 @@ const AllResults = () => {
             .get("q")
             ?.split(" ")
             .filter((str) => !str.match(/following:npub[0-9a-zA-Z]+/g))
-            .join(" ");
+            .join(" ")
+            .replace(/#[a-zA-Z0-9_]+/g, "");
 
           //@ts-ignore
           const userContacts = await ndk.fetchEvent({
@@ -148,14 +155,21 @@ const AllResults = () => {
             ? userContacts?.tags.slice(0, 500).map((contact) => contact[1])
             : [];
 
-          const postsFilter = cleanSearch
-            ? {
-                kinds: [1],
-                search: cleanSearch,
-                authors: followingPubkeys,
-                limit: 10,
-              }
-            : { kinds: [1], authors: followingPubkeys, limit: 10 };
+          const postsFilter = {
+            kinds: [1],
+            authors: followingPubkeys,
+            limit: 10,
+          };
+
+          if (cleanSearch?.trim()) {
+            Object.defineProperty(postsFilter, "search", {
+              value: cleanSearch,
+            });
+          }
+
+          if (tags?.length) {
+            Object.defineProperty(postsFilter, "#t", { value: tags });
+          }
 
           const posts = Array.from(await ndk.fetchEvents(postsFilter));
 
@@ -179,16 +193,20 @@ const AllResults = () => {
             .get("q")
             ?.split(" ")
             .filter((str) => !str.match(/by:npub[0-9a-zA-Z]+/g))
-            .join(" ");
+            .join(" ")
+            .replace(/#[a-zA-Z0-9_]+/g, "");
 
-          const postsFilter = cleanSearch
-            ? {
-                kinds: [1],
-                search: cleanSearch,
-                authors: [userPk],
-                limit: 10,
-              }
-            : { kinds: [1], authors: [userPk], limit: 10 };
+          const postsFilter = { kinds: [1], authors: [userPk], limit: 10 };
+
+          if (cleanSearch?.trim()) {
+            Object.defineProperty(postsFilter, "search", {
+              value: cleanSearch,
+            });
+          }
+
+          if (tags?.length) {
+            Object.defineProperty(postsFilter, "#t", { value: tags });
+          }
 
           const posts = Array.from(await ndk.fetchEvents(postsFilter));
 
@@ -206,13 +224,26 @@ const AllResults = () => {
           setPosts(posts);
           setPostsAuthors(postsAuthors);
         } else {
+          const cleanSearch = search?.replace(/#[a-zA-Z0-9_]+/g, "");
+          const postsFilter = {
+            kinds: [1],
+            //@ts-ignore
+            limit: 10,
+          };
+
+          if (cleanSearch?.trim()) {
+            Object.defineProperty(postsFilter, "search", {
+              value: cleanSearch,
+            });
+          }
+
+          if (tags?.length) {
+            Object.defineProperty(postsFilter, "#t", { value: tags });
+          }
+
           const posts = Array.from(
-            await ndk.fetchEvents({
-              kinds: [1],
-              //@ts-ignore
-              search: search,
-              limit: 10,
-            })
+            //@ts-ignore
+            await ndk.fetchEvents(postsFilter)
           );
           const postsAuthorsPks = posts.map((post) => post.pubkey);
           const postsAuthors = Array.from(
