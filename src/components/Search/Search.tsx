@@ -119,7 +119,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
                 type="text"
                 placeholder="Hashtags"
               />
-              <Form.Label>Example: #bitcoin</Form.Label>
+              <Form.Label>Example: bitcoin</Form.Label>
             </Form.Group>
             <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
               <Form.Control
