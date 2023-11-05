@@ -68,7 +68,7 @@ const Profiles = () => {
     if (ndk instanceof NDK) {
       const search = searchParams.get("q");
 
-      if (search?.startsWith("following:")) {
+      if (search?.includes("following:")) {
         const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
         const userPk = userNpub ? nip19.decode(userNpub).data : "";
         //@ts-ignore
@@ -96,7 +96,7 @@ const Profiles = () => {
         const profilesIds = await ndk.fetchTop(profileFilter);
         setProfilesIds(profilesIds?.ids ? profilesIds.ids : []);
         getProfiles(ndk, profilesIds?.ids ? profilesIds.ids : []);
-      } else if (search?.startsWith("by:")) {
+      } else if (search?.includes("by:")) {
         const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
         const userPk = userNpub ? nip19.decode(userNpub).data : "";
         //@ts-ignore
@@ -119,7 +119,7 @@ const Profiles = () => {
   const fetchProfilesCount = async () => {
     try {
       const search = searchParams.get("q");
-      if (search?.startsWith("following:")) {
+      if (search?.includes("following:")) {
         const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
         const userPk = userNpub ? nip19.decode(userNpub).data : "";
         //@ts-ignore
@@ -128,7 +128,7 @@ const Profiles = () => {
           authors: [userPk],
         });
         setProfilesCount(userContacts?.tags ? userContacts.tags.length : 0);
-      } else if (search?.startsWith("by:")) {
+      } else if (search?.includes("by:")) {
         setProfilesCount(1);
       } else {
         const profilesCount = await ndk.fetchCount({

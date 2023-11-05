@@ -36,19 +36,24 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   const [lna, setLna] = useState("");
   const [nip05, setNip05] = useState("");
   const [isSpam, setIsSpam] = useState(false);
+  const [tags, setTags] = useState("");
   const [resultQuery, setResulQuery] = useState("");
 
   useEffect(() => {
+    const tagsWithHash = tags
+      .split(" ")
+      .map((tag) => "#" + tag)
+      .join(" ");
     setResulQuery(
       `${allSearch ? allSearch + " " : ""}${
         author ? "by:" + author + " " : ""
       }${following ? "following:" + following + " " : ""}${
         lang ? "lang:" + lang + " " : ""
       }${lna ? "lna:" + lna + " " : ""}${nip05 ? "nip05:" + nip05 + " " : ""}${
-        isSpam ? "-filter:spam" : ""
-      }`
+        tags ? tagsWithHash + " " : ""
+      }${isSpam ? "-filter:spam" : ""}`
     );
-  }, [allSearch, author, following, lang, lna, nip05, isSpam]);
+  }, [allSearch, author, following, lang, lna, nip05, isSpam, tags]);
 
   const searchHandleByEnter = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -108,11 +113,24 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
             </Form.Group>
             <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
               <Form.Control
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+                className="searchInput"
+                type="text"
+                placeholder="Hashtags"
+              />
+              <Form.Label>Example: #bitcoin</Form.Label>
+            </Form.Group>
+            <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
+              <Form.Control
+                disabled={following ? true : false}
                 value={author}
                 onChange={(e) => setAuthor(e.target.value)}
                 className="searchInput"
                 type="text"
-                placeholder="Author"
+                placeholder={
+                  following ? "Not compatible with Following filter." : "Author"
+                }
               />
               <Form.Label>
                 Example: npub1xxx - Only posts by npub1xxx
@@ -120,11 +138,14 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
             </Form.Group>
             <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
               <Form.Control
+                disabled={author ? true : false}
                 value={following}
                 onChange={(e) => setFollowing(e.target.value)}
                 className="searchInput"
                 type="text"
-                placeholder="Following"
+                placeholder={
+                  author ? "Not compatible with Author filter." : "Following"
+                }
               />
               <Form.Label>
                 Example: npub1xxx - Only posts by profiles that npub1xxx is

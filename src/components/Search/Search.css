@@ -72,3 +72,6 @@
   color: var(--body-mute-color);
   font-size: 0.9rem;
 }
+.searchInput:disabled {
+  background-color: #6c757d41 !important;
+}
