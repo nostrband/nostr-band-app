@@ -93,18 +93,36 @@ const Header: FC<headerType> = ({ onLogin }) => {
             </NavDropdown.Item>
           </NavDropdown>
           <NavDropdown title="Products " id="basic-nav-dropdown">
-            <NavDropdown.Item href="#action/3.1">Stats</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.2">API</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.3">Relay</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.4">
+            <NavDropdown.Item href="https://stats.nostr.band/">
+              Stats
+            </NavDropdown.Item>
+            <NavDropdown.Item href="https://api.nostr.band">
+              API
+            </NavDropdown.Item>
+            <NavDropdown.Item href="https://relay.nostr.band/index.html">
+              Relay
+            </NavDropdown.Item>
+            <NavDropdown.Item href="https://browser.nostr.band">
               Relay Browser
             </NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.4">Embed widget</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.1">NIP-05 names</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.1">Spam filter</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.1">Trust rank</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.1">RSS feeds</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.1">Search bots</NavDropdown.Item>
+            <NavDropdown.Item href="https://embed.nostr.band">
+              Embed widget
+            </NavDropdown.Item>
+            <NavDropdown.Item href="https://nip05.nostr.band">
+              NIP-05 names
+            </NavDropdown.Item>
+            <NavDropdown.Item href="https://spam.nostr.band">
+              Spam filter
+            </NavDropdown.Item>
+            <NavDropdown.Item href="https://trust.nostr.band">
+              Trust rank
+            </NavDropdown.Item>
+            <NavDropdown.Item href="https://rss.nostr.band">
+              RSS feeds
+            </NavDropdown.Item>
+            <NavDropdown.Item href="https://sb.nostr.band">
+              Search bots
+            </NavDropdown.Item>
           </NavDropdown>
           {
             !state.isAuth && (
