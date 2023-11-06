@@ -152,7 +152,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
                 following
               </Form.Label>
             </Form.Group>
-            <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
+            {/* <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
               <Form.Control
                 value={lang}
                 onChange={(e) => setLang(e.target.value)}
@@ -161,8 +161,8 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
                 placeholder="Language"
               />
               <Form.Label>Example: en - Only posts in English</Form.Label>
-            </Form.Group>
-            <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
+            </Form.Group> */}
+            {/* <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
               <Form.Control
                 value={lna}
                 onChange={(e) => setLna(e.target.value)}
@@ -174,8 +174,8 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
                 Example: me@getalby.com @walletofsatoshi.com - Contains
                 me@getalby.com or @walletofsatoshi.com
               </Form.Label>
-            </Form.Group>
-            <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
+            </Form.Group> */}
+            {/* <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
               <Form.Control
                 value={nip05}
                 onChange={(e) => setNip05(e.target.value)}
@@ -187,7 +187,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
                 Example: some@stacker.news @nostr.band - Contains
                 some@stacker.news or @nostr.band
               </Form.Label>
-            </Form.Group>
+            </Form.Group> */}
             <Form.Check // prettier-ignore
               type="switch"
               id="custom-switch"
