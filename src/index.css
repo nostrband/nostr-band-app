@@ -18,6 +18,7 @@
   --body-mute-color-hover: #545b61;
   --body-link-color: rgba(0, 0, 255, 0.754);
   --body-link-color-hover: rgba(0, 0, 255, 0.809);
+  --body-border-color: black;
 }
 
 [data-theme="dark"] {
@@ -34,6 +35,7 @@
   --body-mute-color-hover: #949aa0;
   --body-link-color: #7154a8;
   --body-link-color-hover: #7e67a8;
+  --body-border-color: white;
 }
 
 html {
