@@ -75,3 +75,7 @@
 .searchInput:disabled {
   background-color: #6c757d41 !important;
 }
+
+.advancedBtn button {
+  border-color: var(--body-border-color) !important;
+}

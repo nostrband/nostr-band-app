@@ -2,7 +2,7 @@ import "./Search.css";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import { Button } from "react-bootstrap";
-import { Search as SearchIcon } from "react-bootstrap-icons";
+import { Search as SearchIcon, Sliders } from "react-bootstrap-icons";
 import Spinner from "react-bootstrap/Spinner";
 import { FC, useEffect, useState } from "react";
 import {
@@ -260,6 +260,22 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
               <option value="zaps">Zaps</option>
             </Form.Select>
           </div>
+          <Link
+            style={{
+              float: "right",
+              color: "var(--body-link-color)",
+              fontSize: ".8rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            className="advancedBtn"
+            to={"/?advanced=true"}
+          >
+            <Button style={{ borderRadius: 0 }} variant="outline-secondary">
+              <Sliders />
+            </Button>
+          </Link>
           <Button
             className="btn"
             id="search-btn"
@@ -271,18 +287,6 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
             />
           </Button>
         </InputGroup>
-      )}
-      {searchParams.get("q") && (
-        <Link
-          style={{
-            float: "right",
-            color: "var(--body-link-color)",
-            fontSize: ".8rem",
-          }}
-          to={"/?advanced=true"}
-        >
-          Advanced search
-        </Link>
       )}
     </>
   );
