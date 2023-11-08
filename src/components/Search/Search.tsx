@@ -2,7 +2,12 @@ import "./Search.css";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import { Button } from "react-bootstrap";
-import { Search as SearchIcon, Sliders } from "react-bootstrap-icons";
+import {
+  Calendar,
+  Calendar2RangeFill,
+  Search as SearchIcon,
+  Sliders,
+} from "react-bootstrap-icons";
 import Spinner from "react-bootstrap/Spinner";
 import { FC, useEffect, useState } from "react";
 import {
@@ -13,6 +18,8 @@ import {
 } from "react-router-dom";
 import React from "react";
 import { useAppSelector } from "../../hooks/redux";
+import DatePicker from "react-datepicker";
+import { dateToUnix } from "nostr-react";
 
 type searchTypes = {
   isLoading: boolean;
@@ -38,6 +45,9 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   const [isSpam, setIsSpam] = useState(false);
   const [tags, setTags] = useState("");
   const [resultQuery, setResulQuery] = useState("");
+  const [isDatePickers, setIsDatePickers] = useState(false);
+  const [startDate, setStartDate] = useState(null);
+  const [sinceDate, setSinceDate] = useState(null);
 
   useEffect(() => {
     const tagsWithHash = tags
@@ -51,9 +61,22 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
         lang ? "lang:" + lang + " " : ""
       }${lna ? "lna:" + lna + " " : ""}${nip05 ? "nip05:" + nip05 + " " : ""}${
         tags ? tagsWithHash + " " : ""
+      }${sinceDate ? "since:" + dateToUnix(sinceDate!) + " " : ""}${
+        startDate ? "until:" + dateToUnix(startDate!) + " " : ""
       }${isSpam ? "-filter:spam" : ""}`
     );
-  }, [allSearch, author, following, lang, lna, nip05, isSpam, tags]);
+  }, [
+    allSearch,
+    author,
+    following,
+    lang,
+    lna,
+    nip05,
+    isSpam,
+    tags,
+    sinceDate,
+    startDate,
+  ]);
 
   const searchHandleByEnter = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -100,17 +123,52 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
           <h4>Advanced search</h4>
           <Form>
             <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
-              <Form.Control
-                value={allSearch}
-                onChange={(e) => setAllSearch(e.target.value)}
-                className="searchInput"
-                type="text"
-                placeholder="All of these words"
-              />
+              <InputGroup>
+                <Form.Control
+                  value={allSearch}
+                  onChange={(e) => setAllSearch(e.target.value)}
+                  className="searchInput"
+                  type="text"
+                  placeholder="All of these words"
+                />
+                <Button
+                  variant="outline-secondary"
+                  onClick={() => setIsDatePickers(true)}
+                >
+                  <Calendar2RangeFill />
+                </Button>
+              </InputGroup>
+
               <Form.Label>
                 Example: nostr relays - Contains both "nostr" and "relays"
               </Form.Label>
             </Form.Group>
+            {isDatePickers && (
+              <div className="datePicker">
+                <div className="date-picker-wrapper">
+                  <p>Since: </p>
+                  <DatePicker
+                    className="datePickerInput"
+                    selected={sinceDate}
+                    onChange={setSinceDate}
+                    dateFormat="yyyy-MM-dd"
+                    maxDate={new Date()}
+                    minDate={new Date("2023-01-01")}
+                  />
+                </div>
+                <div className="date-picker-wrapper">
+                  <p>Until: </p>
+                  <DatePicker
+                    className="datePickerInput"
+                    selected={startDate}
+                    onChange={setStartDate}
+                    dateFormat="yyyy-MM-dd"
+                    maxDate={new Date()}
+                    minDate={new Date("2023-01-01")}
+                  />
+                </div>
+              </div>
+            )}
             <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
               <Form.Control
                 value={tags}
@@ -211,6 +269,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
                 This is the final query for your advanced search
               </Form.Label>
             </Form.Group>
+
             <Button onClick={searchAdvanceHandle} variant="outline-primary">
               Search
             </Button>
