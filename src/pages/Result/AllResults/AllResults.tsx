@@ -34,13 +34,20 @@ const AllResults = () => {
         ?.split(" ")
         .filter((s) => s.match(/#[a-zA-Z0-9_]+/g)?.toString());
       const tags = tagsWithHash?.map((tag) => tag.replace("#", ""));
+      const since = search?.match(/since:(\d+)/)![1];
+      const until = search?.match(/until:(\d+)/)![1];
       search?.replace(/#[a-zA-Z0-9_]+/g, "");
+      search?.replace(/since:(\d+)/, "");
+      search?.replace(/until:(\d+)/, "");
+
       const cleanSearch = searchParams
         .get("q")
         ?.split(" ")
         .filter((str) => !str.match(/following:npub[0-9a-zA-Z]+/g))
         .join(" ")
-        .replace(/#[a-zA-Z0-9_]+/g, "");
+        .replace(/#[a-zA-Z0-9_]+/g, "")
+        .replace(/since:(\d+)/, "")
+        .replace(/until:(\d+)/, "");
       setIsLoadingProfiles(true);
       if (search?.includes("following:")) {
         const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
@@ -74,6 +81,20 @@ const AllResults = () => {
           });
         }
 
+        if (since) {
+          Object.defineProperty(topProfilesFilter, "since", {
+            value: since,
+            enumerable: true,
+          });
+        }
+
+        if (until) {
+          Object.defineProperty(topProfilesFilter, "until", {
+            value: until,
+            enumerable: true,
+          });
+        }
+
         console.log("profilesFilter", topProfilesFilter);
 
         const topProfilesIds = await ndk.fetchTop(topProfilesFilter);
@@ -97,7 +118,9 @@ const AllResults = () => {
         const search = searchParams
           .get("q")
           ?.toString()
-          .replace(/#[a-zA-Z0-9_]+/g, "");
+          .replace(/#[a-zA-Z0-9_]+/g, "")
+          .replace(/since:(\d+)/, "")
+          .replace(/until:(\d+)/, "");
         const filter = {
           kinds: [0],
           limit: 3,
@@ -113,6 +136,20 @@ const AllResults = () => {
         if (tags?.length) {
           Object.defineProperty(filter, "#t", {
             value: tags,
+            enumerable: true,
+          });
+        }
+
+        if (since) {
+          Object.defineProperty(filter, "since", {
+            value: since,
+            enumerable: true,
+          });
+        }
+
+        if (until) {
+          Object.defineProperty(filter, "until", {
+            value: until,
             enumerable: true,
           });
         }
@@ -162,6 +199,8 @@ const AllResults = () => {
           .filter((s) => s.match(/#[a-zA-Z0-9_]+/g)?.toString());
         const tags = tagsWithHash?.map((tag) => tag.replace("#", ""));
         search?.replace(/#[a-zA-Z0-9_]+/g, "");
+        const since = search?.match(/since:(\d+)/)![1];
+        const until = search?.match(/until:(\d+)/)![1];
 
         if (search?.includes("following:")) {
           const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
@@ -171,7 +210,9 @@ const AllResults = () => {
             ?.split(" ")
             .filter((str) => !str.match(/following:npub[0-9a-zA-Z]+/g))
             .join(" ")
-            .replace(/#[a-zA-Z0-9_]+/g, "");
+            .replace(/#[a-zA-Z0-9_]+/g, "")
+            .replace(/since:(\d+)/, "")
+            .replace(/until:(\d+)/, "");
 
           //@ts-ignore
           const userContacts = await ndk.fetchEvent({
@@ -202,6 +243,20 @@ const AllResults = () => {
             });
           }
 
+          if (since) {
+            Object.defineProperty(postsFilter, "since", {
+              value: since,
+              enumerable: true,
+            });
+          }
+
+          if (until) {
+            Object.defineProperty(postsFilter, "until", {
+              value: until,
+              enumerable: true,
+            });
+          }
+
           console.log("postsFilter", postsFilter);
 
           const posts = Array.from(await ndk.fetchEvents(postsFilter));
@@ -227,7 +282,9 @@ const AllResults = () => {
             ?.split(" ")
             .filter((str) => !str.match(/by:npub[0-9a-zA-Z]+/g))
             .join(" ")
-            .replace(/#[a-zA-Z0-9_]+/g, "");
+            .replace(/#[a-zA-Z0-9_]+/g, "")
+            .replace(/since:(\d+)/, "")
+            .replace(/until:(\d+)/, "");
 
           const postsFilter = { kinds: [1], authors: [userPk], limit: 10 };
 
@@ -241,6 +298,20 @@ const AllResults = () => {
           if (tags?.length) {
             Object.defineProperty(postsFilter, "#t", {
               value: tags,
+              enumerable: true,
+            });
+          }
+
+          if (since) {
+            Object.defineProperty(postsFilter, "since", {
+              value: since,
+              enumerable: true,
+            });
+          }
+
+          if (until) {
+            Object.defineProperty(postsFilter, "until", {
+              value: until,
               enumerable: true,
             });
           }
@@ -263,7 +334,10 @@ const AllResults = () => {
           setPosts(posts);
           setPostsAuthors(postsAuthors);
         } else {
-          const cleanSearch = search?.replace(/#[a-zA-Z0-9_]+/g, "");
+          const cleanSearch = search
+            ?.replace(/#[a-zA-Z0-9_]+/g, "")
+            .replace(/since:(\d+)/, "")
+            .replace(/until:(\d+)/, "");
           const postsFilter = {
             kinds: [1],
             //@ts-ignore
@@ -280,6 +354,20 @@ const AllResults = () => {
           if (tags?.length) {
             Object.defineProperty(postsFilter, "#t", {
               value: tags,
+              enumerable: true,
+            });
+          }
+
+          if (since) {
+            Object.defineProperty(postsFilter, "since", {
+              value: since,
+              enumerable: true,
+            });
+          }
+
+          if (until) {
+            Object.defineProperty(postsFilter, "until", {
+              value: until,
               enumerable: true,
             });
           }
