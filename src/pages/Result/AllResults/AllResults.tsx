@@ -183,6 +183,20 @@ const AllResults = () => {
             enumerable: true,
           });
         }
+
+        if (since) {
+          Object.defineProperty(countFilter, "since", {
+            value: since,
+            enumerable: true,
+          });
+        }
+
+        if (until) {
+          Object.defineProperty(countFilter, "until", {
+            value: until,
+            enumerable: true,
+          });
+        }
         const profilesCount = await ndk.fetchCount(countFilter);
         setProfilesCount(profilesCount?.count ? profilesCount.count : 0);
       }
@@ -423,7 +437,7 @@ const AllResults = () => {
             })}
           </div>
         ) : (
-          "No profiles"
+          ""
         )
       ) : (
         <CardSkeleton cards={3} />
