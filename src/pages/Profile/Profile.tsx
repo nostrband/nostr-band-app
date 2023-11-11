@@ -164,7 +164,13 @@ const Profile = () => {
         setIsZapLoading(true);
         // const user = ndk.getUser({ npub });
         // await user.fetchProfile();
-        const pk = npub ? nip19.decode(npub).data.toString() : "";
+        let pk = "";
+        if (npub?.startsWith("nprofile")) {
+          //@ts-ignore
+          pk = nip19.decode(npub).data?.pubkey.toString();
+        } else if (npub?.startsWith("npub")) {
+          pk = nip19.decode(npub).data?.toString();
+        }
         //@ts-ignore
         const user = await ndk.fetchEvent({ kinds: [0], authors: [pk] });
 
