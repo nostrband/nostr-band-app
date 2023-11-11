@@ -7,7 +7,10 @@ const RouteSwitcher = () => {
   if (router) {
     if (router.slice(0, 4) === "note") {
       return <Note />;
-    } else if (router.slice(0, 4) === "npub") {
+    } else if (
+      router.slice(0, 4) === "npub" ||
+      router.slice(0, 8) === "nprofile"
+    ) {
       return <Profile />;
     }
     return <div>Not Found</div>;
