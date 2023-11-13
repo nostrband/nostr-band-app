@@ -8,6 +8,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 import { useAppSelector } from "../../../hooks/redux";
 import { nip19 } from "@nostrband/nostr-tools";
+import { dateToUnix } from "nostr-react";
 
 const AllResults = () => {
   const ndk = useAppSelector((store) => store.connectionReducer.ndk);
@@ -34,11 +35,15 @@ const AllResults = () => {
         ?.split(" ")
         .filter((s) => s.match(/#[a-zA-Z0-9_]+/g)?.toString());
       const tags = tagsWithHash?.map((tag) => tag.replace("#", ""));
-      const since = search?.match(/since:(\d+)/)![1];
-      const until = search?.match(/until:(\d+)/)![1];
+      const since = search?.match(/since:\d{4}-\d{2}-\d{2}/)
+        ? dateToUnix(new Date(search?.match(/since:\d{4}-\d{2}-\d{2}/)![0]))
+        : "";
+      const until = search?.match(/until:\d{4}-\d{2}-\d{2}/)
+        ? dateToUnix(new Date(search?.match(/until:\d{4}-\d{2}-\d{2}/)![0]))
+        : "";
       search?.replace(/#[a-zA-Z0-9_]+/g, "");
-      search?.replace(/since:(\d+)/, "");
-      search?.replace(/until:(\d+)/, "");
+      search?.replace(/since:\d{4}-\d{2}-\d{2}/, "");
+      search?.replace(/until:\d{4}-\d{2}-\d{2}/, "");
 
       const cleanSearch = searchParams
         .get("q")
@@ -46,8 +51,8 @@ const AllResults = () => {
         .filter((str) => !str.match(/following:npub[0-9a-zA-Z]+/g))
         .join(" ")
         .replace(/#[a-zA-Z0-9_]+/g, "")
-        .replace(/since:(\d+)/, "")
-        .replace(/until:(\d+)/, "");
+        .replace(/since:\d{4}-\d{2}-\d{2}/, "")
+        .replace(/until:\d{4}-\d{2}-\d{2}/, "");
       setIsLoadingProfiles(true);
       if (search?.includes("following:")) {
         const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
@@ -109,8 +114,24 @@ const AllResults = () => {
       } else if (search?.includes("by:")) {
         const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
         const userPk = userNpub ? nip19.decode(userNpub).data : "";
+        const topProfilesFilter = { kinds: [0], authors: [userPk] };
+        if (since) {
+          Object.defineProperty(topProfilesFilter, "since", {
+            value: since,
+            enumerable: true,
+          });
+        }
+
+        if (until) {
+          Object.defineProperty(topProfilesFilter, "until", {
+            value: until,
+            enumerable: true,
+          });
+        }
+
+        console.log("profilesFilter", topProfilesFilter);
         //@ts-ignore
-        const user = await ndk.fetchEvent({ kinds: [0], authors: [userPk] });
+        const user = await ndk.fetchEvent(topProfilesFilter);
         setProfiles(user ? [user] : []);
 
         setProfilesCount(1);
@@ -119,8 +140,8 @@ const AllResults = () => {
           .get("q")
           ?.toString()
           .replace(/#[a-zA-Z0-9_]+/g, "")
-          .replace(/since:(\d+)/, "")
-          .replace(/until:(\d+)/, "");
+          .replace(/since:\d{4}-\d{2}-\d{2}/, "")
+          .replace(/until:\d{4}-\d{2}-\d{2}/, "");
         const filter = {
           kinds: [0],
           limit: 3,
@@ -213,8 +234,15 @@ const AllResults = () => {
           .filter((s) => s.match(/#[a-zA-Z0-9_]+/g)?.toString());
         const tags = tagsWithHash?.map((tag) => tag.replace("#", ""));
         search?.replace(/#[a-zA-Z0-9_]+/g, "");
-        const since = search?.match(/since:(\d+)/)![1];
-        const until = search?.match(/until:(\d+)/)![1];
+        const since = search?.match(/since:\d{4}-\d{2}-\d{2}/)
+          ? dateToUnix(new Date(search?.match(/since:\d{4}-\d{2}-\d{2}/)![0]))
+          : "";
+        const until = search?.match(/until:\d{4}-\d{2}-\d{2}/)
+          ? dateToUnix(new Date(search?.match(/until:\d{4}-\d{2}-\d{2}/)![0]))
+          : "";
+        search?.replace(/#[a-zA-Z0-9_]+/g, "");
+        search?.replace(/since:\d{4}-\d{2}-\d{2}/, "");
+        search?.replace(/until:\d{4}-\d{2}-\d{2}/, "");
 
         if (search?.includes("following:")) {
           const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
@@ -225,8 +253,8 @@ const AllResults = () => {
             .filter((str) => !str.match(/following:npub[0-9a-zA-Z]+/g))
             .join(" ")
             .replace(/#[a-zA-Z0-9_]+/g, "")
-            .replace(/since:(\d+)/, "")
-            .replace(/until:(\d+)/, "");
+            .replace(/since:\d{4}-\d{2}-\d{2}/, "")
+            .replace(/until:\d{4}-\d{2}-\d{2}/, "");
 
           //@ts-ignore
           const userContacts = await ndk.fetchEvent({
@@ -297,8 +325,8 @@ const AllResults = () => {
             .filter((str) => !str.match(/by:npub[0-9a-zA-Z]+/g))
             .join(" ")
             .replace(/#[a-zA-Z0-9_]+/g, "")
-            .replace(/since:(\d+)/, "")
-            .replace(/until:(\d+)/, "");
+            .replace(/since:\d{4}-\d{2}-\d{2}/, "")
+            .replace(/until:\d{4}-\d{2}-\d{2}/, "");
 
           const postsFilter = { kinds: [1], authors: [userPk], limit: 10 };
 
@@ -350,8 +378,8 @@ const AllResults = () => {
         } else {
           const cleanSearch = search
             ?.replace(/#[a-zA-Z0-9_]+/g, "")
-            .replace(/since:(\d+)/, "")
-            .replace(/until:(\d+)/, "");
+            .replace(/since:\d{4}-\d{2}-\d{2}/, "")
+            .replace(/until:\d{4}-\d{2}-\d{2}/, "");
           const postsFilter = {
             kinds: [1],
             //@ts-ignore
