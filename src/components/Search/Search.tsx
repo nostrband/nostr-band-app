@@ -20,6 +20,7 @@ import React from "react";
 import { useAppSelector } from "../../hooks/redux";
 import DatePicker from "react-datepicker";
 import { dateToUnix } from "nostr-react";
+import { formatDate } from "../../utils/formatDate";
 
 type searchTypes = {
   isLoading: boolean;
@@ -45,7 +46,6 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   const [isSpam, setIsSpam] = useState(false);
   const [tags, setTags] = useState("");
   const [resultQuery, setResulQuery] = useState("");
-  const [isDatePickers, setIsDatePickers] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [sinceDate, setSinceDate] = useState(null);
 
@@ -61,8 +61,8 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
         lang ? "lang:" + lang + " " : ""
       }${lna ? "lna:" + lna + " " : ""}${nip05 ? "nip05:" + nip05 + " " : ""}${
         tags ? tagsWithHash + " " : ""
-      }${sinceDate ? "since:" + dateToUnix(sinceDate!) + " " : ""}${
-        startDate ? "until:" + dateToUnix(startDate!) + " " : ""
+      }${sinceDate ? "since:" + formatDate(sinceDate!) + " " : ""}${
+        startDate ? "until:" + formatDate(startDate!) + " " : ""
       }${isSpam ? "-filter:spam" : ""}`
     );
   }, [
@@ -131,44 +131,36 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
                   type="text"
                   placeholder="All of these words"
                 />
-                <Button
-                  variant="outline-secondary"
-                  onClick={() => setIsDatePickers(true)}
-                >
-                  <Calendar2RangeFill />
-                </Button>
               </InputGroup>
 
               <Form.Label>
                 Example: nostr relays - Contains both "nostr" and "relays"
               </Form.Label>
             </Form.Group>
-            {isDatePickers && (
-              <div className="datePicker">
-                <div className="date-picker-wrapper">
-                  <p>Since: </p>
-                  <DatePicker
-                    className="datePickerInput"
-                    selected={sinceDate}
-                    onChange={setSinceDate}
-                    dateFormat="yyyy-MM-dd"
-                    maxDate={new Date()}
-                    minDate={new Date("2023-01-01")}
-                  />
-                </div>
-                <div className="date-picker-wrapper">
-                  <p>Until: </p>
-                  <DatePicker
-                    className="datePickerInput"
-                    selected={startDate}
-                    onChange={setStartDate}
-                    dateFormat="yyyy-MM-dd"
-                    maxDate={new Date()}
-                    minDate={new Date("2023-01-01")}
-                  />
-                </div>
+            <div className="datePicker">
+              <div className="date-picker-wrapper">
+                <p>Since: </p>
+                <DatePicker
+                  className="datePickerInput"
+                  selected={sinceDate}
+                  onChange={setSinceDate}
+                  dateFormat="yyyy-MM-dd"
+                  maxDate={new Date()}
+                  minDate={new Date("2023-01-01")}
+                />
               </div>
-            )}
+              <div className="date-picker-wrapper">
+                <p>Until: </p>
+                <DatePicker
+                  className="datePickerInput"
+                  selected={startDate}
+                  onChange={setStartDate}
+                  dateFormat="yyyy-MM-dd"
+                  maxDate={new Date()}
+                  minDate={new Date("2023-01-01")}
+                />
+              </div>
+            </div>
             <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
               <Form.Control
                 value={tags}

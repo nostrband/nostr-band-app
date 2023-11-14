@@ -87,8 +87,8 @@
 .datePickerInput {
   background: var(--body-background) !important;
   color: var(--body-color);
-  border: 1px solid var(--body-mute-color);
-  padding: 0.4rem 0.4rem;
+  border: 1px solid var(--body-mutest-color);
+  padding: 0.1rem 0.2rem;
   border-radius: 10px;
   margin: 0 0.3rem;
 }
@@ -121,5 +121,5 @@
 .date-picker-wrapper p {
   margin: 0 0 0 0.5rem;
   font-size: 1rem;
-  color: var(--body-color);
+  color: var(--body-mute-color);
 }
