@@ -125,8 +125,11 @@
   color: var(--body-mute-color);
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 450px) {
   .date-picker-wrapper {
     width: 49%;
+  }
+  .datePickerInput {
+    width: 80%;
   }
 }
