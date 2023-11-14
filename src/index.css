@@ -89,6 +89,10 @@ body::-webkit-scrollbar-button {
   display: none;
 }
 
+.react-datepicker-popper {
+  transition: none !important;
+}
+
 @media screen and (max-width: 600px) {
   html {
     font-size: 14px;

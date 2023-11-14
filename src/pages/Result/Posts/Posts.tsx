@@ -6,6 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import PostCard from "../../../components/PostCard/PostCard";
 import { useAppSelector } from "../../../hooks/redux";
 import { nip19 } from "@nostrband/nostr-tools";
+import { dateToUnix } from "nostr-react";
 
 const Posts = () => {
   const ndk = useAppSelector((store) => store.connectionReducer.ndk);
@@ -69,20 +70,58 @@ const Posts = () => {
       setIsLoading(true);
       const userNpub = searchParams.get("q")?.match(/npub[0-9a-zA-Z]+/g)![0];
       const userPk = userNpub ? nip19.decode(userNpub).data.toString() : "";
+      const search = searchParams.get("q");
+      const tagsWithHash = search
+        ?.split(" ")
+        .filter((s) => s.match(/#[a-zA-Z0-9_]+/g)?.toString());
+      const tags = tagsWithHash?.map((tag) => tag.replace("#", ""));
+      search?.replace(/#[a-zA-Z0-9_]+/g, "");
+      const since = search?.match(/since:\d{4}-\d{2}-\d{2}/)
+        ? dateToUnix(new Date(search?.match(/since:\d{4}-\d{2}-\d{2}/)![0]))
+        : "";
+      const until = search?.match(/until:\d{4}-\d{2}-\d{2}/)
+        ? dateToUnix(new Date(search?.match(/until:\d{4}-\d{2}-\d{2}/)![0]))
+        : "";
       const cleanSearch = searchParams
         .get("q")
         ?.split(" ")
         .filter((str) => !str.match(/by:npub[0-9a-zA-Z]+/g))
-        .join(" ");
+        .join(" ")
+        .replace(/#[a-zA-Z0-9_]+/g, "")
+        .replace(/since:\d{4}-\d{2}-\d{2}/, "")
+        .replace(/until:\d{4}-\d{2}-\d{2}/, "");
 
-      const postsFilter = cleanSearch
-        ? {
-            kinds: [1],
-            search: cleanSearch,
-            authors: [userPk],
-            limit: limitPosts,
-          }
-        : { kinds: [1], authors: [userPk], limit: limitPosts };
+      const postsFilter = { kinds: [1], authors: [userPk], limit: limitPosts };
+
+      if (cleanSearch?.trim()) {
+        Object.defineProperty(postsFilter, "search", {
+          value: cleanSearch.trimStart().trimEnd(),
+          enumerable: true,
+        });
+      }
+
+      if (tags?.length) {
+        Object.defineProperty(postsFilter, "#t", {
+          value: tags,
+          enumerable: true,
+        });
+      }
+
+      if (since) {
+        Object.defineProperty(postsFilter, "since", {
+          value: since,
+          enumerable: true,
+        });
+      }
+
+      if (until) {
+        Object.defineProperty(postsFilter, "until", {
+          value: until,
+          enumerable: true,
+        });
+      }
+
+      console.log("postsFilter", postsFilter);
 
       const posts = Array.from(await ndk.fetchEvents(postsFilter));
 
@@ -155,28 +194,71 @@ const Posts = () => {
     }
   };
 
-  const fetchPostsCount = async () => {
-    if (ndk instanceof NDK) {
-      const postsCount = await ndk.fetchCount({
-        kinds: [1],
-        //@ts-ignore
-        search: searchParams.get("q"),
-      });
-      setPostsCount(postsCount?.count ? postsCount.count : 0);
-    }
-  };
-
   const getPosts = async (ndk: NDK) => {
     try {
       if (ndk instanceof NDK) {
         setIsLoading(true);
+        const search = searchParams.get("q");
+        const tagsWithHash = search
+          ?.split(" ")
+          .filter((s) => s.match(/#[a-zA-Z0-9_]+/g)?.toString());
+        const tags = tagsWithHash?.map((tag) => tag.replace("#", ""));
+        search?.replace(/#[a-zA-Z0-9_]+/g, "");
+        const since = search?.match(/since:\d{4}-\d{2}-\d{2}/)
+          ? dateToUnix(new Date(search?.match(/since:\d{4}-\d{2}-\d{2}/)![0]))
+          : "";
+        const until = search?.match(/until:\d{4}-\d{2}-\d{2}/)
+          ? dateToUnix(new Date(search?.match(/until:\d{4}-\d{2}-\d{2}/)![0]))
+          : "";
+        const cleanSearch = searchParams
+          .get("q")
+          ?.split(" ")
+          .filter((str) => !str.match(/by:npub[0-9a-zA-Z]+/g))
+          .join(" ")
+          .replace(/#[a-zA-Z0-9_]+/g, "")
+          .replace(/since:\d{4}-\d{2}-\d{2}/, "")
+          .replace(/until:\d{4}-\d{2}-\d{2}/, "");
+
+        const postsFilter = {
+          kinds: [1],
+          //@ts-ignore
+          search: searchParams.get("q"),
+          limit: limitPosts,
+        };
+
+        if (cleanSearch?.trim()) {
+          Object.defineProperty(postsFilter, "search", {
+            value: cleanSearch.trimStart().trimEnd(),
+            enumerable: true,
+          });
+        }
+
+        if (tags?.length) {
+          Object.defineProperty(postsFilter, "#t", {
+            value: tags,
+            enumerable: true,
+          });
+        }
+
+        if (since) {
+          Object.defineProperty(postsFilter, "since", {
+            value: since,
+            enumerable: true,
+          });
+        }
+
+        if (until) {
+          Object.defineProperty(postsFilter, "until", {
+            value: until,
+            enumerable: true,
+          });
+        }
+
+        console.log("postsFilter", postsFilter);
+
         const posts = Array.from(
-          await ndk.fetchEvents({
-            kinds: [1],
-            //@ts-ignore
-            search: searchParams.get("q"),
-            limit: limitPosts,
-          })
+          //@ts-ignore
+          await ndk.fetchEvents(postsFilter)
         );
         const postsAuthorsPks = posts.map((post) => post.pubkey);
         const postsAuthors = Array.from(
@@ -188,7 +270,9 @@ const Posts = () => {
         );
         setPosts(posts);
         setPostsAuthors(postsAuthors);
-        fetchPostsCount();
+        //@ts-ignore
+        const postsCount = await ndk.fetchCount(postsFilter);
+        setPostsCount(postsCount?.count ?? 0);
         setIsLoading(false);
       }
     } catch (e) {
