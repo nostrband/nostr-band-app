@@ -268,11 +268,11 @@ const Posts = () => {
             limit: limitPosts,
           })
         );
-        setPosts(posts);
-        setPostsAuthors(postsAuthors);
         //@ts-ignore
         const postsCount = await ndk.fetchCount(postsFilter);
         setPostsCount(postsCount?.count ?? 0);
+        setPosts(posts);
+        setPostsAuthors(postsAuthors);
         setIsLoading(false);
       }
     } catch (e) {

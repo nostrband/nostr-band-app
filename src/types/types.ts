@@ -134,3 +134,14 @@ export type nostrPeopleType = {
 };
 
 export type contentType = { type: string; url: string };
+
+export type ndkFilter = {
+  kinds?: number[];
+  authors?: string[];
+  pubkey?: string[];
+  "#e"?: string[];
+  "#t"?: string[];
+  limit?: number;
+  since?: number;
+  until?: number;
+};
