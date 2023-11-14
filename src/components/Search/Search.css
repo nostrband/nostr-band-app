@@ -83,6 +83,7 @@
 .datePicker {
   display: flex;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 .datePickerInput {
   background: var(--body-background) !important;
@@ -122,4 +123,10 @@
   margin: 0 0 0 0.5rem;
   font-size: 1rem;
   color: var(--body-mute-color);
+}
+
+@media screen and (max-width: 500px) {
+  .date-picker-wrapper {
+    width: 49%;
+  }
 }
