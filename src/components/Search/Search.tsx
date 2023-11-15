@@ -46,8 +46,8 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   const [isSpam, setIsSpam] = useState(false);
   const [tags, setTags] = useState("");
   const [resultQuery, setResulQuery] = useState("");
-  const [startDate, setStartDate] = useState(null);
-  const [sinceDate, setSinceDate] = useState(null);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [sinceDate, setSinceDate] = useState<Date | null>(null);
 
   useEffect(() => {
     const tagsWithHash = tags
@@ -116,6 +116,9 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
     });
   };
 
+  const theDayBeforeStartDate = new Date(startDate ?? "");
+  const theDayAfterSinceDate = new Date(sinceDate ?? "");
+
   return (
     <>
       {searchParams.get("advanced") === "true" ? (
@@ -141,23 +144,33 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
               <div className="date-picker-wrapper">
                 <p>Since: </p>
                 <DatePicker
+                  placeholderText="20xx-mm-dd"
                   className="datePickerInput"
                   selected={sinceDate}
                   onChange={setSinceDate}
                   dateFormat="yyyy-MM-dd"
-                  maxDate={new Date()}
+                  maxDate={
+                    startDate !== null
+                      ? theDayBeforeStartDate.setDate(startDate.getDate() - 1)
+                      : new Date()
+                  }
                   minDate={new Date("2023-01-01")}
                 />
               </div>
               <div className="date-picker-wrapper">
                 <p>Until: </p>
                 <DatePicker
+                  placeholderText={formatDate(new Date())}
                   className="datePickerInput"
                   selected={startDate}
                   onChange={setStartDate}
                   dateFormat="yyyy-MM-dd"
                   maxDate={new Date()}
-                  minDate={new Date("2023-01-01")}
+                  minDate={
+                    sinceDate !== null
+                      ? theDayAfterSinceDate.setDate(sinceDate.getDate() + 1)
+                      : new Date("2023-01-01")
+                  }
                 />
               </div>
             </div>
@@ -275,7 +288,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
           </Form>
         </div>
       ) : (
-        <InputGroup className="mb-1" id="search-input">
+        <InputGroup className="mb-3" id="search-input">
           <Form.Control
             className="searchInput"
             value={inputValue ? inputValue : ""}

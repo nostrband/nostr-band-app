@@ -13,7 +13,7 @@ const NotFound = () => {
             <ExclamationTriangle color="--bg-secondary-color" />
             &nbsp;Oops! Page not found.
           </p>
-          <p>The page you ara looking for was not found.</p>
+          <p>The page you are looking for was not found.</p>
           <p>
             You may return to <Link to={"/"}>home page</Link> or try using the
             search form.
