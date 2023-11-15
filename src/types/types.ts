@@ -141,6 +141,7 @@ export type ndkFilter = {
   pubkey?: string[];
   "#e"?: string[];
   "#t"?: string[];
+  "#d"?: string[];
   limit?: number;
   since?: number;
   until?: number;
