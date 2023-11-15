@@ -5,7 +5,7 @@ import Profile from "../../pages/Profile/Profile";
 const RouteSwitcher = () => {
   const { router } = useParams();
   if (router) {
-    if (router.slice(0, 4) === "note") {
+    if (router.slice(0, 4) === "note" || router.slice(0, 5) === "naddr") {
       return <Note />;
     } else if (
       router.slice(0, 4) === "npub" ||

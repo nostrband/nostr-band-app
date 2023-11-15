@@ -51,6 +51,7 @@ import { noteHexToNoteId } from "../../utils/decodeFunctions";
 import NotFound from "../NotFound/NotFound";
 import { compareByTagName } from "../../utils/sortFunctions";
 import Thread from "../../components/Thread/Thread";
+import { isNaddr } from "../../types/guards";
 
 const Note = () => {
   const store = useAppSelector((store) => store.userReducer);
@@ -106,6 +107,7 @@ const Note = () => {
     (NDKEvent | string)[]
   >([]);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [noteId, setNoteId] = useState("");
   const renderedLabel: string[] = [];
 
   const { setLabels } = userSlice.actions;
@@ -207,8 +209,8 @@ const Note = () => {
   };
 
   const { router } = useParams();
-  const note = router;
-  const noteId = note ? noteHexToNoteId(note) : "";
+  const noteHex = router;
+  const noteIdCheck = noteHex ? noteHexToNoteId(noteHex) : "";
 
   const fetchNote = async () => {
     try {
@@ -217,8 +219,17 @@ const Note = () => {
       setThreadPostAuthor(null);
       setThreadPost(null);
       setIsLoading(true);
+      const noteId = noteHex ? noteHexToNoteId(noteHex) : "";
+      const noteFilter = isNaddr(noteId)
+        ? {
+            authors: [noteId?.pubkey],
+            kinds: [noteId?.kind],
+            "#d": [noteId?.identifier],
+          }
+        : { ids: [noteId] };
       //@ts-ignore
-      const note = await ndk.fetchEvent({ ids: [noteId] });
+      const note = await ndk.fetchEvent(noteFilter);
+      setNoteId(note?.id ?? "");
       const links = extractNostrStrings(note!.content);
       const pubkeys: string[] = links.map((link: string) => {
         if (link.startsWith("npub")) {
@@ -354,8 +365,8 @@ const Note = () => {
           relays: ["wss://relay.nostr.band"],
         })
       );
-      fetchStats();
-      fetchCount();
+      fetchStats(note?.id ?? "");
+      fetchCount(note?.id ?? "");
       // console.log(JSON.parse(author.content));
       setIsLoading(false);
     } catch (e) {
@@ -367,7 +378,7 @@ const Note = () => {
     setLimitZaps((prevState) => prevState + 10);
   };
 
-  const fetchCount = async () => {
+  const fetchCount = async (noteId: string) => {
     try {
       const repliesCount = await ndk.fetchCount({ kinds: [1], "#e": [noteId] });
       setRepliesCount(repliesCount?.count ?? 0);
@@ -378,7 +389,7 @@ const Note = () => {
     }
   };
 
-  const fetchStats = async () => {
+  const fetchStats = async (noteId: string) => {
     try {
       const { data } = await axios.get(
         `${process.env.REACT_APP_API_URL}/stats/event/${noteId}`
@@ -472,11 +483,11 @@ const Note = () => {
   };
 
   useEffect(() => {
-    if (tabKey === "zaps") {
+    if (tabKey === "zaps" && noteId) {
       fetchZaps(noteId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabKey, limitReplies, limitZaps, location.pathname]);
+  }, [tabKey, limitReplies, limitZaps, location.pathname, noteId]);
 
   const sats = stats?.zaps?.msats ? stats?.zaps?.msats / 1000 : null;
 
@@ -562,7 +573,7 @@ const Note = () => {
     }
   };
 
-  return noteId ? (
+  return noteIdCheck ? (
     <div className={cl.noteContainer}>
       <AddModal
         isModal={isVisibleLabelModal}
@@ -573,7 +584,7 @@ const Note = () => {
       <EmbedModal
         isModal={isEmbedModal}
         setIsModal={setIsEmbedModal}
-        str={note ? note : ""}
+        str={noteHex ? noteHex : ""}
       />
       <ReactModal
         bodyOpenClassName={cl.modalBody}
@@ -812,14 +823,14 @@ const Note = () => {
               )}
             </div>
             <div className={`${cl.profileContentControl} ${cl.profileButtons}`}>
-              <a target="_blanc" href={`https://nostrapp.link/#${note}`}>
+              <a target="_blanc" href={`https://nostrapp.link/#${noteHex}`}>
                 <Button variant="outline-secondary">
                   <BoxArrowUpRight /> Open
                 </Button>
               </a>
               <Link
                 target="_blanc"
-                to={`https://zapper.nostrapps.org/zap?id=${note}`}
+                to={`https://zapper.nostrapps.org/zap?id=${noteHex}`}
               >
                 <Button variant="outline-secondary">
                   <Lightning /> Zap
@@ -892,12 +903,14 @@ const Note = () => {
                 >
                   <Dropdown.Item
                     target="_blanc"
-                    href={`https://nostrapp.link/#${note}?select=true`}
+                    href={`https://nostrapp.link/#${noteHex}?select=true`}
                   >
                     <BoxArrowUpRight /> Open with
                   </Dropdown.Item>
                   <Dropdown.Item
-                    onClick={() => copyLink(`https://new.nostr.band/${note}`)}
+                    onClick={() =>
+                      copyLink(`https://new.nostr.band/${noteHex}`)
+                    }
                   >
                     <Share /> Share
                   </Dropdown.Item>
@@ -953,7 +966,7 @@ const Note = () => {
               >
                 {noteId && (
                   <div className={cl.repliesWrapper}>
-                    <Thread anchor={note} />
+                    <Thread anchor={noteHex} />
                   </div>
                 )}
               </Tab>
@@ -1038,7 +1051,7 @@ const Note = () => {
                     </p>
                     <span>
                       Number of replies to this post.{" "}
-                      <Link to={`/${note}`}>View</Link>
+                      <Link to={`/${noteHex}`}>View</Link>
                     </span>
                   </div>
                   <div className={cl.statsBarWrapper}>
@@ -1094,7 +1107,9 @@ const Note = () => {
                     </p>
                     <span>
                       Number of zaps received by this post.{" "}
-                      <Link to={`/${note}?overview=zaps-received`}>View</Link>
+                      <Link to={`/${noteHex}?overview=zaps-received`}>
+                        View
+                      </Link>
                     </span>
                   </div>
                 </div>

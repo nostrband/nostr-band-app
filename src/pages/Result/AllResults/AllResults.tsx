@@ -425,12 +425,8 @@ const AllResults = () => {
           );
           setPosts(posts);
           setPostsAuthors(postsAuthors);
-          const postsCount = await ndk.fetchCount({
-            kinds: [1],
-            //@ts-ignore
-            search: search,
-          });
-          setPostsCount(postsCount?.count ? postsCount.count : 0);
+          const postsCount = await ndk.fetchCount(postsFilter);
+          setPostsCount(postsCount?.count ?? 0);
         }
       }
     } catch (e) {
