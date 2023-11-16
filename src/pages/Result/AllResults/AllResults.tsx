@@ -91,6 +91,12 @@ const AllResults = () => {
             value: since,
             enumerable: true,
           });
+          if (!until) {
+            Object.defineProperty(topProfilesFilter, "until", {
+              value: dateToUnix(new Date()),
+              enumerable: true,
+            });
+          }
         }
 
         if (until) {
@@ -120,6 +126,12 @@ const AllResults = () => {
             value: since,
             enumerable: true,
           });
+          if (!until) {
+            Object.defineProperty(topProfilesFilter, "until", {
+              value: dateToUnix(new Date()),
+              enumerable: true,
+            });
+          }
         }
 
         if (until) {
@@ -166,6 +178,12 @@ const AllResults = () => {
             value: since,
             enumerable: true,
           });
+          if (!until) {
+            Object.defineProperty(filter, "until", {
+              value: dateToUnix(new Date()),
+              enumerable: true,
+            });
+          }
         }
 
         if (until) {
@@ -196,6 +214,12 @@ const AllResults = () => {
             value: search.trimStart().trimEnd(),
             enumerable: true,
           });
+          if (!until) {
+            Object.defineProperty(countFilter, "until", {
+              value: dateToUnix(new Date()),
+              enumerable: true,
+            });
+          }
         }
 
         if (tags?.length) {
@@ -210,6 +234,12 @@ const AllResults = () => {
             value: since,
             enumerable: true,
           });
+          if (!until) {
+            Object.defineProperty(countFilter, "until", {
+              value: dateToUnix(new Date()),
+              enumerable: true,
+            });
+          }
         }
 
         if (until) {
@@ -290,6 +320,12 @@ const AllResults = () => {
               value: since,
               enumerable: true,
             });
+            if (!until) {
+              Object.defineProperty(postsFilter, "until", {
+                value: dateToUnix(new Date()),
+                enumerable: true,
+              });
+            }
           }
 
           if (until) {
@@ -349,6 +385,12 @@ const AllResults = () => {
               value: since,
               enumerable: true,
             });
+            if (!until) {
+              Object.defineProperty(postsFilter, "until", {
+                value: dateToUnix(new Date()),
+                enumerable: true,
+              });
+            }
           }
 
           if (until) {
@@ -405,6 +447,12 @@ const AllResults = () => {
               value: since,
               enumerable: true,
             });
+            if (!until) {
+              Object.defineProperty(postsFilter, "until", {
+                value: dateToUnix(new Date()),
+                enumerable: true,
+              });
+            }
           }
 
           if (until) {

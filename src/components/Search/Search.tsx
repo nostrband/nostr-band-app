@@ -2,14 +2,9 @@ import "./Search.css";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import { Button } from "react-bootstrap";
-import {
-  Calendar,
-  Calendar2RangeFill,
-  Search as SearchIcon,
-  Sliders,
-} from "react-bootstrap-icons";
+import { Search as SearchIcon, Sliders } from "react-bootstrap-icons";
 import Spinner from "react-bootstrap/Spinner";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import {
   useNavigate,
   useSearchParams,
@@ -19,7 +14,6 @@ import {
 import React from "react";
 import { useAppSelector } from "../../hooks/redux";
 import DatePicker from "react-datepicker";
-import { dateToUnix } from "nostr-react";
 import { formatDate } from "../../utils/formatDate";
 
 type searchTypes = {
@@ -45,16 +39,17 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   const [nip05, setNip05] = useState("");
   const [isSpam, setIsSpam] = useState(false);
   const [tags, setTags] = useState("");
-  const [resultQuery, setResulQuery] = useState("");
+  const [resultQuery, setResultQuery] = useState("");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [sinceDate, setSinceDate] = useState<Date | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const tagsWithHash = tags
       .split(" ")
       .map((tag) => "#" + tag)
       .join(" ");
-    setResulQuery(
+    setResultQuery(
       `${allSearch ? allSearch + " " : ""}${
         author ? "by:" + author + " " : ""
       }${following ? "following:" + following + " " : ""}${
@@ -77,6 +72,68 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
     sinceDate,
     startDate,
   ]);
+
+  useEffect(() => {
+    if (inputValue) {
+      const search = inputValue;
+      const since = search?.match(/since:\d{4}-\d{2}-\d{2}/)
+        ? new Date(search?.match(/since:\d{4}-\d{2}-\d{2}/)![0])
+        : "";
+      const until = search?.match(/until:\d{4}-\d{2}-\d{2}/)
+        ? new Date(search?.match(/until:\d{4}-\d{2}-\d{2}/)![0])
+        : "";
+      if (since) {
+        setSinceDate(since);
+      }
+      if (until) {
+        setStartDate(until);
+      }
+      const tagsWithHash = search
+        ?.split(" ")
+        .filter((s) => s.match(/#[a-zA-Z0-9_]+/g)?.toString());
+      const tags = tagsWithHash?.map((tag) => tag.replace("#", ""));
+      if (tags) {
+        setTags(tags.join(" "));
+      }
+      let cleanSearch = "";
+
+      if (search.includes("following:")) {
+        const followingNpub = search?.match(/npub[0-9a-zA-Z]+/g)
+          ? search?.match(/npub[0-9a-zA-Z]+/g)![0]
+          : "";
+        if (followingNpub) {
+          setFollowing(followingNpub);
+        }
+        cleanSearch = search
+          ?.split(" ")
+          .filter((str) => !str.match(/following:npub[0-9a-zA-Z]+/g))
+          .join(" ")
+          .replace(/#[a-zA-Z0-9_]+/g, "")
+          .replace(/since:\d{4}-\d{2}-\d{2}/, "")
+          .replace(/until:\d{4}-\d{2}-\d{2}/, "");
+      } else if (search.includes("by:")) {
+        const byNpub = search?.match(/npub[0-9a-zA-Z]+/g)
+          ? search?.match(/npub[0-9a-zA-Z]+/g)![0]
+          : "";
+        if (byNpub) {
+          setAuthor(byNpub);
+        }
+        cleanSearch = search
+          ?.split(" ")
+          .filter((str) => !str.match(/by:npub[0-9a-zA-Z]+/g))
+          .join(" ")
+          .replace(/#[a-zA-Z0-9_]+/g, "")
+          .replace(/since:\d{4}-\d{2}-\d{2}/, "")
+          .replace(/until:\d{4}-\d{2}-\d{2}/, "");
+      } else {
+        cleanSearch = search
+          .replace(/#[a-zA-Z0-9_]+/g, "")
+          .replace(/since:\d{4}-\d{2}-\d{2}/, "")
+          .replace(/until:\d{4}-\d{2}-\d{2}/, "");
+      }
+      setAllSearch(cleanSearch.trimStart().trimEnd());
+    }
+  }, [inputValue]);
 
   const searchHandleByEnter = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -104,6 +161,22 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
           : inputValue
           ? createSearchParams({ q: inputValue }).toString()
           : "",
+    });
+  };
+
+  const goToAdvanced = () => {
+    navigate({
+      pathname: "/",
+      search:
+        selectValue && inputValue
+          ? createSearchParams({
+              q: inputValue,
+              type: selectValue,
+              advanced: "true",
+            }).toString()
+          : inputValue
+          ? createSearchParams({ q: inputValue, advanced: "true" }).toString()
+          : createSearchParams({ advanced: "true" }).toString(),
     });
   };
 
@@ -292,6 +365,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
           <Form.Control
             className="searchInput"
             value={inputValue ? inputValue : ""}
+            ref={inputRef}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder={
               placeholder
@@ -324,22 +398,22 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
               <option value="zaps">Zaps</option>
             </Form.Select>
           </div>
-          <Link
+
+          <Button
             style={{
               float: "right",
-              color: "var(--body-link-color)",
+              borderRadius: "0",
               fontSize: ".8rem",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
             className="advancedBtn"
-            to={"/?advanced=true"}
+            variant="outline-secondary"
+            onClick={goToAdvanced}
           >
-            <Button style={{ borderRadius: 0 }} variant="outline-secondary">
-              <Sliders />
-            </Button>
-          </Link>
+            <Sliders />
+          </Button>
           <Button
             className="btn"
             id="search-btn"
