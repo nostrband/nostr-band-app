@@ -47,6 +47,10 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    setInputValue(searchParams.get("q"));
+  }, [searchParams.get("q")]);
+
+  useEffect(() => {
     const tagsWithHash = tags
       .split(" ")
       .map((tag) => "#" + tag)
