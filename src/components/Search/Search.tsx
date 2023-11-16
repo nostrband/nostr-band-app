@@ -9,7 +9,6 @@ import {
   useNavigate,
   useSearchParams,
   createSearchParams,
-  Link,
 } from "react-router-dom";
 import React from "react";
 import { useAppSelector } from "../../hooks/redux";
@@ -25,9 +24,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   const navigate = useNavigate();
   const theme = useAppSelector((state) => state.userReducer.theme);
   const [searchParams] = useSearchParams();
-  const [inputValue, setInputValue] = useState(
-    searchParams.get("q") ? searchParams.get("q") : ""
-  );
+  const [inputValue, setInputValue] = useState(searchParams.get("q") ?? "");
   const [selectValue, setSelectValue] = useState(
     searchParams.get("type") ? searchParams.get("type") : ""
   );
@@ -42,6 +39,9 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   const [resultQuery, setResultQuery] = useState("");
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [sinceDate, setSinceDate] = useState<Date | null>(null);
+  const [isAdvanced, setIsAdvanced] = useState(
+    searchParams.get("advanced") === "true" ? true : false
+  );
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -73,8 +73,11 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
     startDate,
   ]);
 
-  useEffect(() => {
+  const openAdvanced = () => {
+    setIsAdvanced(true);
     if (inputValue) {
+      console.log(inputValue);
+
       const search = inputValue;
       const since = search?.match(/since:\d{4}-\d{2}-\d{2}/)
         ? new Date(search?.match(/since:\d{4}-\d{2}-\d{2}/)![0])
@@ -133,7 +136,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
       }
       setAllSearch(cleanSearch.trimStart().trimEnd());
     }
-  }, [inputValue]);
+  };
 
   const searchHandleByEnter = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -164,22 +167,6 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
     });
   };
 
-  const goToAdvanced = () => {
-    navigate({
-      pathname: "/",
-      search:
-        selectValue && inputValue
-          ? createSearchParams({
-              q: inputValue,
-              type: selectValue,
-              advanced: "true",
-            }).toString()
-          : inputValue
-          ? createSearchParams({ q: inputValue, advanced: "true" }).toString()
-          : createSearchParams({ advanced: "true" }).toString(),
-    });
-  };
-
   const searchAdvanceHandle = () => {
     navigate({
       pathname: "/",
@@ -194,7 +181,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
 
   return (
     <>
-      {searchParams.get("advanced") === "true" ? (
+      {isAdvanced ? (
         <div className="searchAdvanced">
           <h4>Advanced search</h4>
           <Form>
@@ -354,7 +341,10 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
             <Button
               variant="outline-secondary"
               style={{ marginLeft: ".5rem" }}
-              onClick={() => navigate("/")}
+              onClick={() => {
+                navigate("/");
+                setIsAdvanced(false);
+              }}
             >
               Cancel
             </Button>
@@ -410,7 +400,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
             }}
             className="advancedBtn"
             variant="outline-secondary"
-            onClick={goToAdvanced}
+            onClick={openAdvanced}
           >
             <Sliders />
           </Button>
