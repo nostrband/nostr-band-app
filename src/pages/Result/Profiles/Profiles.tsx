@@ -129,6 +129,12 @@ const Profiles = () => {
             value: since,
             enumerable: true,
           });
+          if (!until) {
+            Object.defineProperty(profileFilter, "until", {
+              value: dateToUnix(new Date()),
+              enumerable: true,
+            });
+          }
         }
 
         if (until) {
@@ -153,6 +159,12 @@ const Profiles = () => {
             value: since,
             enumerable: true,
           });
+          if (!until) {
+            Object.defineProperty(profileFilter, "until", {
+              value: dateToUnix(new Date()),
+              enumerable: true,
+            });
+          }
         }
 
         if (until) {
@@ -196,6 +208,12 @@ const Profiles = () => {
             value: since,
             enumerable: true,
           });
+          if (!until) {
+            Object.defineProperty(profileFilter, "until", {
+              value: dateToUnix(new Date()),
+              enumerable: true,
+            });
+          }
         }
 
         if (until) {

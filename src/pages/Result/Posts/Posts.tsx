@@ -112,6 +112,12 @@ const Posts = () => {
           value: since,
           enumerable: true,
         });
+        if (!until) {
+          Object.defineProperty(postsFilter, "until", {
+            value: dateToUnix(new Date()),
+            enumerable: true,
+          });
+        }
       }
 
       if (until) {
@@ -245,6 +251,12 @@ const Posts = () => {
             value: since,
             enumerable: true,
           });
+          if (!until) {
+            Object.defineProperty(postsFilter, "until", {
+              value: dateToUnix(new Date()),
+              enumerable: true,
+            });
+          }
         }
 
         if (until) {
