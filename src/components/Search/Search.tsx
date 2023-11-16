@@ -24,7 +24,9 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   const navigate = useNavigate();
   const theme = useAppSelector((state) => state.userReducer.theme);
   const [searchParams] = useSearchParams();
-  const [inputValue, setInputValue] = useState(searchParams.get("q") ?? "");
+  const [inputValue, setInputValue] = useState(
+    searchParams.get("q") ? searchParams.get("q") : ""
+  );
   const [selectValue, setSelectValue] = useState(
     searchParams.get("type") ? searchParams.get("type") : ""
   );
@@ -76,8 +78,6 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   const openAdvanced = () => {
     setIsAdvanced(true);
     if (inputValue) {
-      console.log(inputValue);
-
       const search = inputValue;
       const since = search?.match(/since:\d{4}-\d{2}-\d{2}/)
         ? new Date(search?.match(/since:\d{4}-\d{2}-\d{2}/)![0])
@@ -168,6 +168,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   };
 
   const searchAdvanceHandle = () => {
+    setIsAdvanced(false);
     navigate({
       pathname: "/",
       search: resultQuery
