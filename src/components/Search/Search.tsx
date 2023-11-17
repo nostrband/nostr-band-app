@@ -62,8 +62,34 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
         lang ? "lang:" + lang + " " : ""
       }${lna ? "lna:" + lna + " " : ""}${nip05 ? "nip05:" + nip05 + " " : ""}${
         tags ? tagsWithHash + " " : ""
-      }${sinceDate ? "since:" + formatDate(sinceDate!) + " " : ""}${
-        startDate ? "until:" + formatDate(startDate!) + " " : ""
+      }${
+        sinceDate
+          ? "since:" +
+            formatDate(
+              new Date(
+                Date.UTC(
+                  sinceDate.getFullYear(),
+                  sinceDate.getMonth(),
+                  sinceDate.getDate()
+                )
+              )
+            ) +
+            " "
+          : ""
+      }${
+        startDate
+          ? "until:" +
+            formatDate(
+              new Date(
+                Date.UTC(
+                  startDate.getFullYear(),
+                  startDate.getMonth(),
+                  startDate.getDate()
+                )
+              )
+            ) +
+            " "
+          : ""
       }${isSpam ? "-filter:spam" : ""}`
     );
   }, [
@@ -84,10 +110,14 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
     if (inputValue) {
       const search = inputValue;
       const since = search?.match(/since:\d{4}-\d{2}-\d{2}/)
-        ? new Date(search?.match(/since:\d{4}-\d{2}-\d{2}/)![0])
+        ? new Date(
+            search?.match(/since:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
+          )
         : "";
       const until = search?.match(/until:\d{4}-\d{2}-\d{2}/)
-        ? new Date(search?.match(/until:\d{4}-\d{2}-\d{2}/)![0])
+        ? new Date(
+            search?.match(/until:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
+          )
         : "";
       if (since) {
         setSinceDate(since);
