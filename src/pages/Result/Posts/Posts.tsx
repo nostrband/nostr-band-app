@@ -77,10 +77,18 @@ const Posts = () => {
       const tags = tagsWithHash?.map((tag) => tag.replace("#", ""));
       search?.replace(/#[a-zA-Z0-9_]+/g, "");
       const since = search?.match(/since:\d{4}-\d{2}-\d{2}/)
-        ? dateToUnix(new Date(search?.match(/since:\d{4}-\d{2}-\d{2}/)![0]))
+        ? dateToUnix(
+            new Date(
+              search?.match(/since:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
+            )
+          )
         : "";
       const until = search?.match(/until:\d{4}-\d{2}-\d{2}/)
-        ? dateToUnix(new Date(search?.match(/until:\d{4}-\d{2}-\d{2}/)![0]))
+        ? dateToUnix(
+            new Date(
+              search?.match(/until:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
+            )
+          )
         : "";
       const cleanSearch = searchParams
         .get("q")
@@ -211,10 +219,18 @@ const Posts = () => {
         const tags = tagsWithHash?.map((tag) => tag.replace("#", ""));
         search?.replace(/#[a-zA-Z0-9_]+/g, "");
         const since = search?.match(/since:\d{4}-\d{2}-\d{2}/)
-          ? dateToUnix(new Date(search?.match(/since:\d{4}-\d{2}-\d{2}/)![0]))
+          ? dateToUnix(
+              new Date(
+                search?.match(/since:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
+              )
+            )
           : "";
         const until = search?.match(/until:\d{4}-\d{2}-\d{2}/)
-          ? dateToUnix(new Date(search?.match(/until:\d{4}-\d{2}-\d{2}/)![0]))
+          ? dateToUnix(
+              new Date(
+                search?.match(/until:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
+              )
+            )
           : "";
         const cleanSearch = searchParams
           .get("q")
