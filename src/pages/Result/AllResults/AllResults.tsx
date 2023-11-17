@@ -36,10 +36,18 @@ const AllResults = () => {
         .filter((s) => s.match(/#[a-zA-Z0-9_]+/g)?.toString());
       const tags = tagsWithHash?.map((tag) => tag.replace("#", ""));
       const since = search?.match(/since:\d{4}-\d{2}-\d{2}/)
-        ? dateToUnix(new Date(search?.match(/since:\d{4}-\d{2}-\d{2}/)![0]))
+        ? dateToUnix(
+            new Date(
+              search?.match(/since:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
+            )
+          )
         : "";
       const until = search?.match(/until:\d{4}-\d{2}-\d{2}/)
-        ? dateToUnix(new Date(search?.match(/until:\d{4}-\d{2}-\d{2}/)![0]))
+        ? dateToUnix(
+            new Date(
+              search?.match(/until:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
+            )
+          )
         : "";
       search?.replace(/#[a-zA-Z0-9_]+/g, "");
       search?.replace(/since:\d{4}-\d{2}-\d{2}/, "");
@@ -248,7 +256,7 @@ const AllResults = () => {
             enumerable: true,
           });
         }
-        const profilesCount = await ndk.fetchCount(countFilter);
+        const profilesCount = await ndk.fetchCount(filter);
         setProfilesCount(profilesCount?.count ? profilesCount.count : 0);
       }
       setIsLoadingProfiles(false);
@@ -265,10 +273,18 @@ const AllResults = () => {
         const tags = tagsWithHash?.map((tag) => tag.replace("#", ""));
         search?.replace(/#[a-zA-Z0-9_]+/g, "");
         const since = search?.match(/since:\d{4}-\d{2}-\d{2}/)
-          ? dateToUnix(new Date(search?.match(/since:\d{4}-\d{2}-\d{2}/)![0]))
+          ? dateToUnix(
+              new Date(
+                search?.match(/since:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
+              )
+            )
           : "";
         const until = search?.match(/until:\d{4}-\d{2}-\d{2}/)
-          ? dateToUnix(new Date(search?.match(/until:\d{4}-\d{2}-\d{2}/)![0]))
+          ? dateToUnix(
+              new Date(
+                search?.match(/until:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
+              )
+            )
           : "";
         search?.replace(/#[a-zA-Z0-9_]+/g, "");
         search?.replace(/since:\d{4}-\d{2}-\d{2}/, "");
@@ -334,8 +350,6 @@ const AllResults = () => {
               enumerable: true,
             });
           }
-
-          console.log("postsFilter", postsFilter);
 
           const posts = Array.from(await ndk.fetchEvents(postsFilter));
 

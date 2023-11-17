@@ -119,11 +119,15 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
             search?.match(/until:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
           )
         : "";
-      if (since) {
-        setSinceDate(since);
+      if (since instanceof Date) {
+        if (since < until) {
+          setSinceDate(since);
+        }
       }
-      if (until) {
-        setStartDate(until);
+      if (until instanceof Date) {
+        if (until > since) {
+          setStartDate(until);
+        }
       }
       const tagsWithHash = search
         ?.split(" ")
