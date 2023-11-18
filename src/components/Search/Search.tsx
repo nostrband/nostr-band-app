@@ -44,11 +44,31 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   const [isAdvanced, setIsAdvanced] = useState(
     searchParams.get("advanced") === "true" ? true : false
   );
+  const [isValidAuthor, setIsValidAuthor] = useState(true);
+  const [isValidFollowing, setIsValidFollowing] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setInputValue(searchParams.get("q"));
   }, [searchParams.get("q")]);
+
+  const authorBlur = () => {
+    const isValidNpub = author.match(/npub[0-9a-zA-Z]{59}$/g);
+    if (isValidNpub || !author) {
+      setIsValidAuthor(true);
+    } else {
+      setIsValidAuthor(false);
+    }
+  };
+
+  const followingBlur = () => {
+    const isValidNpub = following.match(/npub[0-9a-zA-Z]{59}$/g);
+    if (isValidNpub || !following) {
+      setIsValidFollowing(true);
+    } else {
+      setIsValidFollowing(false);
+    }
+  };
 
   useEffect(() => {
     const tagsWithHash = tags
@@ -57,8 +77,8 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
       .join(" ");
     setResultQuery(
       `${allSearch ? allSearch + " " : ""}${
-        author ? "by:" + author + " " : ""
-      }${following ? "following:" + following + " " : ""}${
+        author && isValidAuthor ? "by:" + author + " " : ""
+      }${following && isValidFollowing ? "following:" + following + " " : ""}${
         lang ? "lang:" + lang + " " : ""
       }${lna ? "lna:" + lna + " " : ""}${nip05 ? "nip05:" + nip05 + " " : ""}${
         tags ? tagsWithHash + " " : ""
@@ -103,6 +123,8 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
     tags,
     sinceDate,
     startDate,
+    isValidFollowing,
+    isValidAuthor,
   ]);
 
   const openAdvanced = () => {
@@ -285,6 +307,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
             </Form.Group>
             <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
               <Form.Control
+                onBlur={authorBlur}
                 disabled={following ? true : false}
                 value={author}
                 onChange={(e) => setAuthor(e.target.value)}
@@ -295,13 +318,18 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
                 }
               />
               <Form.Label>
-                Example: npub1xxx - Only posts by npub1xxx
+                Example: npub1xxx - Only posts by npub1xxx{" "}
+                {!isValidAuthor && (
+                  <span style={{ color: "red" }}>*Invalid npub</span>
+                )}
               </Form.Label>
             </Form.Group>
+
             <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
               <Form.Control
                 disabled={author ? true : false}
                 value={following}
+                onBlur={followingBlur}
                 onChange={(e) => setFollowing(e.target.value)}
                 className="searchInput"
                 type="text"
@@ -311,7 +339,10 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
               />
               <Form.Label>
                 Example: npub1xxx - Only posts by profiles that npub1xxx is
-                following
+                following{" "}
+                {!isValidFollowing && (
+                  <span style={{ color: "red" }}>*Invalid npub</span>
+                )}
               </Form.Label>
             </Form.Group>
             {/* <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
