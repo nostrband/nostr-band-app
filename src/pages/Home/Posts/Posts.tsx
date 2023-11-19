@@ -3,12 +3,15 @@ import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 import PostCard from "../../../components/PostCard/PostCard";
 import { nostrApiType } from "../../../types/types.js";
 import { Link } from "react-router-dom";
+import { formatDate } from "../../../utils/formatDate";
 
 type postsTypes = {
   posts: nostrApiType[];
 };
 
 const Posts: FC<postsTypes> = ({ posts }) => {
+  const today = new Date();
+
   return (
     <>
       {posts && posts.length ? (
@@ -36,7 +39,12 @@ const Posts: FC<postsTypes> = ({ posts }) => {
       ) : (
         <CardSkeleton cards={8} />
       )}
-      <Link className="yesterday-trending" to={`/trending/notes/2023-21-10`}>
+      <Link
+        className="yesterday-trending"
+        to={`/trending/notes/${formatDate(
+          new Date(today.setDate(today.getDate() - 1))
+        )}`}
+      >
         See what was trending yesterday →
       </Link>
     </>

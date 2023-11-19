@@ -4,6 +4,8 @@ import { FC, useEffect, useState } from "react";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 import PostCard from "../../../components/PostCard/PostCard";
 import { nostrApiType } from "../../../types/types";
+import { Link } from "react-router-dom";
+import { formatDate } from "../../../utils/formatDate";
 
 type videoType = {
   setIsLoading: (a: boolean) => void;
@@ -11,6 +13,8 @@ type videoType = {
 
 const Video: FC<videoType> = ({ setIsLoading }) => {
   const [videos, setVideos] = useState<nostrApiType[]>([]);
+  const today = new Date();
+
   const fetchVideos = async () => {
     try {
       setIsLoading(true);
@@ -57,6 +61,14 @@ const Video: FC<videoType> = ({ setIsLoading }) => {
       ) : (
         <CardSkeleton cards={8} />
       )}
+      <Link
+        className="yesterday-trending"
+        to={`/trending/videos/${formatDate(
+          new Date(today.setDate(today.getDate() - 1))
+        )}`}
+      >
+        See what was trending yesterday →
+      </Link>
     </>
   );
 };
