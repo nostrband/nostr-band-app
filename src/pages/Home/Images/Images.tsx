@@ -7,6 +7,8 @@ import PostCard from "../../../components/PostCard/PostCard.tsx";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
 import { nostrApiType } from "../../../types/types";
 import React from "react";
+import { formatDate } from "../../../utils/formatDate";
+import { Link } from "react-router-dom";
 
 type imagesTypes = {
   setIsLoading: (a: boolean) => void;
@@ -14,6 +16,8 @@ type imagesTypes = {
 
 const Images: FC<imagesTypes> = ({ setIsLoading }) => {
   const [images, setImages] = useState<nostrApiType[]>([]);
+  const today = new Date();
+
   const fetchImages = async () => {
     try {
       setIsLoading(true);
@@ -60,6 +64,14 @@ const Images: FC<imagesTypes> = ({ setIsLoading }) => {
       ) : (
         <CardSkeleton cards={8} />
       )}
+      <Link
+        className="yesterday-trending"
+        to={`/trending/images/${formatDate(
+          new Date(today.setDate(today.getDate() - 1))
+        )}`}
+      >
+        See what was trending yesterday →
+      </Link>
     </>
   );
 };

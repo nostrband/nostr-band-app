@@ -3,6 +3,8 @@ import { FC, useEffect, useState } from "react";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 import PostCard from "../../../components/PostCard/PostCard";
 import { nostrApiType } from "../../../types/types.js";
+import { formatDate } from "../../../utils/formatDate";
+import { Link } from "react-router-dom";
 
 type audioTypes = {
   setIsLoading: (a: boolean) => void;
@@ -10,6 +12,8 @@ type audioTypes = {
 
 const Audio: FC<audioTypes> = ({ setIsLoading }) => {
   const [audios, setAudios] = useState<nostrApiType[]>([]);
+  const today = new Date();
+
   const fetchAudios = async () => {
     try {
       setIsLoading(true);
@@ -57,6 +61,14 @@ const Audio: FC<audioTypes> = ({ setIsLoading }) => {
       ) : (
         <CardSkeleton cards={8} />
       )}
+      <Link
+        className="yesterday-trending"
+        to={`/trending/audios/${formatDate(
+          new Date(today.setDate(today.getDate() - 1))
+        )}`}
+      >
+        See what was trending yesterday →
+      </Link>
     </>
   );
 };
