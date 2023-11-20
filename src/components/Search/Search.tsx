@@ -127,6 +127,12 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
     isValidAuthor,
   ]);
 
+  useEffect(() => {
+    if (resultQuery) {
+      setInputValue(resultQuery);
+    }
+  }, [resultQuery]);
+
   const openAdvanced = () => {
     setIsAdvanced(true);
     if (inputValue) {
@@ -412,7 +418,6 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
               variant="outline-secondary"
               style={{ marginLeft: ".5rem" }}
               onClick={() => {
-                navigate("/");
                 setIsAdvanced(false);
               }}
             >
