@@ -16,6 +16,7 @@ const AllResults = () => {
   const [profiles, setProfiles] = useState<NDKEvent[]>([]);
   const [profilesCount, setProfilesCount] = useState<number>(0);
   const [isLoadingProfiles, setIsLoadingProfiles] = useState<boolean>(false);
+  const [isLoadingPosts, setIsLoadingPosts] = useState<boolean>(false);
   const [posts, setPosts] = useState<NDKEvent[]>([]);
   const [postsAuthors, setPostsAuthors] = useState<NDKEvent[]>([]);
   const [postsCount, setPostsCount] = useState(0);
@@ -266,6 +267,7 @@ const AllResults = () => {
   const getPosts = async (ndk: NDK) => {
     try {
       if (ndk instanceof NDK) {
+        setIsLoadingPosts(true);
         const search = searchParams.get("q");
         const tagsWithHash = search
           ?.split(" ")
@@ -481,6 +483,7 @@ const AllResults = () => {
             //@ts-ignore
             await ndk.fetchEvents(postsFilter)
           );
+
           const postsAuthorsPks = posts.map((post) => post.pubkey);
           const postsAuthors = Array.from(
             await ndk.fetchEvents({ kinds: [0], authors: postsAuthorsPks })
@@ -489,6 +492,7 @@ const AllResults = () => {
           setPostsAuthors(postsAuthors);
           const postsCount = await ndk.fetchCount(postsFilter);
           setPostsCount(postsCount?.count ?? 0);
+          setIsLoadingPosts(false);
         }
       }
     } catch (e) {
@@ -576,6 +580,11 @@ const AllResults = () => {
           And {postsCount ? postsCount : 0} more posts →
         </Link>
       )}
+
+      {!isLoadingProfiles &&
+        !isLoadingPosts &&
+        !posts.length &&
+        !profiles.length && <div>Nothing found :(</div>}
     </div>
   );
 };
