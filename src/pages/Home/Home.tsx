@@ -73,7 +73,7 @@ const Home = () => {
               Posts
             </Button>
           </Link>
-          <Link to={`/?trending=zapped`}>
+          {/* <Link to={`/?trending=zapped`}>
             <Button
               variant={`${trendingQuery === "zapped" ? "primary" : "link"}`}
             >
@@ -93,7 +93,7 @@ const Home = () => {
             >
               Hashtags
             </Button>
-          </Link>
+          </Link> */}
           <Link to={`/?trending=images`}>
             <Button
               variant={`${trendingQuery === "images" ? "primary" : "link"}`}

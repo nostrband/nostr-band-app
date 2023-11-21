@@ -81,7 +81,7 @@ const AllResults = () => {
           authors: followingPubkeys,
           limit: 3,
         };
-        if (cleanSearch) {
+        if (cleanSearch?.trim()) {
           Object.defineProperty(topProfilesFilter, "search", {
             value: cleanSearch.trimStart().trimEnd(),
             enumerable: true,
