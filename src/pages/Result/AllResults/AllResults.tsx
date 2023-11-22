@@ -167,41 +167,44 @@ const AllResults = () => {
     try {
       if (ndk instanceof NDK) {
         setIsLoadingPosts(true);
-        const search = searchParams.get("q");
-        const tagsWithHash = search
-          ?.split(" ")
-          .filter((s) => s.match(/#[a-zA-Z0-9_]+/g)?.toString());
-        const tags = tagsWithHash?.map((tag) => tag.replace("#", ""));
-        search?.replace(/#[a-zA-Z0-9_]+/g, "");
-        const since = search?.match(/since:\d{4}-\d{2}-\d{2}/)
-          ? dateToUnix(
-              new Date(
-                search?.match(/since:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
-              )
-            )
-          : "";
-        const until = search?.match(/until:\d{4}-\d{2}-\d{2}/)
-          ? dateToUnix(
-              new Date(
-                search?.match(/until:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
-              )
-            )
-          : "";
-        search?.replace(/#[a-zA-Z0-9_]+/g, "");
-        search?.replace(/since:\d{4}-\d{2}-\d{2}/, "");
-        search?.replace(/until:\d{4}-\d{2}-\d{2}/, "");
+        const filter = { kinds: [1], limit: 10 };
+        if (cleanSearch?.trim()) {
+          Object.defineProperty(filter, "search", {
+            value: cleanSearch.trimStart().trimEnd(),
+            enumerable: true,
+          });
+        }
+
+        if (tags?.length) {
+          Object.defineProperty(filter, "t", {
+            value: tags,
+            enumerable: true,
+          });
+        }
+
+        if (since) {
+          Object.defineProperty(filter, "since", {
+            value: since,
+            enumerable: true,
+          });
+          if (!until) {
+            Object.defineProperty(filter, "until", {
+              value: dateToUnix(new Date()),
+              enumerable: true,
+            });
+          }
+        }
+
+        if (until) {
+          Object.defineProperty(filter, "until", {
+            value: until,
+            enumerable: true,
+          });
+        }
 
         if (search?.includes("following:")) {
           const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
           const userPk = userNpub ? nip19.decode(userNpub).data : "";
-          const cleanSearch = searchParams
-            .get("q")
-            ?.split(" ")
-            .filter((str) => !str.match(/following:npub[0-9a-zA-Z]+/g))
-            .join(" ")
-            .replace(/#[a-zA-Z0-9_]+/g, "")
-            .replace(/since:\d{4}-\d{2}-\d{2}/, "")
-            .replace(/until:\d{4}-\d{2}-\d{2}/, "");
 
           //@ts-ignore
           const userContacts = await ndk.fetchEvent({
@@ -212,50 +215,16 @@ const AllResults = () => {
             ? userContacts?.tags.slice(0, 500).map((contact) => contact[1])
             : [];
 
-          const postsFilter = {
-            kinds: [1],
-            authors: followingPubkeys,
-            limit: 10,
-          };
-
-          if (cleanSearch?.trim()) {
-            Object.defineProperty(postsFilter, "search", {
-              value: cleanSearch.trimStart().trimEnd(),
+          if (followingPubkeys.length) {
+            Object.defineProperty(filter, "authors", {
+              value: followingPubkeys,
               enumerable: true,
             });
           }
+          const posts = Array.from(await ndk.fetchEvents(filter));
 
-          if (tags?.length) {
-            Object.defineProperty(postsFilter, "#t", {
-              value: tags,
-              enumerable: true,
-            });
-          }
-
-          if (since) {
-            Object.defineProperty(postsFilter, "since", {
-              value: since,
-              enumerable: true,
-            });
-            if (!until) {
-              Object.defineProperty(postsFilter, "until", {
-                value: dateToUnix(new Date()),
-                enumerable: true,
-              });
-            }
-          }
-
-          if (until) {
-            Object.defineProperty(postsFilter, "until", {
-              value: until,
-              enumerable: true,
-            });
-          }
-
-          const posts = Array.from(await ndk.fetchEvents(postsFilter));
-
-          const postsCount = await ndk.fetchCount(postsFilter);
-          setPostsCount(postsCount?.count ? postsCount.count : 0);
+          const postsCount = await ndk.fetchCount(filter);
+          setPostsCount(postsCount?.count ?? 0);
 
           const postsAuthorsPks = posts.map((post) => post.pubkey);
           const postsAuthors = Array.from(
@@ -270,57 +239,22 @@ const AllResults = () => {
         } else if (search?.includes("by:")) {
           const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
           const userPk = userNpub ? nip19.decode(userNpub).data.toString() : "";
-          const cleanSearch = searchParams
-            .get("q")
-            ?.split(" ")
-            .filter((str) => !str.match(/by:npub[0-9a-zA-Z]+/g))
-            .join(" ")
-            .replace(/#[a-zA-Z0-9_]+/g, "")
-            .replace(/since:\d{4}-\d{2}-\d{2}/, "")
-            .replace(/until:\d{4}-\d{2}-\d{2}/, "");
 
           const postsFilter = { kinds: [1], authors: [userPk], limit: 10 };
 
-          if (cleanSearch?.trim()) {
-            Object.defineProperty(postsFilter, "search", {
-              value: cleanSearch.trimStart().trimEnd(),
+          if (userPk) {
+            Object.defineProperty(filter, "authors", {
+              value: [userPk],
               enumerable: true,
             });
           }
 
-          if (tags?.length) {
-            Object.defineProperty(postsFilter, "#t", {
-              value: tags,
-              enumerable: true,
-            });
-          }
+          console.log("postsFilter", filter);
 
-          if (since) {
-            Object.defineProperty(postsFilter, "since", {
-              value: since,
-              enumerable: true,
-            });
-            if (!until) {
-              Object.defineProperty(postsFilter, "until", {
-                value: dateToUnix(new Date()),
-                enumerable: true,
-              });
-            }
-          }
+          const posts = Array.from(await ndk.fetchEvents(filter));
 
-          if (until) {
-            Object.defineProperty(postsFilter, "until", {
-              value: until,
-              enumerable: true,
-            });
-          }
-
-          console.log("postsFilter", postsFilter);
-
-          const posts = Array.from(await ndk.fetchEvents(postsFilter));
-
-          const postsCount = await ndk.fetchCount(postsFilter);
-          setPostsCount(postsCount?.count ? postsCount.count : 0);
+          const postsCount = await ndk.fetchCount(filter);
+          setPostsCount(postsCount?.count ?? 0);
 
           const postsAuthorsPks = posts.map((post) => post.pubkey);
           const postsAuthors = Array.from(
@@ -333,55 +267,9 @@ const AllResults = () => {
           setPosts(posts);
           setPostsAuthors(postsAuthors);
         } else {
-          const cleanSearch = search
-            ?.replace(/#[a-zA-Z0-9_]+/g, "")
-            .replace(/since:\d{4}-\d{2}-\d{2}/, "")
-            .replace(/until:\d{4}-\d{2}-\d{2}/, "");
-          const postsFilter = {
-            kinds: [1],
-            //@ts-ignore
-            limit: 10,
-          };
+          console.log("postsFilter", filter);
 
-          if (cleanSearch?.trim()) {
-            Object.defineProperty(postsFilter, "search", {
-              value: cleanSearch.trimStart().trimEnd(),
-              enumerable: true,
-            });
-          }
-
-          if (tags?.length) {
-            Object.defineProperty(postsFilter, "#t", {
-              value: tags,
-              enumerable: true,
-            });
-          }
-
-          if (since) {
-            Object.defineProperty(postsFilter, "since", {
-              value: since,
-              enumerable: true,
-            });
-            if (!until) {
-              Object.defineProperty(postsFilter, "until", {
-                value: dateToUnix(new Date()),
-                enumerable: true,
-              });
-            }
-          }
-
-          if (until) {
-            Object.defineProperty(postsFilter, "until", {
-              value: until,
-              enumerable: true,
-            });
-          }
-          console.log("postsFilter", postsFilter);
-
-          const posts = Array.from(
-            //@ts-ignore
-            await ndk.fetchEvents(postsFilter)
-          );
+          const posts = Array.from(await ndk.fetchEvents(filter));
 
           const postsAuthorsPks = posts.map((post) => post.pubkey);
           const postsAuthors = Array.from(
@@ -389,7 +277,7 @@ const AllResults = () => {
           );
           setPosts(posts);
           setPostsAuthors(postsAuthors);
-          const postsCount = await ndk.fetchCount(postsFilter);
+          const postsCount = await ndk.fetchCount(filter);
           setPostsCount(postsCount?.count ?? 0);
           setIsLoadingPosts(false);
         }
