@@ -11,22 +11,44 @@ import Audio from "./Audio/Audio";
 import Result from "../Result/Result";
 import { nostrApiType } from "../../types/types";
 import axios from "axios";
+import { NDKEvent } from "@nostrband/ndk";
+import { nip19 } from "@nostrband/nostr-tools";
+import { extractNostrStrings } from "../../utils/formatLink";
+import { useAppSelector } from "../../hooks/redux";
 
 const Home = () => {
+  const ndk = useAppSelector((store) => store.connectionReducer.ndk);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchParams] = useSearchParams();
   const [trendingQuery, setTrendingQuery] = useState(
     searchParams.get("trending") ? searchParams.get("trending") : "people"
   );
   const [posts, setPosts] = useState<nostrApiType[]>([]);
+  const [taggedProfiles, setTaggedProfiles] = useState<(NDKEvent | string)[]>(
+    []
+  );
 
   const fetchPosts = async () => {
     try {
       setIsLoading(true);
-      const { data } = await axios.get(
+      const { data } = await axios.get<{ notes: nostrApiType[] }>(
         `${process.env.REACT_APP_API_URL}/trending/notes`
       );
 
+      const postsLinks = data.notes
+        .map((post: nostrApiType) => extractNostrStrings(post.event.content))
+        .flat();
+      const notNpubLinks = postsLinks.filter((r) => !r.startsWith("npub"));
+      const npubs = postsLinks.filter((r) => r.startsWith("npub"));
+      const pubkeys = npubs.map((npub) => nip19.decode(npub).data);
+
+      const postsTaggedUsers = Array.from(
+        //@ts-ignore
+        await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
+      );
+      const allPostsTagged = [...notNpubLinks, ...postsTaggedUsers];
+
+      setTaggedProfiles(allPostsTagged);
       setPosts(data.notes);
       // console.log(data);
     } catch (e) {
@@ -121,7 +143,7 @@ const Home = () => {
         {trendingQuery === "people" ? (
           <People setIsLoading={setIsLoading} />
         ) : trendingQuery === "posts" ? (
-          <Posts posts={posts} />
+          <Posts posts={posts} taggedProfiles={taggedProfiles} />
         ) : trendingQuery === "images" ? (
           <Images setIsLoading={setIsLoading} />
         ) : trendingQuery === "video" ? (
