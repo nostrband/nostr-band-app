@@ -196,7 +196,7 @@ const App = () => {
                 <h5 className="offcanvas-title" id="offcanvasBottomLabel">
                   <img src="https://spring.site/favicon.ico" width="30" />
                   <span style={{ verticalAlign: "middle" }}>
-                    Explore 100+ Nostr apps!
+                    &nbsp;Explore 100+ Nostr apps!
                   </span>
                 </h5>
                 <button
