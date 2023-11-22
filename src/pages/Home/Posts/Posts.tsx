@@ -4,12 +4,14 @@ import PostCard from "../../../components/PostCard/PostCard";
 import { nostrApiType } from "../../../types/types.js";
 import { Link } from "react-router-dom";
 import { formatDate } from "../../../utils/formatDate";
+import { NDKEvent } from "@nostrband/ndk";
 
 type postsTypes = {
   posts: nostrApiType[];
+  taggedProfiles: (NDKEvent | string)[];
 };
 
-const Posts: FC<postsTypes> = ({ posts }) => {
+const Posts: FC<postsTypes> = ({ posts, taggedProfiles }) => {
   const today = new Date();
 
   return (
@@ -21,6 +23,7 @@ const Posts: FC<postsTypes> = ({ posts }) => {
             : {};
           return (
             <PostCard
+              taggedProfiles={taggedProfiles}
               key={post.id}
               name={
                 authorContent?.display_name

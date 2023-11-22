@@ -281,8 +281,6 @@ const AllResults = () => {
           const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
           const userPk = userNpub ? nip19.decode(userNpub).data.toString() : "";
 
-          const postsFilter = { kinds: [1], authors: [userPk], limit: 10 };
-
           if (userPk) {
             Object.defineProperty(filter, "authors", {
               value: [userPk],
