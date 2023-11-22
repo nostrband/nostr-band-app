@@ -32,6 +32,9 @@
   float: right;
 }
 
+#spring-ad {
+  height: auto;
+}
 @media screen and (max-width: 1000px) {
   .login-modal {
     width: 75%;

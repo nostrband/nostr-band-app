@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
 import Footer from "./components/Footer/Footer";
 import Header from "./components/Header/Header";
@@ -14,7 +14,6 @@ import { X } from "react-bootstrap-icons";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { userSlice } from "./store/reducers/UserSlice";
-import NDK from "@nostrband/ndk";
 import { NostrProvider } from "nostr-react";
 import { useAppDispatch, useAppSelector } from "./hooks/redux";
 import Home from "./pages/Home/Home";
@@ -26,6 +25,8 @@ const App = () => {
   const closeModal = (): void => setIsModal(false);
   const store = useAppSelector((store) => store.userReducer);
   const { ndk, ndkAll } = useAppSelector((store) => store.connectionReducer);
+  const location = useLocation();
+  const [isSpringAd, setIsSpringAd] = useState(false);
 
   const dispatch = useAppDispatch();
   const { setIsAuth, setContacts, setLists, setLabels, setUser } =
@@ -37,7 +38,14 @@ const App = () => {
     if (store.theme === "dark") {
       document.querySelector("body")?.setAttribute("data-theme", "dark");
     }
+
+    const lastAdSeen = Number(localStorage.getItem("lastAdSeen")) || 0;
+    if (Date.now() - lastAdSeen > 24 * 3600 * 1000) {
+      setIsSpringAd(true);
+    }
   }, []);
+
+  useEffect(() => {}, [location.pathname]);
 
   const getUser = async (pubkey: string): Promise<void> => {
     //@ts-ignore
@@ -170,6 +178,71 @@ const App = () => {
             <Footer />
           </Col>
         </Row>
+        <div
+          id="spring-ad"
+          className={`offcanvas offcanvas-bottom ${
+            isSpringAd ? "show" : "hide"
+          }`}
+          tabIndex={-1}
+          aria-labelledby="offcanvasBottomLabel"
+          data-bs-scroll="true"
+          data-bs-backdrop="false"
+          aria-modal="true"
+          role="dialog"
+        >
+          <div className="offcanvas-header" style={{ display: "block" }}>
+            <div className="row justify-content-md-center">
+              <div className="col col-lg-6 d-flex justify-content-between">
+                <h5 className="offcanvas-title" id="offcanvasBottomLabel">
+                  <img src="https://spring.site/favicon.ico" width="30" />
+                  <span style={{ verticalAlign: "middle" }}>
+                    Explore 100+ Nostr apps!
+                  </span>
+                </h5>
+                <button
+                  onClick={() => {
+                    setIsSpringAd(false);
+                    localStorage.setItem("lastAdSeen", Date.now().toString());
+                  }}
+                  type="button"
+                  className="btn-close"
+                  data-bs-dismiss="offcanvas"
+                  aria-label="Close"
+                ></button>
+              </div>
+            </div>
+          </div>
+          <div className="offcanvas-body" style={{ paddingTop: 0 }}>
+            <div className="row justify-content-md-center">
+              <div className="col col-lg-6 d-flex justify-content-between">
+                <div className="row w-100">
+                  <div className="col-12 col-lg-8 d-flex align-items-center pb-2">
+                    Try new apps and keep your keys safe with Spring — the Nostr
+                    browser.
+                  </div>
+                  <div className="col-12 col-lg-4 d-flex flex-row justify-content-start justify-content-lg-end">
+                    <a
+                      id="spring-learn"
+                      className="btn btn-outline-secondary me-1"
+                      href="https://spring.site"
+                      target="_blank"
+                    >
+                      Learn more
+                    </a>
+                    <a
+                      id="spring-download"
+                      className="btn btn-outline-primary"
+                      href="https://play.google.com/store/apps/details?id=com.nostr.universe"
+                      target="_blank"
+                    >
+                      Get on Play Store
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </Container>
     </NostrProvider>
   );
