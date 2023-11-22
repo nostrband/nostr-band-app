@@ -706,7 +706,13 @@ const Profile = () => {
                 {!imgError ? (
                   <img
                     onClick={() => setIsFullAvatar(true)}
-                    src={profile.image ? profile.image : profile.picture}
+                    src={
+                      profile.image
+                        ? profile.image
+                        : profile.picture
+                        ? profile.picture
+                        : UserIcon
+                    }
                     alt="Profile icon"
                     onError={() => setImgError(true)}
                   />
