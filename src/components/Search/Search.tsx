@@ -1,8 +1,8 @@
 import "./Search.css";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
-import { Button } from "react-bootstrap";
-import { Search as SearchIcon, Sliders } from "react-bootstrap-icons";
+import { Button, Dropdown } from "react-bootstrap";
+import { Check, Search as SearchIcon, Sliders } from "react-bootstrap-icons";
 import Spinner from "react-bootstrap/Spinner";
 import { FC, useEffect, useRef, useState } from "react";
 import {
@@ -47,6 +47,9 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   const [isValidAuthor, setIsValidAuthor] = useState(true);
   const [isValidFollowing, setIsValidFollowing] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
+  const store = useAppSelector((store) => store.userReducer);
+
+  const languages = ["en", "es", "de", "fr", "ru"];
 
   useEffect(() => {
     setInputValue(searchParams.get("q"));
@@ -246,6 +249,16 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   const theDayBeforeStartDate = new Date(startDate ?? "");
   const theDayAfterSinceDate = new Date(sinceDate ?? "");
 
+  const handleLanguage = (lang: string) => {
+    if (allSearch.includes(`lang:${lang}`)) {
+      setAllSearch((prevState) => prevState.replace(`lang:${lang}`, ""));
+    } else {
+      setAllSearch((prevState) =>
+        prevState.concat(` lang:${lang}`).trimStart()
+      );
+    }
+  };
+
   return (
     <>
       {isAdvanced ? (
@@ -390,6 +403,38 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
                 some@stacker.news or @nostr.band
               </Form.Label>
             </Form.Group> */}
+            <Dropdown style={{ marginBottom: ".2rem" }}>
+              <Dropdown.Toggle variant="outline-secondary">
+                language
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu
+                variant={store.theme === "dark" ? "dark" : "light"}
+              >
+                {languages.map((lang, index) => {
+                  return (
+                    <Dropdown.Item
+                      key={index}
+                      onClick={() => handleLanguage(lang)}
+                    >
+                      {lang} {resultQuery.includes(`lang:${lang}`) && <Check />}
+                    </Dropdown.Item>
+                  );
+                })}
+              </Dropdown.Menu>
+            </Dropdown>
+            {/* <div style={{color: "var(--body-color)"}}>
+              Language: {languages.map(lang => {
+                const isLangSelected = resultQuery.includes(`lang:${lang}`);
+                console.log(isLangSelected);
+                
+                return isLangSelected ? <Button style={{margin: ".1rem"}} size="sm" variant="outline-primary">
+                  {lang}
+                </Button> : <Button size="sm" style={{margin: ".1rem"}} variant="outline-secondary">
+                  {lang}
+                </Button>
+              })}
+            </div> */}
             <Form.Check // prettier-ignore
               type="switch"
               id="custom-switch"
@@ -398,6 +443,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
               label="Include low-quality content (spam)"
               className="searchInput"
             />
+
             <Form.Group
               className="mb-3 mt-2"
               controlId="exampleForm.ControlInput1"
