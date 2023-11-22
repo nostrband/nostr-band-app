@@ -269,9 +269,8 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
             </Form.Group>
             <div className="datePicker">
               <div className="date-picker-wrapper">
-                <p>Since: </p>
                 <DatePicker
-                  placeholderText="20xx-mm-dd"
+                  placeholderText="Since"
                   className="datePickerInput"
                   selected={sinceDate}
                   onChange={setSinceDate}
@@ -284,10 +283,12 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
                   minDate={new Date("2023-01-01")}
                 />
               </div>
-              <div className="date-picker-wrapper">
-                <p>Until: </p>
+              <div
+                className="date-picker-wrapper"
+                style={{ marginLeft: ".3rem" }}
+              >
                 <DatePicker
-                  placeholderText={formatDate(new Date())}
+                  placeholderText={"Until"}
                   className="datePickerInput"
                   selected={startDate}
                   onChange={setStartDate}
@@ -301,6 +302,8 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
                 />
               </div>
             </div>
+            <Form.Label>Specify a range of dates</Form.Label>
+
             <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
               <Form.Control
                 value={tags}
