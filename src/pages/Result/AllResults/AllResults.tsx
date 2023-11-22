@@ -9,6 +9,7 @@ import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 import { useAppSelector } from "../../../hooks/redux";
 import { nip19 } from "@nostrband/nostr-tools";
 import { dateToUnix } from "nostr-react";
+import { extractNostrStrings } from "../../../utils/formatLink";
 
 const AllResults = () => {
   const ndk = useAppSelector((store) => store.connectionReducer.ndk);
@@ -20,6 +21,9 @@ const AllResults = () => {
   const [posts, setPosts] = useState<NDKEvent[]>([]);
   const [postsAuthors, setPostsAuthors] = useState<NDKEvent[]>([]);
   const [postsCount, setPostsCount] = useState(0);
+  const [taggedProfiles, setTaggedProfiles] = useState<(NDKEvent | string)[]>(
+    []
+  );
   const search = searchParams.get("q");
 
   useEffect(() => {
@@ -29,6 +33,23 @@ const AllResults = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("q")]);
+
+  const fetchTaggedUsers = async (posts: NDKEvent[]) => {
+    const postsLinks = posts
+      .map((post) => extractNostrStrings(post.content))
+      .flat();
+    const notNpubLinks = postsLinks.filter((r) => !r.startsWith("npub"));
+    const npubs = postsLinks.filter((r) => r.startsWith("npub"));
+    const pubkeys = npubs.map((npub) => nip19.decode(npub).data);
+
+    const postsTaggedUsers = Array.from(
+      //@ts-ignore
+      await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
+    );
+    const allPostsTagged = [...notNpubLinks, ...postsTaggedUsers];
+
+    setTaggedProfiles(allPostsTagged);
+  };
 
   const cleanSearch = useMemo(() => {
     return search
@@ -253,6 +274,7 @@ const AllResults = () => {
               limit: 10,
             })
           );
+          fetchTaggedUsers(posts);
           setPosts(posts);
           setPostsAuthors(postsAuthors);
         } else if (search?.includes("by:")) {
@@ -271,7 +293,7 @@ const AllResults = () => {
           console.log("postsFilter", filter);
 
           const posts = Array.from(await ndk.fetchEvents(filter));
-
+          fetchTaggedUsers(posts);
           const postsCount = await ndk.fetchCount(filter);
           setPostsCount(postsCount?.count ?? 0);
 
@@ -287,9 +309,8 @@ const AllResults = () => {
           setPostsAuthors(postsAuthors);
         } else {
           console.log("postsFilter", filter);
-
           const posts = Array.from(await ndk.fetchEvents(filter));
-
+          fetchTaggedUsers(posts);
           const postsAuthorsPks = posts.map((post) => post.pubkey);
           const postsAuthors = Array.from(
             await ndk.fetchEvents({ kinds: [0], authors: postsAuthorsPks })
@@ -359,6 +380,7 @@ const AllResults = () => {
 
             return (
               <PostCard
+                taggedProfiles={taggedProfiles}
                 key={post.id}
                 name={
                   authorContent.display_name
