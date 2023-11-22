@@ -304,18 +304,13 @@ const ProfileItem: FC<profileItemTypes> = ({
         </div>
         <div className="profile-content__stats">
           <p>
-            <span>
-              {stats.pub_following_pubkey_count
-                ? stats.pub_following_pubkey_count
-                : 0}
-            </span>{" "}
-            Following &nbsp;&nbsp;
-            <span>
-              {stats.followers_pubkey_count ? stats.followers_pubkey_count : 0}
-            </span>{" "}
-            Followers
-            {newFollowersCount && (
+            <span>{stats.pub_following_pubkey_count ?? 0}</span> Following
+            &nbsp;&nbsp;
+            <span>{stats.followers_pubkey_count ?? 0}</span> Followers
+            {newFollowersCount ? (
               <span className="new-followers">&nbsp;+{newFollowersCount}</span>
+            ) : (
+              ""
             )}
           </p>
         </div>

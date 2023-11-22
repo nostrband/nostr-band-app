@@ -706,7 +706,13 @@ const Profile = () => {
                 {!imgError ? (
                   <img
                     onClick={() => setIsFullAvatar(true)}
-                    src={profile.image ? profile.image : profile.picture}
+                    src={
+                      profile.image
+                        ? profile.image
+                        : profile.picture
+                        ? profile.picture
+                        : UserIcon
+                    }
                     alt="Profile icon"
                     onError={() => setImgError(true)}
                   />
@@ -770,12 +776,7 @@ const Profile = () => {
               <p>
                 <span>{stats.pub_following_pubkey_count}</span> Following
                 &nbsp;&nbsp;
-                <span>
-                  {stats.followers_pubkey_count
-                    ? stats.followers_pubkey_count
-                    : 0}
-                </span>{" "}
-                Followers
+                <span>{stats.followers_pubkey_count ?? 0}</span> Followers
               </p>
             </div>
             <div className={cl.profileZaps}>
