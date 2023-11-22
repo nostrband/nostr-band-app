@@ -40,6 +40,7 @@ const AllResults = () => {
       )
       .join(" ")
       .replace(/#[a-zA-Z0-9_]+/g, "")
+      .replace(/lang:[a-zA-Z0-9_]+/g, "")
       .replace(/since:\d{4}-\d{2}-\d{2}/, "")
       .replace(/until:\d{4}-\d{2}-\d{2}/, "");
   }, [search]);
@@ -48,6 +49,10 @@ const AllResults = () => {
     ?.split(" ")
     .filter((s) => s.match(/#[a-zA-Z0-9_]+/g)?.toString());
   const tags = tagsWithHash?.map((tag) => tag.replace("#", ""));
+  const langsWithPrefix = search
+    ?.split(" ")
+    .filter((s) => s.match(/lang:[a-zA-Z]+/g)?.toString());
+  const langs = langsWithPrefix?.map((lang) => lang.replace("lang:", ""));
   const since = search?.match(/since:\d{4}-\d{2}-\d{2}/)
     ? dateToUnix(
         new Date(
@@ -97,6 +102,13 @@ const AllResults = () => {
       if (until) {
         Object.defineProperty(filter, "until", {
           value: until,
+          enumerable: true,
+        });
+      }
+
+      if (langs?.length) {
+        Object.defineProperty(filter, "@lang", {
+          value: langs,
           enumerable: true,
         });
       }
@@ -198,6 +210,13 @@ const AllResults = () => {
         if (until) {
           Object.defineProperty(filter, "until", {
             value: until,
+            enumerable: true,
+          });
+        }
+
+        if (langs?.length) {
+          Object.defineProperty(filter, "@lang", {
+            value: langs,
             enumerable: true,
           });
         }

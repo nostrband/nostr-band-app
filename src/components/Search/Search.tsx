@@ -417,7 +417,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
                       key={index}
                       onClick={() => handleLanguage(lang)}
                     >
-                      {lang} {resultQuery.includes(`lang:${lang}`) && <Check />}
+                      {lang} {allSearch.includes(`lang:${lang}`) && <Check />}
                     </Dropdown.Item>
                   );
                 })}
