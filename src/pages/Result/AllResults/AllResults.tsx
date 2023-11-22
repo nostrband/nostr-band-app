@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import cl from "./AllResults.module.css";
 import Search from "../../../components/Search/Search";
 import ProfileItem from "../../../components/ProfileItem/ProfileItem";
@@ -20,6 +20,7 @@ const AllResults = () => {
   const [posts, setPosts] = useState<NDKEvent[]>([]);
   const [postsAuthors, setPostsAuthors] = useState<NDKEvent[]>([]);
   const [postsCount, setPostsCount] = useState(0);
+  const search = searchParams.get("q");
 
   useEffect(() => {
     if (ndk instanceof NDK) {
@@ -29,40 +30,88 @@ const AllResults = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("q")]);
 
+  const cleanSearch = useMemo(() => {
+    return search
+      ?.split(" ")
+      .filter((str) =>
+        str.includes("following:")
+          ? !str.match(/following:npub[0-9a-zA-Z]+/g)
+          : !str.match(/by:npub[0-9a-zA-Z]+/g)
+      )
+      .join(" ")
+      .replace(/#[a-zA-Z0-9_]+/g, "")
+      .replace(/lang:[a-zA-Z0-9_]+/g, "")
+      .replace(/since:\d{4}-\d{2}-\d{2}/, "")
+      .replace(/until:\d{4}-\d{2}-\d{2}/, "");
+  }, [search]);
+
+  const tagsWithHash = search
+    ?.split(" ")
+    .filter((s) => s.match(/#[a-zA-Z0-9_]+/g)?.toString());
+  const tags = tagsWithHash?.map((tag) => tag.replace("#", ""));
+  const langsWithPrefix = search
+    ?.split(" ")
+    .filter((s) => s.match(/lang:[a-zA-Z]+/g)?.toString());
+  const langs = langsWithPrefix?.map((lang) => lang.replace("lang:", ""));
+  const since = search?.match(/since:\d{4}-\d{2}-\d{2}/)
+    ? dateToUnix(
+        new Date(
+          search?.match(/since:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
+        )
+      )
+    : "";
+  const until = search?.match(/until:\d{4}-\d{2}-\d{2}/)
+    ? dateToUnix(
+        new Date(
+          search?.match(/until:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
+        )
+      )
+    : "";
+
   const getProfiles = async (ndk: NDK) => {
     if (ndk instanceof NDK) {
-      const search = searchParams.get("q");
-      const tagsWithHash = search
-        ?.split(" ")
-        .filter((s) => s.match(/#[a-zA-Z0-9_]+/g)?.toString());
-      const tags = tagsWithHash?.map((tag) => tag.replace("#", ""));
-      const since = search?.match(/since:\d{4}-\d{2}-\d{2}/)
-        ? dateToUnix(
-            new Date(
-              search?.match(/since:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
-            )
-          )
-        : "";
-      const until = search?.match(/until:\d{4}-\d{2}-\d{2}/)
-        ? dateToUnix(
-            new Date(
-              search?.match(/until:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
-            )
-          )
-        : "";
-      search?.replace(/#[a-zA-Z0-9_]+/g, "");
-      search?.replace(/since:\d{4}-\d{2}-\d{2}/, "");
-      search?.replace(/until:\d{4}-\d{2}-\d{2}/, "");
-
-      const cleanSearch = searchParams
-        .get("q")
-        ?.split(" ")
-        .filter((str) => !str.match(/following:npub[0-9a-zA-Z]+/g))
-        .join(" ")
-        .replace(/#[a-zA-Z0-9_]+/g, "")
-        .replace(/since:\d{4}-\d{2}-\d{2}/, "")
-        .replace(/until:\d{4}-\d{2}-\d{2}/, "");
       setIsLoadingProfiles(true);
+      const filter = { kinds: [0], limit: 3 };
+      if (cleanSearch?.trim()) {
+        Object.defineProperty(filter, "search", {
+          value: cleanSearch.trimStart().trimEnd(),
+          enumerable: true,
+        });
+      }
+
+      if (tags?.length) {
+        Object.defineProperty(filter, "t", {
+          value: tags,
+          enumerable: true,
+        });
+      }
+
+      if (since) {
+        Object.defineProperty(filter, "since", {
+          value: since,
+          enumerable: true,
+        });
+        if (!until) {
+          Object.defineProperty(filter, "until", {
+            value: dateToUnix(new Date()),
+            enumerable: true,
+          });
+        }
+      }
+
+      if (until) {
+        Object.defineProperty(filter, "until", {
+          value: until,
+          enumerable: true,
+        });
+      }
+
+      if (langs?.length) {
+        Object.defineProperty(filter, "@lang", {
+          value: langs,
+          enumerable: true,
+        });
+      }
       if (search?.includes("following:")) {
         const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
         const userPk = userNpub ? nip19.decode(userNpub).data : "";
@@ -76,107 +125,70 @@ const AllResults = () => {
           ? userContacts?.tags.slice(0, 500).map((contact) => contact[1])
           : [];
 
-        const topProfilesFilter = {
-          kinds: [0],
-          authors: followingPubkeys,
-          limit: 3,
-        };
+        if (followingPubkeys.length) {
+          Object.defineProperty(filter, "authors", {
+            value: followingPubkeys,
+            enumerable: true,
+          });
+        }
+
+        console.log("profilesFilter", filter);
+
+        const topProfilesIds = await ndk.fetchTop(filter);
+        const topProfiles = Array.from(
+          //@ts-ignore
+          await ndk.fetchEvents({ kinds: [0], ids: topProfilesIds.ids })
+        );
+        setProfiles(topProfiles);
+        setProfilesCount(userContacts?.tags?.length ?? 0);
+      } else if (search?.includes("by:")) {
+        const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
+        const userPk = userNpub ? nip19.decode(userNpub).data : "";
+        if (userPk) {
+          Object.defineProperty(filter, "authors", {
+            value: [userPk],
+            enumerable: true,
+          });
+        }
+
+        console.log("profilesFilter", filter);
+        //@ts-ignore
+        const user = await ndk.fetchEvent(filter);
+        setProfiles(user ? [user] : []);
+
+        setProfilesCount(1);
+      } else {
+        console.log("profilesFilter", filter);
+        const topProfilesIds = await ndk.fetchTop(filter);
+
+        const topProfiles = topProfilesIds
+          ? Array.from(
+              //@ts-ignore
+              await ndk.fetchEvents({ kinds: [0], ids: topProfilesIds.ids })
+            )
+          : [];
+        setProfiles(topProfiles);
+        const profilesCount = await ndk.fetchCount(filter);
+        setProfilesCount(profilesCount?.count ?? 0);
+      }
+      setIsLoadingProfiles(false);
+    }
+  };
+
+  const getPosts = async (ndk: NDK) => {
+    try {
+      if (ndk instanceof NDK) {
+        setIsLoadingPosts(true);
+        const filter = { kinds: [1], limit: 10 };
         if (cleanSearch?.trim()) {
-          Object.defineProperty(topProfilesFilter, "search", {
+          Object.defineProperty(filter, "search", {
             value: cleanSearch.trimStart().trimEnd(),
             enumerable: true,
           });
         }
 
         if (tags?.length) {
-          Object.defineProperty(topProfilesFilter, "t", {
-            value: tags,
-            enumerable: true,
-          });
-        }
-
-        if (since) {
-          Object.defineProperty(topProfilesFilter, "since", {
-            value: since,
-            enumerable: true,
-          });
-          if (!until) {
-            Object.defineProperty(topProfilesFilter, "until", {
-              value: dateToUnix(new Date()),
-              enumerable: true,
-            });
-          }
-        }
-
-        if (until) {
-          Object.defineProperty(topProfilesFilter, "until", {
-            value: until,
-            enumerable: true,
-          });
-        }
-
-        console.log("profilesFilter", topProfilesFilter);
-
-        const topProfilesIds = await ndk.fetchTop(topProfilesFilter);
-        const topProfiles = Array.from(
-          //@ts-ignore
-          await ndk.fetchEvents({ kinds: [0], ids: topProfilesIds.ids })
-        );
-        setProfiles(topProfiles);
-        setProfilesCount(
-          userContacts?.tags?.length ? userContacts?.tags?.length : 0
-        );
-      } else if (search?.includes("by:")) {
-        const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
-        const userPk = userNpub ? nip19.decode(userNpub).data : "";
-        const topProfilesFilter = { kinds: [0], authors: [userPk] };
-        if (since) {
-          Object.defineProperty(topProfilesFilter, "since", {
-            value: since,
-            enumerable: true,
-          });
-          if (!until) {
-            Object.defineProperty(topProfilesFilter, "until", {
-              value: dateToUnix(new Date()),
-              enumerable: true,
-            });
-          }
-        }
-
-        if (until) {
-          Object.defineProperty(topProfilesFilter, "until", {
-            value: until,
-            enumerable: true,
-          });
-        }
-
-        console.log("profilesFilter", topProfilesFilter);
-        //@ts-ignore
-        const user = await ndk.fetchEvent(topProfilesFilter);
-        setProfiles(user ? [user] : []);
-
-        setProfilesCount(1);
-      } else {
-        const search = searchParams
-          .get("q")
-          ?.toString()
-          .replace(/#[a-zA-Z0-9_]+/g, "")
-          .replace(/since:\d{4}-\d{2}-\d{2}/, "")
-          .replace(/until:\d{4}-\d{2}-\d{2}/, "");
-        const filter = {
-          kinds: [0],
-          limit: 3,
-        };
-
-        if (search?.trim()) {
-          Object.defineProperty(filter, "search", {
-            value: search.trimStart().trimEnd(),
-            enumerable: true,
-          });
-        }
-
-        if (tags?.length) {
-          Object.defineProperty(filter, "#t", {
+          Object.defineProperty(filter, "t", {
             value: tags,
             enumerable: true,
           });
@@ -202,107 +214,16 @@ const AllResults = () => {
           });
         }
 
-        console.log("profilesFilter", filter);
-
-        //@ts-ignore
-        const topProfilesIds = await ndk.fetchTop(filter);
-
-        const topProfiles = topProfilesIds
-          ? Array.from(
-              //@ts-ignore
-              await ndk.fetchEvents({ kinds: [0], ids: topProfilesIds.ids })
-            )
-          : [];
-        setProfiles(topProfiles);
-        const countFilter = {
-          kinds: [0],
-          //@ts-ignore
-        };
-        if (search?.trim()) {
-          Object.defineProperty(countFilter, "search", {
-            value: search.trimStart().trimEnd(),
-            enumerable: true,
-          });
-          if (!until) {
-            Object.defineProperty(countFilter, "until", {
-              value: dateToUnix(new Date()),
-              enumerable: true,
-            });
-          }
-        }
-
-        if (tags?.length) {
-          Object.defineProperty(countFilter, "#t", {
-            value: tags,
+        if (langs?.length) {
+          Object.defineProperty(filter, "@lang", {
+            value: langs,
             enumerable: true,
           });
         }
-
-        if (since) {
-          Object.defineProperty(countFilter, "since", {
-            value: since,
-            enumerable: true,
-          });
-          if (!until) {
-            Object.defineProperty(countFilter, "until", {
-              value: dateToUnix(new Date()),
-              enumerable: true,
-            });
-          }
-        }
-
-        if (until) {
-          Object.defineProperty(countFilter, "until", {
-            value: until,
-            enumerable: true,
-          });
-        }
-        const profilesCount = await ndk.fetchCount(filter);
-        setProfilesCount(profilesCount?.count ? profilesCount.count : 0);
-      }
-      setIsLoadingProfiles(false);
-    }
-  };
-
-  const getPosts = async (ndk: NDK) => {
-    try {
-      if (ndk instanceof NDK) {
-        setIsLoadingPosts(true);
-        const search = searchParams.get("q");
-        const tagsWithHash = search
-          ?.split(" ")
-          .filter((s) => s.match(/#[a-zA-Z0-9_]+/g)?.toString());
-        const tags = tagsWithHash?.map((tag) => tag.replace("#", ""));
-        search?.replace(/#[a-zA-Z0-9_]+/g, "");
-        const since = search?.match(/since:\d{4}-\d{2}-\d{2}/)
-          ? dateToUnix(
-              new Date(
-                search?.match(/since:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
-              )
-            )
-          : "";
-        const until = search?.match(/until:\d{4}-\d{2}-\d{2}/)
-          ? dateToUnix(
-              new Date(
-                search?.match(/until:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
-              )
-            )
-          : "";
-        search?.replace(/#[a-zA-Z0-9_]+/g, "");
-        search?.replace(/since:\d{4}-\d{2}-\d{2}/, "");
-        search?.replace(/until:\d{4}-\d{2}-\d{2}/, "");
 
         if (search?.includes("following:")) {
           const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
           const userPk = userNpub ? nip19.decode(userNpub).data : "";
-          const cleanSearch = searchParams
-            .get("q")
-            ?.split(" ")
-            .filter((str) => !str.match(/following:npub[0-9a-zA-Z]+/g))
-            .join(" ")
-            .replace(/#[a-zA-Z0-9_]+/g, "")
-            .replace(/since:\d{4}-\d{2}-\d{2}/, "")
-            .replace(/until:\d{4}-\d{2}-\d{2}/, "");
 
           //@ts-ignore
           const userContacts = await ndk.fetchEvent({
@@ -313,50 +234,16 @@ const AllResults = () => {
             ? userContacts?.tags.slice(0, 500).map((contact) => contact[1])
             : [];
 
-          const postsFilter = {
-            kinds: [1],
-            authors: followingPubkeys,
-            limit: 10,
-          };
-
-          if (cleanSearch?.trim()) {
-            Object.defineProperty(postsFilter, "search", {
-              value: cleanSearch.trimStart().trimEnd(),
+          if (followingPubkeys.length) {
+            Object.defineProperty(filter, "authors", {
+              value: followingPubkeys,
               enumerable: true,
             });
           }
+          const posts = Array.from(await ndk.fetchEvents(filter));
 
-          if (tags?.length) {
-            Object.defineProperty(postsFilter, "#t", {
-              value: tags,
-              enumerable: true,
-            });
-          }
-
-          if (since) {
-            Object.defineProperty(postsFilter, "since", {
-              value: since,
-              enumerable: true,
-            });
-            if (!until) {
-              Object.defineProperty(postsFilter, "until", {
-                value: dateToUnix(new Date()),
-                enumerable: true,
-              });
-            }
-          }
-
-          if (until) {
-            Object.defineProperty(postsFilter, "until", {
-              value: until,
-              enumerable: true,
-            });
-          }
-
-          const posts = Array.from(await ndk.fetchEvents(postsFilter));
-
-          const postsCount = await ndk.fetchCount(postsFilter);
-          setPostsCount(postsCount?.count ? postsCount.count : 0);
+          const postsCount = await ndk.fetchCount(filter);
+          setPostsCount(postsCount?.count ?? 0);
 
           const postsAuthorsPks = posts.map((post) => post.pubkey);
           const postsAuthors = Array.from(
@@ -371,57 +258,22 @@ const AllResults = () => {
         } else if (search?.includes("by:")) {
           const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
           const userPk = userNpub ? nip19.decode(userNpub).data.toString() : "";
-          const cleanSearch = searchParams
-            .get("q")
-            ?.split(" ")
-            .filter((str) => !str.match(/by:npub[0-9a-zA-Z]+/g))
-            .join(" ")
-            .replace(/#[a-zA-Z0-9_]+/g, "")
-            .replace(/since:\d{4}-\d{2}-\d{2}/, "")
-            .replace(/until:\d{4}-\d{2}-\d{2}/, "");
 
           const postsFilter = { kinds: [1], authors: [userPk], limit: 10 };
 
-          if (cleanSearch?.trim()) {
-            Object.defineProperty(postsFilter, "search", {
-              value: cleanSearch.trimStart().trimEnd(),
+          if (userPk) {
+            Object.defineProperty(filter, "authors", {
+              value: [userPk],
               enumerable: true,
             });
           }
 
-          if (tags?.length) {
-            Object.defineProperty(postsFilter, "#t", {
-              value: tags,
-              enumerable: true,
-            });
-          }
+          console.log("postsFilter", filter);
 
-          if (since) {
-            Object.defineProperty(postsFilter, "since", {
-              value: since,
-              enumerable: true,
-            });
-            if (!until) {
-              Object.defineProperty(postsFilter, "until", {
-                value: dateToUnix(new Date()),
-                enumerable: true,
-              });
-            }
-          }
+          const posts = Array.from(await ndk.fetchEvents(filter));
 
-          if (until) {
-            Object.defineProperty(postsFilter, "until", {
-              value: until,
-              enumerable: true,
-            });
-          }
-
-          console.log("postsFilter", postsFilter);
-
-          const posts = Array.from(await ndk.fetchEvents(postsFilter));
-
-          const postsCount = await ndk.fetchCount(postsFilter);
-          setPostsCount(postsCount?.count ? postsCount.count : 0);
+          const postsCount = await ndk.fetchCount(filter);
+          setPostsCount(postsCount?.count ?? 0);
 
           const postsAuthorsPks = posts.map((post) => post.pubkey);
           const postsAuthors = Array.from(
@@ -434,55 +286,9 @@ const AllResults = () => {
           setPosts(posts);
           setPostsAuthors(postsAuthors);
         } else {
-          const cleanSearch = search
-            ?.replace(/#[a-zA-Z0-9_]+/g, "")
-            .replace(/since:\d{4}-\d{2}-\d{2}/, "")
-            .replace(/until:\d{4}-\d{2}-\d{2}/, "");
-          const postsFilter = {
-            kinds: [1],
-            //@ts-ignore
-            limit: 10,
-          };
+          console.log("postsFilter", filter);
 
-          if (cleanSearch?.trim()) {
-            Object.defineProperty(postsFilter, "search", {
-              value: cleanSearch.trimStart().trimEnd(),
-              enumerable: true,
-            });
-          }
-
-          if (tags?.length) {
-            Object.defineProperty(postsFilter, "#t", {
-              value: tags,
-              enumerable: true,
-            });
-          }
-
-          if (since) {
-            Object.defineProperty(postsFilter, "since", {
-              value: since,
-              enumerable: true,
-            });
-            if (!until) {
-              Object.defineProperty(postsFilter, "until", {
-                value: dateToUnix(new Date()),
-                enumerable: true,
-              });
-            }
-          }
-
-          if (until) {
-            Object.defineProperty(postsFilter, "until", {
-              value: until,
-              enumerable: true,
-            });
-          }
-          console.log("postsFilter", postsFilter);
-
-          const posts = Array.from(
-            //@ts-ignore
-            await ndk.fetchEvents(postsFilter)
-          );
+          const posts = Array.from(await ndk.fetchEvents(filter));
 
           const postsAuthorsPks = posts.map((post) => post.pubkey);
           const postsAuthors = Array.from(
@@ -490,7 +296,7 @@ const AllResults = () => {
           );
           setPosts(posts);
           setPostsAuthors(postsAuthors);
-          const postsCount = await ndk.fetchCount(postsFilter);
+          const postsCount = await ndk.fetchCount(filter);
           setPostsCount(postsCount?.count ?? 0);
           setIsLoadingPosts(false);
         }
