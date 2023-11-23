@@ -2,6 +2,6 @@
   font-size: 1.2rem;
   font-weight: 300;
 }
-.profiles h2 {
+.profiles {
   color: var(--body-color);
 }

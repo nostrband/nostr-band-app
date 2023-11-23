@@ -285,6 +285,7 @@ const Posts = () => {
         : ""}
       {isLoading && <p>Loading...</p>}
       <p>{postsCount - posts.length === 0 ? `End of results` : ""}</p>
+      {!posts.length && !isLoading && <div>Nothing found :(</div>}
     </div>
   );
 };
