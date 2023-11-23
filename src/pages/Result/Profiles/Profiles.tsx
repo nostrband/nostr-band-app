@@ -175,7 +175,7 @@ const Profiles = () => {
 
         const profilesIds = await ndk.fetchTop(filter);
         setProfilesIds(profilesIds?.ids ? profilesIds.ids : []);
-        getProfiles(ndk, profilesIds?.ids ? profilesIds.ids : []);
+        getProfiles(profilesIds?.ids ?? []);
         setCountFilter(filter);
       } else if (search?.includes("by:")) {
         const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
@@ -186,15 +186,15 @@ const Profiles = () => {
             enumerable: true,
           });
         }
-        //@ts-ignore
-        const user = await ndk.fetchEvent(filter);
-        setProfiles(user ? [user] : []);
+        const profilesIds = await ndk.fetchTop(filter);
+        setProfilesIds(profilesIds?.ids ?? []);
+        getProfiles(profilesIds?.ids ?? []);
         setProfilesCount(1);
       } else {
         const topProfilesIds = await ndk.fetchTop(filter);
         console.log("postsFilter", filter);
         setProfilesIds(topProfilesIds?.ids ?? []);
-        getProfiles(ndk, topProfilesIds?.ids ?? []);
+        getProfiles(topProfilesIds?.ids ?? []);
         setCountFilter(filter);
       }
     }
@@ -226,7 +226,7 @@ const Profiles = () => {
 
   useEffect(() => {
     if (ndk instanceof NDK) {
-      getProfiles(ndk, profilesIds);
+      getProfiles(profilesIds);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limitProfiles]);
@@ -235,7 +235,7 @@ const Profiles = () => {
     return ids.indexOf(a.id) - ids.indexOf(b.id);
   }
 
-  const getProfiles = async (ndk: NDK, ids: string[]) => {
+  const getProfiles = async (ids: string[]) => {
     try {
       if (ndk instanceof NDK) {
         setIsLoadingProfiles(true);
@@ -248,6 +248,7 @@ const Profiles = () => {
         const sortedContentArray = profiles
           .slice()
           .sort((a, b) => compareByKeys(a, b, ids));
+
         setProfiles(sortedContentArray);
         // fetchProfilesCount();
       }
@@ -266,35 +267,32 @@ const Profiles = () => {
           found {profilesCount} {profilesCount > 1 ? "profiles" : "profile"}
         </span>
       </h2>
-      {profiles.length !== 0 ? (
-        profiles?.length ? (
-          <div className={cl.resultProfiles}>
-            {profiles.map((profile) => {
-              const profileContent = JSON.parse(profile.content);
-              return (
-                <ProfileItem
-                  img={profileContent.picture}
-                  pubKey={profile.pubkey}
-                  bio={profileContent.about}
-                  name={
-                    profileContent.display_name
-                      ? profileContent.display_name
-                      : profileContent.name
-                  }
-                  key={profile.id}
-                  mail={profileContent.nip05}
-                  newFollowersCount={0}
-                />
-              );
-            })}
-          </div>
-        ) : (
-          "No profiles"
-        )
+      {profiles?.length ? (
+        <div className={cl.resultProfiles}>
+          {profiles.map((profile) => {
+            console.log(profiles?.length);
+
+            const profileContent = JSON.parse(profile.content);
+            return (
+              <ProfileItem
+                img={profileContent.picture}
+                pubKey={profile.pubkey}
+                bio={profileContent.about}
+                name={
+                  profileContent.display_name
+                    ? profileContent.display_name
+                    : profileContent.name
+                }
+                key={profile.id}
+                mail={profileContent.nip05}
+                newFollowersCount={0}
+              />
+            );
+          })}
+        </div>
       ) : (
-        ""
+        "No profiles"
       )}
-      {isLoadingProfiles && <CardSkeleton cards={8} />}
       {isLoadingProfiles && <p>Loading...</p>}
       <p style={{ color: "var(--body-color)" }}>
         {profilesIds.length - profiles.length === 0 && profiles.length !== 200
@@ -304,7 +302,6 @@ const Profiles = () => {
           : ""}
       </p>
       <p>{profiles.length >= 200 ? "We only show top 200 results" : ""}</p>
-      {!profiles.length && !isLoadingProfiles && <div>Nothing found :(</div>}
     </div>
   );
 };
