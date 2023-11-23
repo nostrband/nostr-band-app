@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useMemo } from "react";
 import NDK, { NDKEvent } from "@nostrband/ndk";
 import { getZapAmount } from "../../../utils/zapFunctions";
 import { useSearchParams } from "react-router-dom";
@@ -6,6 +6,8 @@ import ZapTransfer from "../../../components/ZapTransfer/ZapTransfer";
 import cl from "./Zaps.module.css";
 import Search from "../../../components/Search/Search";
 import { useAppSelector } from "../../../hooks/redux";
+import { dateToUnix } from "nostr-react";
+import { nip19 } from "@nostrband/nostr-tools";
 
 const Zaps = () => {
   const ndk = useAppSelector((store) => store.connectionReducer.ndk);
@@ -22,6 +24,46 @@ const Zaps = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [limitZaps, setLimitZaps] = useState(10);
   const [isBottom, setIsBottom] = useState(false);
+  const search = searchParams.get("q");
+  const cleanSearch = useMemo(() => {
+    return search
+      ?.split(" ")
+      .filter((str) =>
+        str.includes("following:")
+          ? !str.match(/following:npub[0-9a-zA-Z]+/g)
+          : !str.match(/by:npub[0-9a-zA-Z]+/g)
+      )
+      .join(" ")
+      .replace(/#[a-zA-Z0-9_]+/g, "")
+      .replace(/lang:[a-zA-Z0-9_]+/g, "")
+      .replace(/since:\d{4}-\d{2}-\d{2}/, "")
+      .replace(/until:\d{4}-\d{2}-\d{2}/, "");
+  }, [search]);
+
+  const tagsWithHash = search
+    ?.split(" ")
+    .filter((s) => s.match(/#[a-zA-Z0-9_]+/g)?.toString());
+  const tags = tagsWithHash?.map((tag) => tag.replace("#", ""));
+  const langsWithPrefix = search
+    ?.split(" ")
+    .filter((s) => s.match(/lang:[a-zA-Z]+/g)?.toString());
+  const langs = langsWithPrefix?.map((lang) => lang.replace("lang:", ""));
+  const since = search?.match(/since:\d{4}-\d{2}-\d{2}/)
+    ? dateToUnix(
+        new Date(
+          search?.match(/since:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
+        )
+      )
+    : "";
+  const until = search?.match(/until:\d{4}-\d{2}-\d{2}/)
+    ? dateToUnix(
+        new Date(
+          search?.match(/until:\d{4}-\d{2}-\d{2}/)![0].replace(/-/g, "/")
+        )
+      )
+    : "";
+
+  const filter = { kinds: [9735], limit: limitZaps };
 
   const handleScroll = () => {
     const windowHeight = window.innerHeight;
@@ -46,7 +88,7 @@ const Zaps = () => {
 
   useEffect(() => {
     if (ndk instanceof NDK) {
-      getZaps(ndk);
+      getZaps();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limitZaps, searchParams.get("q")]);
@@ -60,33 +102,80 @@ const Zaps = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useLayoutEffect(() => {
-    fetchZapsCount(ndk);
-  }, []);
+  if (cleanSearch?.trim()) {
+    Object.defineProperty(filter, "search", {
+      value: cleanSearch.trimStart().trimEnd(),
+      enumerable: true,
+    });
+  }
 
-  const fetchZapsCount = async (ndk: NDK) => {
-    if (ndk instanceof NDK) {
-      const zapsCount = await ndk.fetchCount({
-        kinds: [9735],
-        //@ts-ignore
-        search: searchParams.get("q"),
+  if (tags?.length) {
+    Object.defineProperty(filter, "t", {
+      value: tags,
+      enumerable: true,
+    });
+  }
+
+  if (since) {
+    Object.defineProperty(filter, "since", {
+      value: since,
+      enumerable: true,
+    });
+    if (!until) {
+      Object.defineProperty(filter, "until", {
+        value: dateToUnix(new Date()),
+        enumerable: true,
       });
-      setZapsCount(zapsCount?.count ? zapsCount.count : 0);
     }
-  };
+  }
 
-  const getZaps = async (ndk: NDK) => {
+  if (until) {
+    Object.defineProperty(filter, "until", {
+      value: until,
+      enumerable: true,
+    });
+  }
+
+  if (langs?.length) {
+    Object.defineProperty(filter, "@lang", {
+      value: langs,
+      enumerable: true,
+    });
+  }
+
+  const getZaps = async () => {
     if (ndk instanceof NDK) {
       try {
         setIsLoading(true);
-        const zaps = Array.from(
-          await ndk.fetchEvents({
-            kinds: [9735],
-            //@ts-ignore
-            search: searchParams.get("q"),
-            limit: limitZaps,
-          })
-        );
+        if (search?.includes("following:")) {
+          const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
+          const userPk = userNpub ? nip19.decode(userNpub).data : "";
+          //@ts-ignore
+          const userContacts = await ndk.fetchEvent({
+            kinds: [3],
+            authors: [userPk],
+          });
+          const followingPubkeys = userContacts
+            ? userContacts?.tags.slice(0, 500).map((contact) => contact[1])
+            : [];
+
+          if (followingPubkeys.length) {
+            Object.defineProperty(filter, "authors", {
+              value: followingPubkeys,
+              enumerable: true,
+            });
+          }
+        } else if (search?.includes("by:")) {
+          const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
+          const userPk = userNpub ? nip19.decode(userNpub).data : "";
+          if (userPk) {
+            Object.defineProperty(filter, "@zs", {
+              value: [userPk],
+              enumerable: true,
+            });
+          }
+        }
+        const zaps = Array.from(await ndk.fetchEvents(filter));
         setReceivedZaps(zaps);
         const providersPubkyes = zaps.map((zap) => zap.pubkey);
         const providers = Array.from(
@@ -163,6 +252,8 @@ const Zaps = () => {
           return receiver;
         });
         setReceiverAuthors(receivers);
+        const zapsCount = await ndk.fetchCount(filter);
+        setZapsCount(zapsCount?.count ?? 0);
         setIsLoading(false);
       } catch (e) {
         console.log(e);
