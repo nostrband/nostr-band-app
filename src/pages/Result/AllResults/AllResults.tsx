@@ -317,8 +317,8 @@ const AllResults = () => {
           setPostsAuthors(postsAuthors);
           const postsCount = await ndk.fetchCount(filter);
           setPostsCount(postsCount?.count ?? 0);
-          setIsLoadingPosts(false);
         }
+        setIsLoadingPosts(false);
       }
     } catch (e) {
       console.log(e);
