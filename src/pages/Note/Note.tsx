@@ -52,6 +52,7 @@ import NotFound from "../NotFound/NotFound";
 import { compareByTagName } from "../../utils/sortFunctions";
 import Thread from "../../components/Thread/Thread";
 import { isNaddr } from "../../types/guards";
+import { openNostrEvent, openNostrProfile } from "../../utils/helper";
 
 const Note = () => {
   const store = useAppSelector((store) => store.userReducer);
@@ -723,8 +724,8 @@ const Note = () => {
                   variant={store.theme === "dark" ? "dark" : "light"}
                 >
                   <Dropdown.Item
-                    target="_blanc"
-                    href={`https://nostrapp.link/#${npubKey}`}
+                    onClick={(e) => openNostrProfile(e, npubKey)}
+                    // href={`https://nostrapp.link/#${npubKey}`}
                   >
                     Open
                   </Dropdown.Item>
@@ -823,7 +824,7 @@ const Note = () => {
               )}
             </div>
             <div className={`${cl.profileContentControl} ${cl.profileButtons}`}>
-              <a target="_blanc" href={`https://nostrapp.link/#${noteHex}`}>
+              <a onClick={(e) => openNostrEvent(e, noteHex ?? "", false)}>
                 <Button variant="outline-secondary">
                   <BoxArrowUpRight /> Open
                 </Button>
@@ -902,8 +903,7 @@ const Note = () => {
                   id={cl["menu-id"]}
                 >
                   <Dropdown.Item
-                    target="_blanc"
-                    href={`https://nostrapp.link/#${noteHex}?select=true`}
+                    onClick={(e) => openNostrEvent(e, noteHex ?? "", true)}
                   >
                     <BoxArrowUpRight /> Open with
                   </Dropdown.Item>

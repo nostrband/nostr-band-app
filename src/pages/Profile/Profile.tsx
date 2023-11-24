@@ -47,6 +47,7 @@ import { profileType, statsType } from "../../types/types";
 import AddModal from "../../components/AddModal/AddModal";
 import { extractNostrStrings } from "../../utils/formatLink";
 import { compareByTagName } from "../../utils/sortFunctions";
+import { openNostrProfile } from "../../utils/helper";
 
 const Profile = () => {
   const store = useAppSelector((store) => store.userReducer);
@@ -811,7 +812,7 @@ const Profile = () => {
               )}
             </div>
             <div className={`${cl.profileContentControl} ${cl.profileButtons}`}>
-              <a target="_blanc" href={`https://nostrapp.link/#${npub}`}>
+              <a onClick={(e) => openNostrProfile(e, npub ?? "", false)}>
                 <Button variant="outline-secondary">
                   <BoxArrowUpRight /> Open
                 </Button>
@@ -952,8 +953,7 @@ const Profile = () => {
                   variant={store.theme === "dark" ? "dark" : "light"}
                 >
                   <Dropdown.Item
-                    target="_blanc"
-                    href={`https://nostrapp.link/#${npub}?select=true`}
+                    onClick={(e) => openNostrProfile(e, npub ?? "", true)}
                   >
                     <BoxArrowUpRight /> Open with
                   </Dropdown.Item>
