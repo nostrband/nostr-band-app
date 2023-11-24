@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation, useSearchParams } from "react-router-dom";
 import "./App.css";
 import Footer from "./components/Footer/Footer";
 import Header from "./components/Header/Header";
@@ -17,6 +17,7 @@ import { userSlice } from "./store/reducers/UserSlice";
 import { NostrProvider } from "nostr-react";
 import { useAppDispatch, useAppSelector } from "./hooks/redux";
 import Home from "./pages/Home/Home";
+import { openNostrBand } from "./utils/helper";
 
 const relayUrls = ["wss://relay.nostr.band"];
 
@@ -27,6 +28,7 @@ const App = () => {
   const { ndk, ndkAll } = useAppSelector((store) => store.connectionReducer);
   const location = useLocation();
   const [isSpringAd, setIsSpringAd] = useState(false);
+  const [searchParams] = useSearchParams();
 
   const dispatch = useAppDispatch();
   const { setIsAuth, setContacts, setLists, setLabels, setUser } =
@@ -44,8 +46,6 @@ const App = () => {
       setIsSpringAd(true);
     }
   }, []);
-
-  useEffect(() => {}, [location.pathname]);
 
   const getUser = async (pubkey: string): Promise<void> => {
     //@ts-ignore
@@ -83,6 +83,10 @@ const App = () => {
       getUser(pubkey);
     }
   }, [store.isAuth]);
+
+  useEffect(() => {
+    openNostrBand();
+  }, [location.pathname, searchParams.get("trending")!]);
 
   const loginBtn = async (): Promise<void> => {
     if (window.nostr) {
