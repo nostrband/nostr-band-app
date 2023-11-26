@@ -5,6 +5,7 @@ import PostCard from "../../../components/PostCard/PostCard";
 import { nostrApiType } from "../../../types/types.js";
 import { formatDate } from "../../../utils/formatDate";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 type audioTypes = {
   setIsLoading: (a: boolean) => void;
@@ -36,6 +37,13 @@ const Audio: FC<audioTypes> = ({ setIsLoading }) => {
 
   return (
     <>
+      <Helmet>
+        <title>Nostr.Band: Trending audios on Nostr</title>
+        <meta
+          name="description"
+          content="Nostr.Band · Stats; Top. People · Posts · Images · Video · Audio. Products. Stats · API · Relay · Relay Browser · Embed widget ..."
+        />
+      </Helmet>
       {audios && audios.length ? (
         audios.map((image) => {
           const authorContent = image?.author?.content

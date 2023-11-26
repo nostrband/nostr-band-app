@@ -6,6 +6,7 @@ import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 import { nostrPeopleType } from "../../../types/types";
 import { Link } from "react-router-dom";
 import { formatDate } from "../../../utils/formatDate";
+import { Helmet } from "react-helmet";
 
 type peopleTypes = {
   setIsLoading: (a: boolean) => void;
@@ -36,6 +37,13 @@ const People: FC<peopleTypes> = ({ setIsLoading }) => {
 
   return (
     <>
+      <Helmet>
+        <title>Nostr.Band: Trending people on Nostr</title>
+        <meta
+          name="description"
+          content="NH-based organization. Our mission is to spread adoption and educate people on Bitcoin."
+        />
+      </Helmet>
       {profiles && profiles.length ? (
         profiles.map((profile) => {
           const profileContent = profile?.profile?.content

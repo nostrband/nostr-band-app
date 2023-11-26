@@ -53,6 +53,7 @@ import { compareByTagName } from "../../utils/sortFunctions";
 import Thread from "../../components/Thread/Thread";
 import { isNaddr } from "../../types/guards";
 import { openNostrEvent, openNostrProfile } from "../../utils/helper";
+import { Helmet } from "react-helmet";
 
 const Note = () => {
   const store = useAppSelector((store) => store.userReducer);
@@ -576,6 +577,13 @@ const Note = () => {
 
   return noteIdCheck ? (
     <div className={cl.noteContainer}>
+      <Helmet>
+        <title>Nostr.Band: Explore note - {noteHex}</title>
+        <meta
+          name="description"
+          content={`Nostr.Band · Nostr.Band: Explore note - ${noteHex}`}
+        />
+      </Helmet>
       <AddModal
         isModal={isVisibleLabelModal}
         setIsModal={setIsVisibleLabelModal}

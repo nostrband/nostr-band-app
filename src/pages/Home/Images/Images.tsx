@@ -6,9 +6,9 @@ import PostCard from "../../../components/PostCard/PostCard.tsx";
 //@ts-ignore
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton.tsx";
 import { nostrApiType } from "../../../types/types";
-import React from "react";
 import { formatDate } from "../../../utils/formatDate";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 type imagesTypes = {
   setIsLoading: (a: boolean) => void;
@@ -39,6 +39,13 @@ const Images: FC<imagesTypes> = ({ setIsLoading }) => {
 
   return (
     <>
+      <Helmet>
+        <title>Nostr.Band: Trending images on Nostr</title>
+        <meta
+          name="description"
+          content="Nostr.Band · Stats; Top. People · Posts · Images · Video · Audio. Products. Stats · API · Relay · Relay Browser · Embed widget ..."
+        />
+      </Helmet>
       {images && images.length ? (
         images.map((image) => {
           const authorContent = image?.author?.content
