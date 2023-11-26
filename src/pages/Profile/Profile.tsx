@@ -48,6 +48,7 @@ import AddModal from "../../components/AddModal/AddModal";
 import { extractNostrStrings } from "../../utils/formatLink";
 import { compareByTagName } from "../../utils/sortFunctions";
 import { openNostrProfile } from "../../utils/helper";
+import { Helmet } from "react-helmet";
 
 const Profile = () => {
   const store = useAppSelector((store) => store.userReducer);
@@ -631,6 +632,13 @@ const Profile = () => {
 
   return (
     <div className={cl.profileContainer}>
+      <Helmet>
+        <title>Nostr.Band: Explore profile - {npub}</title>
+        <meta
+          name="description"
+          content={`Nostr.Band · Nostr.Band: Explore profile - ${npub}`}
+        />
+      </Helmet>
       <Modal
         show={isFullAvatar}
         id={[`${cl.profileFullAvatar}`]}

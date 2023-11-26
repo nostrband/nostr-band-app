@@ -5,6 +5,7 @@ import { nostrApiType } from "../../../types/types.js";
 import { Link } from "react-router-dom";
 import { formatDate } from "../../../utils/formatDate";
 import { NDKEvent } from "@nostrband/ndk";
+import { Helmet } from "react-helmet";
 
 type postsTypes = {
   posts: nostrApiType[];
@@ -16,6 +17,13 @@ const Posts: FC<postsTypes> = ({ posts, taggedProfiles }) => {
 
   return (
     <>
+      <Helmet>
+        <title>Nostr.Band: Trending video on Nostr</title>
+        <meta
+          name="description"
+          content="Nostr.Band · Stats; Top. People · Posts · Images · Video · Audio. Products. Stats · API · Relay · Relay Browser · Embed widget ..."
+        />
+      </Helmet>
       {posts && posts.length ? (
         posts.map((post) => {
           const authorContent = post?.author?.content

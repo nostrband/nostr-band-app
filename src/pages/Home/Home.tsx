@@ -15,6 +15,7 @@ import { NDKEvent } from "@nostrband/ndk";
 import { nip19 } from "@nostrband/nostr-tools";
 import { extractNostrStrings } from "../../utils/formatLink";
 import { useAppSelector } from "../../hooks/redux";
+import { Helmet } from "react-helmet";
 
 const Home = () => {
   const ndk = useAppSelector((store) => store.connectionReducer.ndk);
@@ -72,6 +73,13 @@ const Home = () => {
     <Result />
   ) : (
     <div>
+      <Helmet>
+        <title>Nostr.Band: Trending people on Nostr</title>
+        <meta
+          name="description"
+          content="NH-based organization. Our mission is to spread adoption and educate people on Bitcoin."
+        />
+      </Helmet>
       <Search isLoading={isLoading} />
       <div className="home-hero">
         <h2 className="home-hero-title">

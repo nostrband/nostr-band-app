@@ -6,6 +6,7 @@ import PostCard from "../../../components/PostCard/PostCard";
 import { nostrApiType } from "../../../types/types";
 import { Link } from "react-router-dom";
 import { formatDate } from "../../../utils/formatDate";
+import { Helmet } from "react-helmet";
 
 type videoType = {
   setIsLoading: (a: boolean) => void;
@@ -36,6 +37,13 @@ const Video: FC<videoType> = ({ setIsLoading }) => {
 
   return (
     <>
+      <Helmet>
+        <title>Nostr.Band: Trending video on Nostr</title>
+        <meta
+          name="description"
+          content="Nostr.Band · Stats; Top. People · Posts · Images · Video · Audio. Products. Stats · API · Relay · Relay Browser · Embed widget ..."
+        />
+      </Helmet>
       {videos && videos.length ? (
         videos.map((video) => {
           const authorContent = video?.author?.content
