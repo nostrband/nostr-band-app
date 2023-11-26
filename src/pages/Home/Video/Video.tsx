@@ -40,8 +40,8 @@ const Video: FC<videoType> = ({ setIsLoading }) => {
       <Helmet>
         <title>Nostr.Band: Trending video on Nostr</title>
         <meta
-          name="description"
-          content="Nostr.Band · Stats; Top. People · Posts · Images · Video · Audio. Products. Stats · API · Relay · Relay Browser · Embed widget ..."
+          name="robots"
+          content="index, follow, noimageindex, max-snippet:-1, max-image-preview:none, max-video-preview:-1, nositelinkssearchbox"
         />
       </Helmet>
       {videos && videos.length ? (
