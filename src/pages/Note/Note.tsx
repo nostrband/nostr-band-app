@@ -580,8 +580,8 @@ const Note = () => {
       <Helmet>
         <title>Nostr.Band: Explore note - {noteHex}</title>
         <meta
-          name="description"
-          content={`Nostr.Band · Nostr.Band: Explore note - ${noteHex}`}
+          name="robots"
+          content="index, follow, noimageindex, max-snippet:-1, max-image-preview:none, max-video-preview:-1, nositelinkssearchbox"
         />
       </Helmet>
       <AddModal

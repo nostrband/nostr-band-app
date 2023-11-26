@@ -635,8 +635,8 @@ const Profile = () => {
       <Helmet>
         <title>Nostr.Band: Explore profile - {npub}</title>
         <meta
-          name="description"
-          content={`Nostr.Band · Nostr.Band: Explore profile - ${npub}`}
+          name="robots"
+          content="index, follow, noimageindex, max-snippet:-1, max-image-preview:none, max-video-preview:-1, nositelinkssearchbox"
         />
       </Helmet>
       <Modal

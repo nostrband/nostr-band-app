@@ -40,8 +40,8 @@ const People: FC<peopleTypes> = ({ setIsLoading }) => {
       <Helmet>
         <title>Nostr.Band: Trending people on Nostr</title>
         <meta
-          name="description"
-          content="NH-based organization. Our mission is to spread adoption and educate people on Bitcoin."
+          name="robots"
+          content="index, follow, noimageindex, max-snippet:-1, max-image-preview:none, max-video-preview:-1, nositelinkssearchbox"
         />
       </Helmet>
       {profiles && profiles.length ? (
