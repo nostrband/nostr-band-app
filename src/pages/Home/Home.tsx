@@ -69,7 +69,7 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("trending")]);
 
-  return searchParams.get("q") ? (
+  return searchParams.has("q") ? (
     <Result />
   ) : (
     <div>
