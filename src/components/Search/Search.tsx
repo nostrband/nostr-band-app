@@ -151,12 +151,12 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
           )
         : "";
       if (since instanceof Date) {
-        if (since < until) {
+        if (since < until || !until) {
           setSinceDate(since);
         }
       }
       if (until instanceof Date) {
-        if (until > since) {
+        if (!since || until > since) {
           setStartDate(until);
         }
       }
