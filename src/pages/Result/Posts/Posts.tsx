@@ -132,7 +132,7 @@ const Posts = () => {
         }
 
         if (tags?.length) {
-          Object.defineProperty(filter, "t", {
+          Object.defineProperty(filter, "#t", {
             value: tags,
             enumerable: true,
           });
@@ -185,8 +185,7 @@ const Posts = () => {
             });
           }
           const posts = Array.from(await ndk.fetchEvents(filter));
-
-          const { limit, ...countFilter } = filter;
+          const countFilter = { ...filter, limit: 10000 };
           const postsCount = await ndk.fetchCount(countFilter);
           setPostsCount(postsCount?.count ?? 0);
 
@@ -216,7 +215,7 @@ const Posts = () => {
 
           const posts = Array.from(await ndk.fetchEvents(filter));
           fetchTaggedUsers(posts);
-          const { limit, ...countFilter } = filter;
+          const countFilter = { ...filter, limit: 10000 };
           const postsCount = await ndk.fetchCount(countFilter);
           setPostsCount(postsCount?.count ?? 0);
 
@@ -239,7 +238,7 @@ const Posts = () => {
           );
           setPosts(posts);
           setPostsAuthors(postsAuthors);
-          const { limit, ...countFilter } = filter;
+          const countFilter = { ...filter, limit: 10000 };
           const postsCount = await ndk.fetchCount(countFilter);
           setPostsCount(postsCount?.count ?? 0);
         }

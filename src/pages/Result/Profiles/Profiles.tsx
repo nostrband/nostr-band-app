@@ -119,7 +119,7 @@ const Profiles = () => {
       }
 
       if (tags?.length) {
-        Object.defineProperty(filter, "t", {
+        Object.defineProperty(filter, "#t", {
           value: tags,
           enumerable: true,
         });
@@ -174,7 +174,7 @@ const Profiles = () => {
         console.log("postsFilter", filter);
 
         const profilesIds = await ndk.fetchTop(filter);
-        const { limit, ...countFilter } = filter;
+        const countFilter = { ...filter, limit: 10000 };
         setCountFilter(countFilter);
         setProfilesIds(profilesIds?.ids ?? []);
         getProfiles(profilesIds?.ids ?? []);
@@ -196,7 +196,7 @@ const Profiles = () => {
         console.log("postsFilter", filter);
         setProfilesIds(topProfilesIds?.ids ?? []);
         getProfiles(topProfilesIds?.ids ?? []);
-        const { limit, ...countFilter } = filter;
+        const countFilter = { ...filter, limit: 10000 };
         setCountFilter(countFilter);
       }
     }

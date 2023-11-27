@@ -110,7 +110,7 @@ const Zaps = () => {
   }
 
   if (tags?.length) {
-    Object.defineProperty(filter, "t", {
+    Object.defineProperty(filter, "#t", {
       value: tags,
       enumerable: true,
     });
@@ -252,7 +252,7 @@ const Zaps = () => {
           return receiver;
         });
         setReceiverAuthors(receivers);
-        const {limit, ...countFilter} = filter;
+        const countFilter = { ...filter, limit: 10000 };
         const zapsCount = await ndk.fetchCount(countFilter);
         setZapsCount(zapsCount?.count ?? 0);
         setIsLoading(false);

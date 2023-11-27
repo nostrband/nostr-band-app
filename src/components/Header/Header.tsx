@@ -102,9 +102,6 @@ const Header: FC<headerType> = ({ onLogin }) => {
             <NavDropdown.Item href="https://relay.nostr.band/index.html">
               Relay
             </NavDropdown.Item>
-            <NavDropdown.Item href="https://browser.nostr.band">
-              Relay Browser
-            </NavDropdown.Item>
             <NavDropdown.Item href="https://embed.nostr.band">
               Embed widget
             </NavDropdown.Item>
@@ -117,11 +114,8 @@ const Header: FC<headerType> = ({ onLogin }) => {
             <NavDropdown.Item href="https://trust.nostr.band">
               Trust rank
             </NavDropdown.Item>
-            <NavDropdown.Item href="https://rss.nostr.band">
-              RSS feeds
-            </NavDropdown.Item>
-            <NavDropdown.Item href="https://sb.nostr.band">
-              Search bots
+            <NavDropdown.Item href="https://feeds.nostr.band">
+              Feeds
             </NavDropdown.Item>
           </NavDropdown>
           {
