@@ -4,16 +4,17 @@ import Search from "../../../components/Search/Search";
 import ProfileItem from "../../../components/ProfileItem/ProfileItem";
 import PostCard from "../../../components/PostCard/PostCard";
 import NDK, { NDKEvent } from "@nostrband/ndk";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 import { useAppSelector } from "../../../hooks/redux";
 import { nip19 } from "@nostrband/nostr-tools";
 import { dateToUnix } from "nostr-react";
 import { extractNostrStrings } from "../../../utils/formatLink";
+import { Button } from "react-bootstrap";
 
 const AllResults = () => {
   const ndk = useAppSelector((store) => store.connectionReducer.ndk);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [profiles, setProfiles] = useState<NDKEvent[]>([]);
   const [profilesCount, setProfilesCount] = useState<number>(0);
   const [isLoadingProfiles, setIsLoadingProfiles] = useState<boolean>(false);
@@ -189,7 +190,9 @@ const AllResults = () => {
             )
           : [];
         setProfiles(topProfiles);
-        const profilesCount = await ndk.fetchCount(filter);
+        const { limit, ...countFilter } = filter;
+
+        const profilesCount = await ndk.fetchCount(countFilter);
         setProfilesCount(profilesCount?.count ?? 0);
       }
       setIsLoadingProfiles(false);
@@ -263,7 +266,9 @@ const AllResults = () => {
           }
           const posts = Array.from(await ndk.fetchEvents(filter));
 
-          const postsCount = await ndk.fetchCount(filter);
+          const { limit, ...countFilter } = filter;
+
+          const postsCount = await ndk.fetchCount(countFilter);
           setPostsCount(postsCount?.count ?? 0);
 
           const postsAuthorsPks = posts.map((post) => post.pubkey);
@@ -292,7 +297,9 @@ const AllResults = () => {
 
           const posts = Array.from(await ndk.fetchEvents(filter));
           fetchTaggedUsers(posts);
-          const postsCount = await ndk.fetchCount(filter);
+          const { limit, ...countFilter } = filter;
+
+          const postsCount = await ndk.fetchCount(countFilter);
           setPostsCount(postsCount?.count ?? 0);
 
           const postsAuthorsPks = posts.map((post) => post.pubkey);
@@ -315,7 +322,9 @@ const AllResults = () => {
           );
           setPosts(posts);
           setPostsAuthors(postsAuthors);
-          const postsCount = await ndk.fetchCount(filter);
+          const { limit, ...countFilter } = filter;
+
+          const postsCount = await ndk.fetchCount(countFilter);
           setPostsCount(postsCount?.count ?? 0);
         }
         setIsLoadingPosts(false);
@@ -358,12 +367,13 @@ const AllResults = () => {
         <CardSkeleton cards={3} />
       )}
       {profilesCount >= 4 && (
-        <Link
+        <Button
+          variant="link"
           className={cl.moreLink}
-          to={`/?q=${searchParams.get("q")}&type=profiles`}
+          onClick={() => setSearchParams({ q: search ?? "", type: "profiles" })}
         >
           And {profilesCount ? profilesCount : 0} more profiles →
-        </Link>
+        </Button>
       )}
       {posts?.length ? (
         <div className={cl.resPosts}>
@@ -399,12 +409,13 @@ const AllResults = () => {
         ""
       )}
       {postsCount >= 10 && (
-        <Link
+        <Button
+          variant="link"
           className={cl.moreLink}
-          to={`/?q=${searchParams.get("q")}&type=posts`}
+          onClick={() => setSearchParams({ q: search ?? "", type: "posts" })}
         >
           And {postsCount ? postsCount : 0} more posts →
-        </Link>
+        </Button>
       )}
 
       {!isLoadingProfiles &&

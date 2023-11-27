@@ -174,9 +174,10 @@ const Profiles = () => {
         console.log("postsFilter", filter);
 
         const profilesIds = await ndk.fetchTop(filter);
-        setProfilesIds(profilesIds?.ids ? profilesIds.ids : []);
+        const { limit, ...countFilter } = filter;
+        setCountFilter(countFilter);
+        setProfilesIds(profilesIds?.ids ?? []);
         getProfiles(profilesIds?.ids ?? []);
-        setCountFilter(filter);
       } else if (search?.includes("by:")) {
         const userNpub = search?.match(/npub[0-9a-zA-Z]+/g)![0];
         const userPk = userNpub ? nip19.decode(userNpub).data : "";
@@ -195,7 +196,8 @@ const Profiles = () => {
         console.log("postsFilter", filter);
         setProfilesIds(topProfilesIds?.ids ?? []);
         getProfiles(topProfilesIds?.ids ?? []);
-        setCountFilter(filter);
+        const { limit, ...countFilter } = filter;
+        setCountFilter(countFilter);
       }
     }
   };
@@ -211,11 +213,14 @@ const Profiles = () => {
           kinds: [3],
           authors: [userPk],
         });
+
         const countProfiles = await ndk.fetchCount(filter);
         setProfilesCount(countProfiles?.count ?? 0);
       } else if (search?.includes("by:")) {
         setProfilesCount(1);
       } else {
+        console.log(filter);
+
         const profilesCount = await ndk.fetchCount(filter);
         setProfilesCount(profilesCount?.count ?? 0);
       }
@@ -270,8 +275,6 @@ const Profiles = () => {
       {profiles?.length ? (
         <div className={cl.resultProfiles}>
           {profiles.map((profile) => {
-            console.log(profiles?.length);
-
             const profileContent = JSON.parse(profile.content);
             return (
               <ProfileItem

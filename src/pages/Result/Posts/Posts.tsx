@@ -186,7 +186,8 @@ const Posts = () => {
           }
           const posts = Array.from(await ndk.fetchEvents(filter));
 
-          const postsCount = await ndk.fetchCount(filter);
+          const { limit, ...countFilter } = filter;
+          const postsCount = await ndk.fetchCount(countFilter);
           setPostsCount(postsCount?.count ?? 0);
 
           const postsAuthorsPks = posts.map((post) => post.pubkey);
@@ -215,7 +216,8 @@ const Posts = () => {
 
           const posts = Array.from(await ndk.fetchEvents(filter));
           fetchTaggedUsers(posts);
-          const postsCount = await ndk.fetchCount(filter);
+          const { limit, ...countFilter } = filter;
+          const postsCount = await ndk.fetchCount(countFilter);
           setPostsCount(postsCount?.count ?? 0);
 
           const postsAuthorsPks = posts.map((post) => post.pubkey);
@@ -237,7 +239,8 @@ const Posts = () => {
           );
           setPosts(posts);
           setPostsAuthors(postsAuthors);
-          const postsCount = await ndk.fetchCount(filter);
+          const { limit, ...countFilter } = filter;
+          const postsCount = await ndk.fetchCount(countFilter);
           setPostsCount(postsCount?.count ?? 0);
         }
 

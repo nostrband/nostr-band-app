@@ -252,7 +252,8 @@ const Zaps = () => {
           return receiver;
         });
         setReceiverAuthors(receivers);
-        const zapsCount = await ndk.fetchCount(filter);
+        const {limit, ...countFilter} = filter;
+        const zapsCount = await ndk.fetchCount(countFilter);
         setZapsCount(zapsCount?.count ?? 0);
         setIsLoading(false);
       } catch (e) {
