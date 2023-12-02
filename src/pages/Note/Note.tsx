@@ -972,10 +972,12 @@ const Note = () => {
                   </span>
                 }
               >
-                {noteId && (
+                {noteId && repliesCount ? (
                   <div className={cl.repliesWrapper}>
                     <Thread anchor={noteHex} />
                   </div>
+                ) : (
+                  "No replies"
                 )}
               </Tab>
               <Tab
