@@ -74,7 +74,7 @@ const Header: FC<headerType> = ({ onLogin }) => {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto">
-          <Nav.Link href="#home">Stats</Nav.Link>
+          <Nav.Link href="https://stats.nostr.band">Stats</Nav.Link>
           <NavDropdown title="Top " id="basic-nav-dropdown">
             <NavDropdown.Item>
               <Link to={`/trending/profiles/${formatDate(today)}`}>People</Link>
