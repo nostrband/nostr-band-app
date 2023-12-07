@@ -7,6 +7,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { Provider } from "react-redux";
 import { setupStore } from "./store/store";
 import "react-datepicker/dist/react-datepicker.css";
+import "react-tagsinput/react-tagsinput.css";
 
 const store = setupStore();
 
