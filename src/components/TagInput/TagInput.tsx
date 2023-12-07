@@ -1,24 +1,48 @@
-import TagsInput from "react-tagsinput";
+import ReactTags from "react-tag-autocomplete";
 import "./TagInput.css";
+import { useCallback, useRef, useState } from "react";
+
+type tagType = {
+  id: number;
+  name: string;
+};
 
 const TagInput = ({
   tags,
   setTags,
   placeholder,
+  suggestions,
 }: {
-  tags: string[];
-  setTags: (tags: string[]) => void;
+  tags: tagType[];
+  setTags: (tags: tagType[]) => void;
   placeholder: string;
+  suggestions: tagType[];
 }) => {
-  const handleChange = (tags: string[]) => {
-    setTags(tags);
-  };
+  const reactTags = useRef();
+
+  const onDelete = useCallback(
+    (tagIndex: number) => {
+      setTags(tags.filter((_, i) => i !== tagIndex));
+    },
+    [tags]
+  );
+
+  const onAddition = useCallback(
+    (newTag: tagType) => {
+      setTags([...tags, newTag]);
+    },
+    [tags]
+  );
+
   return (
-    <TagsInput
-      addOnBlur
-      inputProps={{ placeholder }}
-      value={tags}
-      onChange={handleChange}
+    <ReactTags
+      allowNew
+      ref={reactTags}
+      tags={tags}
+      suggestions={suggestions}
+      onDelete={onDelete}
+      onAddition={onAddition}
+      placeholderText={placeholder}
     />
   );
 };

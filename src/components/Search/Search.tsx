@@ -21,6 +21,11 @@ type searchTypes = {
   placeholder?: string;
 };
 
+type tagType = {
+  id: number;
+  name: string;
+};
+
 const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   const navigate = useNavigate();
   const theme = useAppSelector((state) => state.userReducer.theme);
@@ -47,10 +52,44 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   );
   const [isValidAuthor, setIsValidAuthor] = useState(true);
   const [isValidFollowing, setIsValidFollowing] = useState(true);
-  const [newTags, setNewTags] = useState<string[]>([]);
-  const [langs, setLangs] = useState<string[]>([]);
+  const [newTags, setNewTags] = useState<tagType[]>([]);
+  const [langs, setLangs] = useState<tagType[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const store = useAppSelector((store) => store.userReducer);
+
+  const hashtagsSuggestions = [
+    {
+      id: 1,
+      name: "bitcoin",
+    },
+    {
+      id: 2,
+      name: "nostr",
+    },
+    {
+      id: 3,
+      name: "life",
+    },
+  ];
+
+  const langsSuggestions = [
+    {
+      id: 1,
+      name: "en",
+    },
+    {
+      id: 2,
+      name: "ru",
+    },
+    {
+      id: 3,
+      name: "fr",
+    },
+    {
+      id: 4,
+      name: "us",
+    },
+  ];
 
   const languages = ["en", "es", "de", "fr", "ru"];
 
@@ -77,13 +116,13 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   };
 
   useEffect(() => {
-    const tagsWithHash = newTags.map((tag) => "#" + tag).join(" ");
+    const tagsWithHash = newTags.map((tag) => "#" + tag.name).join(" ");
 
     setResultQuery(
       `${allSearch ? allSearch + " " : ""}${
         author && isValidAuthor ? "by:" + author + " " : ""
       }${following && isValidFollowing ? "following:" + following + " " : ""}${
-        langs ? langs.map((lang) => "lang:" + lang).join(" ") + " " : ""
+        langs ? langs.map((lang) => "lang:" + lang.name).join(" ") + " " : ""
       }${lna ? "lna:" + lna + " " : ""}${nip05 ? "nip05:" + nip05 + " " : ""}${
         newTags ? tagsWithHash + " " : ""
       }${
@@ -328,6 +367,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
                 placeholder="Hashtags"
               /> */}
               <TagInput
+                suggestions={hashtagsSuggestions}
                 tags={newTags}
                 placeholder="Hashtags"
                 setTags={setNewTags}
@@ -376,6 +416,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
             </Form.Group>
             <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
               <TagInput
+                suggestions={langsSuggestions}
                 placeholder="Languages"
                 tags={langs}
                 setTags={setLangs}
