@@ -14,6 +14,7 @@ import React from "react";
 import { useAppSelector } from "../../hooks/redux";
 import DatePicker from "react-datepicker";
 import { formatDate } from "../../utils/formatDate";
+import TagInput from "../TagInput/TagInput";
 
 type searchTypes = {
   isLoading: boolean;
@@ -46,6 +47,8 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   );
   const [isValidAuthor, setIsValidAuthor] = useState(true);
   const [isValidFollowing, setIsValidFollowing] = useState(true);
+  const [newTags, setNewTags] = useState<string[]>([]);
+  const [langs, setLangs] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const store = useAppSelector((store) => store.userReducer);
 
@@ -74,17 +77,15 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   };
 
   useEffect(() => {
-    const tagsWithHash = tags
-      .split(" ")
-      .map((tag) => "#" + tag)
-      .join(" ");
+    const tagsWithHash = newTags.map((tag) => "#" + tag).join(" ");
+
     setResultQuery(
       `${allSearch ? allSearch + " " : ""}${
         author && isValidAuthor ? "by:" + author + " " : ""
       }${following && isValidFollowing ? "following:" + following + " " : ""}${
-        lang ? "lang:" + lang + " " : ""
+        langs ? langs.map((lang) => "lang:" + lang).join(" ") + " " : ""
       }${lna ? "lna:" + lna + " " : ""}${nip05 ? "nip05:" + nip05 + " " : ""}${
-        tags ? tagsWithHash + " " : ""
+        newTags ? tagsWithHash + " " : ""
       }${
         sinceDate
           ? "since:" +
@@ -113,7 +114,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
             ) +
             " "
           : ""
-      }${isSpam ? "-filter:spam" : ""}`
+      }${isSpam ? "-filter:spam" : ""}`.trim()
     );
   }, [
     allSearch,
@@ -123,11 +124,12 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
     lna,
     nip05,
     isSpam,
-    tags,
+    newTags,
     sinceDate,
     startDate,
     isValidFollowing,
     isValidAuthor,
+    langs,
   ]);
 
   useEffect(() => {
@@ -318,12 +320,17 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
             <Form.Label>Specify a range of dates</Form.Label>
 
             <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
-              <Form.Control
+              {/* <Form.Control
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
                 className="searchInput"
                 type="text"
                 placeholder="Hashtags"
+              /> */}
+              <TagInput
+                tags={newTags}
+                placeholder="Hashtags"
+                setTags={setNewTags}
               />
               <Form.Label>Example: bitcoin</Form.Label>
             </Form.Group>
@@ -367,6 +374,14 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
                 )}
               </Form.Label>
             </Form.Group>
+            <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
+              <TagInput
+                placeholder="Languages"
+                tags={langs}
+                setTags={setLangs}
+              />
+              <Form.Label>Example: en</Form.Label>
+            </Form.Group>
             {/* <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
               <Form.Control
                 value={lang}
@@ -403,7 +418,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
                 some@stacker.news or @nostr.band
               </Form.Label>
             </Form.Group> */}
-            <Dropdown style={{ marginBottom: ".2rem" }}>
+            {/* <Dropdown style={{ marginBottom: ".2rem" }}>
               <Dropdown.Toggle variant="outline-secondary">
                 language
               </Dropdown.Toggle>
@@ -422,7 +437,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
                   );
                 })}
               </Dropdown.Menu>
-            </Dropdown>
+            </Dropdown> */}
             {/* <div style={{color: "var(--body-color)"}}>
               Language: {languages.map(lang => {
                 const isLangSelected = resultQuery.includes(`lang:${lang}`);
