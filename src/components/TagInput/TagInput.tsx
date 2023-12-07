@@ -1,10 +1,10 @@
-import ReactTags from "react-tag-autocomplete";
+import { ReactTags } from "react-tag-autocomplete";
 import "./TagInput.css";
 import { useCallback, useRef, useState } from "react";
 
 type tagType = {
-  id: number;
-  name: string;
+  value: number;
+  label: string;
 };
 
 const TagInput = ({
@@ -27,7 +27,7 @@ const TagInput = ({
     [tags]
   );
 
-  const onAddition = useCallback(
+  const onAdd = useCallback(
     (newTag: tagType) => {
       setTags([...tags, newTag]);
     },
@@ -37,12 +37,12 @@ const TagInput = ({
   return (
     <ReactTags
       allowNew
-      ref={reactTags}
-      tags={tags}
+      labelText={placeholder}
+      selected={tags}
       suggestions={suggestions}
+      onAdd={onAdd}
       onDelete={onDelete}
-      onAddition={onAddition}
-      placeholderText={placeholder}
+      noOptionsText="No matching countries"
     />
   );
 };

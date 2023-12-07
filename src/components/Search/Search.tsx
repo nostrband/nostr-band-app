@@ -22,8 +22,8 @@ type searchTypes = {
 };
 
 type tagType = {
-  id: number;
-  name: string;
+  value: number;
+  label: string;
 };
 
 const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
@@ -59,35 +59,35 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
 
   const hashtagsSuggestions = [
     {
-      id: 1,
-      name: "bitcoin",
+      value: 1,
+      label: "bitcoin",
     },
     {
-      id: 2,
-      name: "nostr",
+      value: 2,
+      label: "nostr",
     },
     {
-      id: 3,
-      name: "life",
+      value: 3,
+      label: "life",
     },
   ];
 
   const langsSuggestions = [
     {
-      id: 1,
-      name: "en",
+      value: 1,
+      label: "en",
     },
     {
-      id: 2,
-      name: "ru",
+      value: 2,
+      label: "ru",
     },
     {
-      id: 3,
-      name: "fr",
+      value: 3,
+      label: "fr",
     },
     {
-      id: 4,
-      name: "us",
+      value: 4,
+      label: "us",
     },
   ];
 
@@ -116,13 +116,13 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   };
 
   useEffect(() => {
-    const tagsWithHash = newTags.map((tag) => "#" + tag.name).join(" ");
+    const tagsWithHash = newTags.map((tag) => "#" + tag.label).join(" ");
 
     setResultQuery(
       `${allSearch ? allSearch + " " : ""}${
         author && isValidAuthor ? "by:" + author + " " : ""
       }${following && isValidFollowing ? "following:" + following + " " : ""}${
-        langs ? langs.map((lang) => "lang:" + lang.name).join(" ") + " " : ""
+        langs ? langs.map((lang) => "lang:" + lang.label).join(" ") + " " : ""
       }${lna ? "lna:" + lna + " " : ""}${nip05 ? "nip05:" + nip05 + " " : ""}${
         newTags ? tagsWithHash + " " : ""
       }${
