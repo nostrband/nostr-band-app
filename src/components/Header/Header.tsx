@@ -156,7 +156,7 @@ const Header: FC<headerType> = ({ onLogin }) => {
             <Nav.Link onClick={() => onLogin(true)}>Login</Nav.Link>
           )}
         </Nav>
-        {state.isAuth && (
+        {state.isAuth && state.user && (
           <Nav>
             <NavDropdown
               id="profile-drop-menu"

@@ -633,7 +633,9 @@ const Profile = () => {
   return (
     <div className={cl.profileContainer}>
       <Helmet>
-        <title>Nostr.Band: Explore profile - {npub}</title>
+        <title>{`${profile?.name || profile?.display_name} on Nostr, ${
+          profile?.nip05 ?? ""
+        } ${pubkey} ${npub}`}</title>
         <meta
           name="robots"
           content="index, follow, noimageindex, max-snippet:-1, max-image-preview:none, max-video-preview:-1, nositelinkssearchbox"

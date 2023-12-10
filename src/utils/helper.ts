@@ -60,3 +60,15 @@ export function openNostrProfile(
   openAppManager(npub, select);
   return false;
 }
+
+export const getKindNumber = (str: string) => {
+  switch (str) {
+    case "Profiles":
+      return 0;
+    case "Posts":
+      return 1;
+    case "Zaps":
+      return 9735;
+  }
+  return null;
+};

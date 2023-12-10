@@ -29,15 +29,18 @@ const TagInput = ({
 
   const onAdd = useCallback(
     (newTag: tagType) => {
-      setTags([...tags, newTag]);
+      const newTagTrim = { ...newTag, label: newTag.label.replaceAll(" ", "") };
+      console.log(newTagTrim);
+      setTags([...tags, newTagTrim]);
     },
     [tags]
   );
 
   return (
     <ReactTags
+      activateFirstOption
       allowNew
-      labelText={placeholder}
+      placeholderText={placeholder}
       selected={tags}
       suggestions={suggestions}
       onAdd={onAdd}
