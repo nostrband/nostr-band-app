@@ -65,6 +65,7 @@ const Note = () => {
   const [pubkey, setPubkey] = useState("");
   const [npubKey, setNpubKey] = useState("");
   const [nprofile, setNprofile] = useState("");
+  const [nevent, setNevent] = useState("");
   const [nnadr, setNnadr] = useState("");
   const [author, setAuthor] = useState<profileType>({});
   const [imgError, setImgError] = useState(false);
@@ -343,6 +344,7 @@ const Note = () => {
       const nprofile = note?.pubkey
         ? nip19.nprofileEncode({ pubkey: note.pubkey })
         : "";
+      const nevent = note?.id ? nip19.neventEncode({ id: note.id }) : "";
       setContentJson(
         JSON.stringify(
           {
@@ -359,6 +361,7 @@ const Note = () => {
       );
       setNpubKey(npub);
       setNprofile(nprofile);
+      setNevent(nevent);
       setNnadr(
         nip19.naddrEncode({
           kind: 3,
@@ -578,7 +581,9 @@ const Note = () => {
   return noteIdCheck ? (
     <div className={cl.noteContainer}>
       <Helmet>
-        <title>Nostr.Band: Explore note - {noteHex}</title>
+        <title>{`${
+          author?.name || author?.display_name
+        } ${event?.content.substring(0, 50)} ${event?.id}`}</title>
         <meta
           name="robots"
           content="index, follow, noimageindex, max-snippet:-1, max-image-preview:none, max-video-preview:-1, nositelinkssearchbox"
@@ -926,17 +931,14 @@ const Note = () => {
                     <FileEarmarkPlus /> Embed
                   </Dropdown.Item>
                   <hr />
-                  <Dropdown.Item onClick={() => copyUrl(npubKey)}>
-                    Copy npub
+                  <Dropdown.Item onClick={() => copyUrl(noteHex ?? "")}>
+                    Copy note
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => copyUrl(nprofile)}>
-                    Copy nprofile
+                  <Dropdown.Item onClick={() => copyUrl(noteId)}>
+                    Copy note id
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => copyUrl(pubkey)}>
-                    Copy pubkey
-                  </Dropdown.Item>
-                  <Dropdown.Item onClick={() => copyUrl(nnadr)}>
-                    Copy contact list naddr
+                  <Dropdown.Item onClick={() => copyUrl(nevent)}>
+                    Copy nevent
                   </Dropdown.Item>
                   <hr />
                   <Dropdown.Item href="#/action-1">View relays</Dropdown.Item>
