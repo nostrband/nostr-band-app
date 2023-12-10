@@ -15,6 +15,7 @@ import { useAppSelector } from "../../hooks/redux";
 import DatePicker from "react-datepicker";
 import { formatDate } from "../../utils/formatDate";
 import TagInput from "../TagInput/TagInput";
+import { getKindNumber } from "../../utils/helper";
 
 type searchTypes = {
   isLoading: boolean;
@@ -54,6 +55,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   const [isValidFollowing, setIsValidFollowing] = useState(true);
   const [newTags, setNewTags] = useState<tagType[]>([]);
   const [langs, setLangs] = useState<tagType[]>([]);
+  const [kinds, setKinds] = useState<tagType[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const store = useAppSelector((store) => store.userReducer);
 
@@ -91,6 +93,21 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
     },
   ];
 
+  const kindsSuggestions = [
+    {
+      value: 1,
+      label: "Profiles",
+    },
+    {
+      value: 2,
+      label: "Posts",
+    },
+    {
+      value: 3,
+      label: "Zaps",
+    },
+  ];
+
   const languages = ["en", "es", "de", "fr", "ru"];
 
   useEffect(() => {
@@ -117,6 +134,10 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
 
   useEffect(() => {
     const tagsWithHash = newTags.map((tag) => "#" + tag.label).join(" ");
+    const kindsNumbers = kinds
+      .map((kind) => "kind:" + getKindNumber(kind.label))
+      .join(" ");
+    console.log(kindsNumbers);
 
     setResultQuery(
       `${allSearch ? allSearch + " " : ""}${
@@ -125,7 +146,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
         langs ? langs.map((lang) => "lang:" + lang.label).join(" ") + " " : ""
       }${lna ? "lna:" + lna + " " : ""}${nip05 ? "nip05:" + nip05 + " " : ""}${
         newTags ? tagsWithHash + " " : ""
-      }${
+      }${kinds ? kindsNumbers + " " : ""}${
         sinceDate
           ? "since:" +
             formatDate(
@@ -169,6 +190,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
     isValidFollowing,
     isValidAuthor,
     langs,
+    kinds,
   ]);
 
   useEffect(() => {
@@ -369,7 +391,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
               <TagInput
                 suggestions={hashtagsSuggestions}
                 tags={newTags}
-                placeholder="Hashtags"
+                placeholder="Hashtag"
                 setTags={setNewTags}
               />
               <Form.Label>Example: bitcoin</Form.Label>
@@ -417,11 +439,20 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
             <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
               <TagInput
                 suggestions={langsSuggestions}
-                placeholder="Languages"
+                placeholder="Language"
                 tags={langs}
                 setTags={setLangs}
               />
               <Form.Label>Example: en</Form.Label>
+            </Form.Group>
+            <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
+              <TagInput
+                suggestions={kindsSuggestions}
+                placeholder="Kind"
+                tags={kinds}
+                setTags={setKinds}
+              />
+              <Form.Label>Example: 0, 1</Form.Label>
             </Form.Group>
             {/* <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
               <Form.Control
@@ -552,7 +583,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
             </div>
           )}
 
-          <div
+          {/* <div
             id="dropdown-basic"
             style={{ borderColor: theme === "dark" ? "white" : "#6c757d" }}
           >
@@ -567,7 +598,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
               <option value="profiles">Profiles</option>
               <option value="zaps">Zaps</option>
             </Form.Select>
-          </div>
+          </div> */}
 
           <Button
             style={{
