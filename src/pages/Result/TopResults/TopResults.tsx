@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import cl from "./AllResults.module.css";
+import cl from "./TopResults.module.css";
 import Search from "../../../components/Search/Search";
 import ProfileItem from "../../../components/ProfileItem/ProfileItem";
 import PostCard from "../../../components/PostCard/PostCard";

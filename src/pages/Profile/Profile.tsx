@@ -56,6 +56,7 @@ const Profile = () => {
   const { publish } = useNostr();
   const [pubkey, setPubkey] = useState("");
   const [lastEvent, setLastEvent] = useState<NDKEvent | null>(null);
+  const [firstEvent, setFirstEvent] = useState<NDKEvent | null>(null);
   const [events, setEvents] = useState<NDKEvent[]>([]);
   const [profile, setProfile] = useState<profileType>();
   const { router } = useParams();
@@ -185,6 +186,13 @@ const Profile = () => {
           limit: 1,
         });
         setLastEvent(lastEv);
+        const firstEv = await ndk.fetchEvent(
+          { authors: [pk], limit: 1 },
+          //@ts-ignore
+          { verb: "REQR" }
+        );
+        setFirstEvent(firstEv);
+
         fetchPosts(pk, ndk);
         const userContent: profileType = user?.content
           ? JSON.parse(user?.content)
@@ -814,6 +822,11 @@ const Profile = () => {
                   </span>{" "}
                   sats sent
                 </p>
+              )}
+            </div>
+            <div className={cl.lastActive}>
+              {firstEvent?.created_at && (
+                <p>First active: {formatAMPM(firstEvent.created_at * 1000)}</p>
               )}
             </div>
             <div className={cl.lastActive}>

@@ -137,7 +137,6 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
     const kindsNumbers = kinds
       .map((kind) => "kind:" + getKindNumber(kind.label))
       .join(" ");
-    console.log(kindsNumbers);
 
     setResultQuery(
       `${allSearch ? allSearch + " " : ""}${
@@ -452,7 +451,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
                 tags={kinds}
                 setTags={setKinds}
               />
-              <Form.Label>Example: 0, 1</Form.Label>
+              <Form.Label>Example: profiles, posts</Form.Label>
             </Form.Group>
             {/* <Form.Group className="mb-1" controlId="exampleForm.ControlInput1">
               <Form.Control
