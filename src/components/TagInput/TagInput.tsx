@@ -1,6 +1,6 @@
 import { ReactTags } from "react-tag-autocomplete";
 import "./TagInput.css";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 
 type tagType = {
   value: number;
@@ -18,8 +18,6 @@ const TagInput = ({
   placeholder: string;
   suggestions: tagType[];
 }) => {
-  const reactTags = useRef();
-
   const onDelete = useCallback(
     (tagIndex: number) => {
       setTags(tags.filter((_, i) => i !== tagIndex));
