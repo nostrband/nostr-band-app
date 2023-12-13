@@ -51,7 +51,7 @@ import { noteHexToNoteId } from "../../utils/decodeFunctions";
 import NotFound from "../NotFound/NotFound";
 import { compareByTagName } from "../../utils/sortFunctions";
 import Thread from "../../components/Thread/Thread";
-import { isNaddr } from "../../types/guards";
+import { isNaddr, isNevent } from "../../types/guards";
 import { openNostrEvent, openNostrProfile } from "../../utils/helper";
 import { Helmet } from "react-helmet";
 
@@ -223,12 +223,15 @@ const Note = () => {
       setThreadPost(null);
       setIsLoading(true);
       const noteId = noteHex ? noteHexToNoteId(noteHex) : "";
+
       const noteFilter = isNaddr(noteId)
         ? {
             authors: [noteId?.pubkey],
             kinds: [noteId?.kind],
             "#d": [noteId?.identifier],
           }
+        : isNevent(noteId)
+        ? { ids: [noteId!.id] }
         : { ids: [noteId] };
       //@ts-ignore
       const note = await ndk.fetchEvent(noteFilter);

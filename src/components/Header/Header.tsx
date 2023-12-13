@@ -20,14 +20,11 @@ const Header: FC<headerType> = ({ onLogin }) => {
   const { setIsAuth, setTheme } = userSlice.actions;
   const state = useAppSelector((state) => state.userReducer);
   const today = new Date();
+  const loginPk = localStorage.getItem("login");
 
   const getNpub = () => {
     try {
-      console.log(state.user);
-
-      const npub = state.user?.pubkey
-        ? nip19.npubEncode(state.user?.pubkey)
-        : "";
+      const npub = loginPk ? nip19.npubEncode(loginPk) : "";
       return npub ? npub : "";
     } catch (e) {
       console.log(e);
