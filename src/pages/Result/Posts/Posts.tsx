@@ -46,8 +46,9 @@ const Posts = () => {
       .join(" ")
       .replace(/#[a-zA-Z0-9_]+/g, "")
       .replace(/lang:[a-zA-Z0-9_]+/g, "")
-      .replace(/since:\d{4}-\d{2}-\d{2}/, "")
-      .replace(/until:\d{4}-\d{2}-\d{2}/, "");
+      .replace(/since:\d{4}-\d{2}-\d{2}/g, "")
+      .replace(/until:\d{4}-\d{2}-\d{2}/g, "")
+      .replace(/kind:\d+/g, "");
   }, [search]);
 
   const tagsWithHash = search
