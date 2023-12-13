@@ -38,6 +38,7 @@ const TagInput = ({
 
   return (
     <ReactTags
+      delimiterKeys={[" ", "Enter"]}
       activateFirstOption
       allowNew
       placeholderText={placeholder}
@@ -45,7 +46,7 @@ const TagInput = ({
       suggestions={suggestions}
       onAdd={onAdd}
       onDelete={onDelete}
-      noOptionsText="No matching countries"
+      noOptionsText="No matching tags"
     />
   );
 };

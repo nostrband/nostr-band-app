@@ -4,7 +4,7 @@ import Search from "../../../components/Search/Search";
 import ProfileItem from "../../../components/ProfileItem/ProfileItem";
 import PostCard from "../../../components/PostCard/PostCard";
 import NDK, { NDKEvent } from "@nostrband/ndk";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import CardSkeleton from "../../../components/CardSkeleton/CardSkeleton";
 import { useAppSelector } from "../../../hooks/redux";
 import { nip19 } from "@nostrband/nostr-tools";
@@ -12,7 +12,7 @@ import { dateToUnix } from "nostr-react";
 import { extractNostrStrings } from "../../../utils/formatLink";
 import { Button } from "react-bootstrap";
 
-const AllResults = () => {
+const TopResults = () => {
   const ndk = useAppSelector((store) => store.connectionReducer.ndk);
   const [searchParams, setSearchParams] = useSearchParams();
   const [profiles, setProfiles] = useState<NDKEvent[]>([]);
@@ -63,8 +63,9 @@ const AllResults = () => {
       .join(" ")
       .replace(/#[a-zA-Z0-9_]+/g, "")
       .replace(/lang:[a-zA-Z0-9_]+/g, "")
-      .replace(/since:\d{4}-\d{2}-\d{2}/, "")
-      .replace(/until:\d{4}-\d{2}-\d{2}/, "");
+      .replace(/since:\d{4}-\d{2}-\d{2}/g, "")
+      .replace(/until:\d{4}-\d{2}-\d{2}/g, "")
+      .replace(/kind:\d+/g, "");
   }, [search]);
 
   const tagsWithHash = search
@@ -329,6 +330,8 @@ const AllResults = () => {
     }
   };
 
+  const navigate = useNavigate();
+
   return (
     <div className={cl.result}>
       <Search isLoading={isLoadingProfiles} />
@@ -365,7 +368,9 @@ const AllResults = () => {
         <Button
           variant="link"
           className={cl.moreLink}
-          onClick={() => setSearchParams({ q: search ?? "", type: "profiles" })}
+          onClick={() =>
+            navigate(`/?q=${search?.replace(/kind:\d+/g, "")} kind:0`)
+          }
         >
           And {profilesCount ? profilesCount : 0} more profiles →
         </Button>
@@ -407,7 +412,9 @@ const AllResults = () => {
         <Button
           variant="link"
           className={cl.moreLink}
-          onClick={() => setSearchParams({ q: search ?? "", type: "posts" })}
+          onClick={() =>
+            navigate(`/?q=${search?.replace(/kind:\d+/g, "")} kind:1`)
+          }
         >
           And {postsCount ? postsCount : 0} more posts →
         </Button>
@@ -421,4 +428,4 @@ const AllResults = () => {
   );
 };
 
-export default AllResults;
+export default TopResults;

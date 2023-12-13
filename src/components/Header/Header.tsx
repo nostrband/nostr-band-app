@@ -23,6 +23,8 @@ const Header: FC<headerType> = ({ onLogin }) => {
 
   const getNpub = () => {
     try {
+      console.log(state.user);
+
       const npub = state.user?.pubkey
         ? nip19.npubEncode(state.user?.pubkey)
         : "";
