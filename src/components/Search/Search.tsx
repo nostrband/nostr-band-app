@@ -227,7 +227,10 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
         .filter((s) => s.match(/#[a-zA-Z0-9_]+/g)?.toString());
       const tags = tagsWithHash?.map((tag) => tag.replace("#", ""));
       if (tags) {
-        setTags(tags.join(" "));
+        const newTags: tagType[] = tags.map((tag, i) => {
+          return { value: i, label: tag };
+        });
+        setNewTags(newTags);
       }
       let cleanSearch = "";
 
