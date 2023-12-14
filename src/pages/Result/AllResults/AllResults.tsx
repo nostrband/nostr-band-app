@@ -450,7 +450,7 @@ const AllResults = () => {
       setIsLoadingPosts(false);
     }
   };
-
+  let indexOfZaps = -1;
   const navigate = useNavigate();
 
   return (
@@ -499,7 +499,7 @@ const AllResults = () => {
       {posts?.length ? (
         <div className={cl.resPosts}>
           <h2>Results</h2>
-          {posts.map((post, index) => {
+          {posts.map((post) => {
             if (post.kind === 1) {
               const postAuthor = postsAuthors.find(
                 (author) => author.pubkey === post.pubkey
@@ -526,6 +526,7 @@ const AllResults = () => {
                 />
               );
             } else if (post.kind === 9735) {
+              indexOfZaps++;
               const cleanJSON = post.tags
                 .find((item) => item[0] === "description")![1]
                 .replace(/[^\x20-\x7E]/g, "");
@@ -556,14 +557,15 @@ const AllResults = () => {
               const receiverContent = receiver
                 ? JSON.parse(receiver.content)
                 : "";
+
               return (
                 <ZapTransfer
-                  key={index}
-                  created={createdTimes[index]}
+                  key={indexOfZaps}
+                  created={createdTimes[indexOfZaps]}
                   sender={senderContent}
-                  amount={amountReceivedZaps[index]}
+                  amount={amountReceivedZaps[indexOfZaps]}
                   receiver={receiverContent}
-                  comment={sendersComments[index]}
+                  comment={sendersComments[indexOfZaps]}
                   zappedPost={zappedPost ? zappedPost.content : ""}
                   provider={provider}
                   eventId={zappedPost ? zappedPost?.id : ""}
