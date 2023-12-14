@@ -28,7 +28,6 @@ const TagInput = ({
   const onAdd = useCallback(
     (newTag: tagType) => {
       const newTagTrim = { ...newTag, label: newTag.label.replaceAll(" ", "") };
-      console.log(newTagTrim);
       setTags([...tags, newTagTrim]);
     },
     [tags]
