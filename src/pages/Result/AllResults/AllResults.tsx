@@ -66,7 +66,7 @@ const AllResults = () => {
 
   useEffect(() => {
     if (ndk instanceof NDK) {
-      getProfiles();
+      setLimitEvents(10);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("q")]);
@@ -76,7 +76,7 @@ const AllResults = () => {
       fetchEvents();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [limitEvents, searchParams.get("q")]);
+  }, [limitEvents]);
 
   useEffect(() => {
     if (isBottom) {
@@ -356,18 +356,22 @@ const AllResults = () => {
         const postsAuthors = Array.from(
           await ndk.fetchEvents({ kinds: [0], authors: postsAuthorsPks })
         );
+
         // console.log(posts);
 
         const zaps = events.filter((event) => event.kind === 9735);
         setReceivedZaps(zaps);
         const providersPubkyes = zaps.map((zap) => zap.pubkey);
-        const providers = Array.from(
-          await ndk.fetchEvents({
-            kinds: [0],
-            authors: providersPubkyes,
-            limit: limitEvents,
-          })
-        );
+        const providers = providersPubkyes.length
+          ? Array.from(
+              await ndk.fetchEvents({
+                kinds: [0],
+                authors: providersPubkyes,
+                limit: limitEvents,
+              })
+            )
+          : [];
+
         setProviders(providers);
 
         const zapsAmount = zaps.map((zap) => {
@@ -380,13 +384,15 @@ const AllResults = () => {
             ? zap.tags.find((item) => item[0] === "e")![1]
             : "";
         });
-        const zappedPosts = Array.from(
-          await ndk.fetchEvents({
-            kinds: [1],
-            ids: postsIds,
-            limit: limitEvents,
-          })
-        );
+        const zappedPosts = postsIds.length
+          ? Array.from(
+              await ndk.fetchEvents({
+                kinds: [1],
+                ids: postsIds,
+                limit: limitEvents,
+              })
+            )
+          : [];
         setZappedPosts(zappedPosts);
 
         const sendersPubkeys = zaps.map((zap) => {
@@ -410,13 +416,16 @@ const AllResults = () => {
         });
         setCreatedTimes(createdTimes);
 
-        const sendersArr = Array.from(
-          await ndk.fetchEvents({
-            kinds: [0],
-            authors: sendersPubkeys,
-            limit: limitEvents,
-          })
-        );
+        const sendersArr = sendersPubkeys.length
+          ? Array.from(
+              await ndk.fetchEvents({
+                kinds: [0],
+                authors: sendersPubkeys,
+                limit: limitEvents,
+              })
+            )
+          : [];
+
         // console.log(sendersArr);
         const senders = sendersArr.map((sender) => {
           return sender;
@@ -427,13 +436,15 @@ const AllResults = () => {
           return zap.tags.find((item) => item[0] === "p")![1];
         });
 
-        const receiversArr = Array.from(
-          await ndk.fetchEvents({
-            kinds: [0],
-            authors: receiversPubkeys,
-            limit: limitEvents,
-          })
-        );
+        const receiversArr = receiversPubkeys.length
+          ? Array.from(
+              await ndk.fetchEvents({
+                kinds: [0],
+                authors: receiversPubkeys,
+                limit: limitEvents,
+              })
+            )
+          : [];
 
         const receivers = receiversArr.map((receiver) => {
           return receiver;
@@ -455,7 +466,7 @@ const AllResults = () => {
 
   return (
     <div className={cl.result}>
-      <Search isLoading={isLoadingProfiles} />
+      <Search isLoading={isLoadingPosts} />
       {!isLoadingProfiles ? (
         profiles?.length ? (
           <div className={cl.resultProfiles}>
