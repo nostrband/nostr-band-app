@@ -115,10 +115,17 @@ const Posts = () => {
 
   useEffect(() => {
     if (ndk instanceof NDK) {
+      setLimitPosts(10);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.get("q")]);
+
+  useEffect(() => {
+    if (ndk instanceof NDK) {
       getPosts();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams.get("q"), limitPosts]);
+  }, [limitPosts]);
 
   const getPosts = async () => {
     try {
