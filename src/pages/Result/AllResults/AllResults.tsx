@@ -66,7 +66,11 @@ const AllResults = () => {
 
   useEffect(() => {
     if (ndk instanceof NDK) {
-      setLimitEvents(10);
+      if (limitEvents !== 10) {
+        setLimitEvents(10);
+      } else {
+        fetchEvents();
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("q")]);
@@ -511,32 +515,7 @@ const AllResults = () => {
         <div className={cl.resPosts}>
           <h2>Results</h2>
           {posts.map((post) => {
-            if (post.kind === 1) {
-              const postAuthor = postsAuthors.find(
-                (author) => author.pubkey === post.pubkey
-              );
-              const authorContent = postAuthor
-                ? JSON.parse(postAuthor.content)
-                : {};
-
-              return (
-                <PostCard
-                  taggedProfiles={taggedProfiles}
-                  key={post.id}
-                  name={
-                    authorContent.display_name
-                      ? authorContent.display_name
-                      : authorContent.name
-                  }
-                  picture={authorContent.picture}
-                  about={post.content}
-                  pubkey={post.pubkey}
-                  eventId={post.id}
-                  createdDate={post.created_at ? post.created_at : 0}
-                  thread={""}
-                />
-              );
-            } else if (post.kind === 9735) {
+            if (post.kind === 9735) {
               indexOfZaps++;
               const cleanJSON = post.tags
                 .find((item) => item[0] === "description")![1]
@@ -582,6 +561,31 @@ const AllResults = () => {
                   eventId={zappedPost ? zappedPost?.id : ""}
                   senderPubkey={pk}
                   mode={""}
+                />
+              );
+            } else {
+              const postAuthor = postsAuthors.find(
+                (author) => author.pubkey === post.pubkey
+              );
+              const authorContent = postAuthor
+                ? JSON.parse(postAuthor.content)
+                : {};
+
+              return (
+                <PostCard
+                  taggedProfiles={taggedProfiles}
+                  key={post.id}
+                  name={
+                    authorContent.display_name
+                      ? authorContent.display_name
+                      : authorContent.name
+                  }
+                  picture={authorContent.picture}
+                  about={post.content}
+                  pubkey={post.pubkey}
+                  eventId={post.id}
+                  createdDate={post.created_at ? post.created_at : 0}
+                  thread={""}
                 />
               );
             }

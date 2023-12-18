@@ -259,10 +259,12 @@ const Profile = () => {
         const npubs = postsLinks.filter((r) => r.startsWith("npub"));
         const pubkeys = npubs.map((npub) => nip19.decode(npub).data);
 
-        const postsTaggedUsers = Array.from(
-          //@ts-ignore
-          await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
-        );
+        const postsTaggedUsers = pubkeys.length
+          ? Array.from(
+              //@ts-ignore
+              await ndk.fetchEvents({ kinds: [0], authors: pubkeys })
+            )
+          : [];
         const allPostsTagged = [...notNpubLinks, ...postsTaggedUsers];
         setPostsTagged(allPostsTagged);
 
@@ -327,13 +329,15 @@ const Profile = () => {
         setSentZaps(zaps);
 
         const providersPubkyes = zaps.map((zap) => zap.pubkey);
-        const providers = Array.from(
-          await ndkAll.fetchEvents({
-            kinds: [0],
-            authors: providersPubkyes,
-            limit: limitSentZaps,
-          })
-        );
+        const providers = providersPubkyes.length
+          ? Array.from(
+              await ndkAll.fetchEvents({
+                kinds: [0],
+                authors: providersPubkyes,
+                limit: limitSentZaps,
+              })
+            )
+          : [];
         setSentProviders(providers);
 
         const zapsAmount = zaps.map((zap) => {
@@ -372,13 +376,15 @@ const Profile = () => {
           return zap.tags.find((item) => item[0] === "p")![1];
         });
 
-        const receiversArr = Array.from(
-          await ndkAll.fetchEvents({
-            kinds: [0],
-            authors: receiversPubkeys,
-            limit: limitSentZaps,
-          })
-        );
+        const receiversArr = receiversPubkeys.length
+          ? Array.from(
+              await ndkAll.fetchEvents({
+                kinds: [0],
+                authors: receiversPubkeys,
+                limit: limitSentZaps,
+              })
+            )
+          : [];
 
         const receivers = receiversArr.map((receiver) => {
           return receiver;
@@ -405,13 +411,15 @@ const Profile = () => {
         setReceivedZaps(zaps);
 
         const providersPubkyes = zaps.map((zap) => zap.pubkey);
-        const providers = Array.from(
-          await ndkAll.fetchEvents({
-            kinds: [0],
-            authors: providersPubkyes,
-            limit: limitZaps,
-          })
-        );
+        const providers = providersPubkyes.length
+          ? Array.from(
+              await ndkAll.fetchEvents({
+                kinds: [0],
+                authors: providersPubkyes,
+                limit: limitZaps,
+              })
+            )
+          : [];
         setProviders(providers);
 
         const zapsAmount = zaps.map((zap) => {
@@ -454,13 +462,15 @@ const Profile = () => {
         });
         setCreatedTimes(createdTimes);
 
-        const sendersArr = Array.from(
-          await ndkAll.fetchEvents({
-            kinds: [0],
-            authors: sendersPubkeys,
-            limit: limitZaps,
-          })
-        );
+        const sendersArr = sendersPubkeys.length
+          ? Array.from(
+              await ndkAll.fetchEvents({
+                kinds: [0],
+                authors: sendersPubkeys,
+                limit: limitZaps,
+              })
+            )
+          : [];
         // console.log(sendersArr);
         const senders = sendersArr.map((sender) => {
           return sender;
