@@ -1,3 +1,4 @@
+import { NDKTag } from "@nostrband/ndk";
 import { tagType } from "../types/types";
 
 export function getAllTags(array: tagType, tagName: string): tagType {
@@ -37,6 +38,15 @@ export function getReplyTag(array: tagType): string {
       } else if (array.length >= 2 && tag[1] !== rootId) {
         return tag[1];
       }
+    }
+  }
+  return "";
+}
+
+export function getTag(array: tagType, tagNames: string[]): string {
+  for (const item of array) {
+    if (tagNames.includes(item[0])) {
+      return item[1];
     }
   }
   return "";

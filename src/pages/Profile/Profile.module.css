@@ -70,7 +70,6 @@
   margin-bottom: 0.2rem;
   text-overflow: ellipsis;
   overflow: hidden;
-  text-overflow: ellipsis;
   cursor: pointer;
 }
 .profileStats span {
