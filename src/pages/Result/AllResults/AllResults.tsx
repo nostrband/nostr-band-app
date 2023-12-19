@@ -13,6 +13,7 @@ import { nip19 } from "@nostrband/nostr-tools";
 import { getZapAmount } from "../../../utils/zapFunctions";
 import ZapTransfer from "../../../components/ZapTransfer/ZapTransfer";
 import { getTag } from "../../../utils/getTags";
+import { getKindName } from "../../../utils/helper";
 
 const AllResults = () => {
   const ndk = useAppSelector((store) => store.connectionReducer.ndk);
@@ -71,6 +72,7 @@ const AllResults = () => {
         setLimitEvents(10);
       } else {
         fetchEvents();
+        getProfiles();
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -605,6 +607,7 @@ const AllResults = () => {
 
               return (
                 <PostCard
+                  kindName={getKindName(post.kind ?? 0)}
                   taggedProfiles={taggedProfiles}
                   key={post.id}
                   name={

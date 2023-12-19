@@ -34,6 +34,7 @@ type postItemType = {
   thread: string;
   taggedProfiles?: (NDKEvent | string)[];
   title?: string;
+  kindName?: string;
 };
 
 const PostItem: FC<postItemType> = ({
@@ -46,6 +47,7 @@ const PostItem: FC<postItemType> = ({
   thread,
   taggedProfiles,
   title,
+  kindName,
 }) => {
   const [imgError, setImgError] = useState(false);
   const [stats, setStats] = useState<statsType>({});
@@ -203,7 +205,10 @@ const PostItem: FC<postItemType> = ({
 
         <div className={cl.postState}>
           <Link to={`/${note}`}>
-            <span>{formatAMPM(createdDateAt.getTime())}</span>
+            <span>
+              {formatAMPM(createdDateAt.getTime())}
+              {kindName && `, ${kindName}`}
+            </span>
           </Link>
         </div>
       </div>
