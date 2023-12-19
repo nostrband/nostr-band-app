@@ -68,11 +68,11 @@ const AllResults = () => {
 
   useEffect(() => {
     if (ndk instanceof NDK) {
+      getProfiles();
       if (limitEvents !== 10) {
         setLimitEvents(10);
       } else {
         fetchEvents();
-        getProfiles();
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -138,7 +138,7 @@ const AllResults = () => {
     : "";
 
   const getProfiles = async () => {
-    if (ndk instanceof NDK) {
+    if ((ndk instanceof NDK && kindsList?.includes(0)) || !kindsList) {
       setIsLoadingProfiles(true);
       const filter = { kinds: [0], limit: 3 };
       if (cleanSearch?.trim()) {
@@ -238,6 +238,9 @@ const AllResults = () => {
         setProfilesCount(profilesCount?.count ?? 0);
       }
       setIsLoadingProfiles(false);
+    } else {
+      setProfiles([]);
+      setProfilesCount(0);
     }
   };
 
