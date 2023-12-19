@@ -82,9 +82,9 @@ export const getKindName = (number: number) => {
     case 2:
       return "Recommend Relay";
     case 3:
-      return "Follows";
+      return "Follow";
     case 4:
-      return "Encrypted Direct Messages";
+      return "Encrypted Direct Message";
     case 5:
       return "Event Deletion";
     case 6:
@@ -106,7 +106,7 @@ export const getKindName = (number: number) => {
     case 44:
       return "Channel Mute User";
     case 1040:
-      return "OpenTimestamps";
+      return "OpenTimestamp";
     case 1063:
       return "File Metadata";
     case 1311:
@@ -130,7 +130,7 @@ export const getKindName = (number: number) => {
     case 9735:
       return "Zap";
     case 9802:
-      return "Highlights";
+      return "Highlight";
     case 10000:
       return "Mute list";
     case 10001:
@@ -154,21 +154,21 @@ export const getKindName = (number: number) => {
     case 13194:
       return "Wallet Info";
     case 30000:
-      return "Follow sets";
+      return "Follow set";
     case 30001:
-      return "Generic lists";
+      return "Generic list";
     case 30002:
-      return "Relay sets";
+      return "Relay set";
     case 30003:
-      return "Bookmark sets";
+      return "Bookmark set";
     case 30004:
-      return "Curation sets";
+      return "Curation set";
     case 30008:
-      return "Profile Badges";
+      return "Profile Badge";
     case 30009:
       return "Badge Definition";
     case 30015:
-      return "Interest sets";
+      return "Interest set";
     case 30017:
       return "Create or update a stall";
     case 30018:
@@ -178,13 +178,13 @@ export const getKindName = (number: number) => {
     case 30024:
       return "Draft Long-form Content";
     case 30030:
-      return "Emoji sets";
+      return "Emoji set";
     case 30078:
       return "Application-specific Data";
     case 30311:
       return "Live Event";
     case 30315:
-      return "User Statuses";
+      return "User Status";
     case 30402:
       return "Classified Listing";
     case 30403:
