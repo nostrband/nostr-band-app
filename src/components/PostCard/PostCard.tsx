@@ -33,6 +33,7 @@ type postItemType = {
   eventId: string;
   thread: string;
   taggedProfiles?: (NDKEvent | string)[];
+  title?: string;
 };
 
 const PostItem: FC<postItemType> = ({
@@ -44,6 +45,7 @@ const PostItem: FC<postItemType> = ({
   eventId,
   thread,
   taggedProfiles,
+  title,
 }) => {
   const [imgError, setImgError] = useState(false);
   const [stats, setStats] = useState<statsType>({});
@@ -146,6 +148,11 @@ const PostItem: FC<postItemType> = ({
           </Dropdown.Menu>
         </Dropdown>
       </div>
+      {title && (
+        <div>
+          <b>{title.slice(0, 100)}</b>
+        </div>
+      )}
       <div
         style={{ cursor: "pointer" }}
         onClick={(e) => {

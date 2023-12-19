@@ -12,6 +12,7 @@ import { dateToUnix } from "nostr-react";
 import { nip19 } from "@nostrband/nostr-tools";
 import { getZapAmount } from "../../../utils/zapFunctions";
 import ZapTransfer from "../../../components/ZapTransfer/ZapTransfer";
+import { getTag } from "../../../utils/getTags";
 
 const AllResults = () => {
   const ndk = useAppSelector((store) => store.connectionReducer.ndk);
@@ -563,7 +564,7 @@ const AllResults = () => {
                   mode={""}
                 />
               );
-            } else {
+            } else if (post.kind === 1) {
               const postAuthor = postsAuthors.find(
                 (author) => author.pubkey === post.pubkey
               );
@@ -588,8 +589,39 @@ const AllResults = () => {
                   thread={""}
                 />
               );
+            } else {
+              const postAuthor = postsAuthors.find(
+                (author) => author.pubkey === post.pubkey
+              );
+              const authorContent = postAuthor
+                ? JSON.parse(postAuthor.content)
+                : {};
+              const title = getTag(post.tags, ["title", "name"]);
+              const body = getTag(post.tags, [
+                "summary",
+                "description",
+                "alt",
+              ]).slice(0, 300);
+
+              return (
+                <PostCard
+                  taggedProfiles={taggedProfiles}
+                  key={post.id}
+                  name={
+                    authorContent.display_name
+                      ? authorContent.display_name
+                      : authorContent.name
+                  }
+                  picture={authorContent.picture}
+                  about={body ?? post.content}
+                  title={title}
+                  pubkey={post.pubkey}
+                  eventId={post.id}
+                  createdDate={post.created_at ? post.created_at : 0}
+                  thread={""}
+                />
+              );
             }
-            return null;
           })}
         </div>
       ) : (
