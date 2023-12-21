@@ -34,7 +34,12 @@ import { formatAMPM } from "../../utils/formatDate";
 import axios from "axios";
 import NoteSkeleton from "./NoteSkeleton/NoteSkeleton";
 import PostCard from "../../components/PostCard/PostCard";
-import { getAllTags, getReplyTag, getRootTag } from "../../utils/getTags";
+import {
+  getAllTags,
+  getReplyTag,
+  getRootTag,
+  getTag,
+} from "../../utils/getTags";
 import { getZapAmount } from "../../utils/zapFunctions";
 import ZapTransfer from "../../components/ZapTransfer/ZapTransfer";
 import ReactModal from "react-modal";
@@ -52,7 +57,11 @@ import NotFound from "../NotFound/NotFound";
 import { compareByTagName } from "../../utils/sortFunctions";
 import Thread from "../../components/Thread/Thread";
 import { isNaddr, isNevent } from "../../types/guards";
-import { openNostrEvent, openNostrProfile } from "../../utils/helper";
+import {
+  getKindName,
+  openNostrEvent,
+  openNostrProfile,
+} from "../../utils/helper";
 import { Helmet } from "react-helmet";
 
 const Note = () => {
@@ -111,6 +120,8 @@ const Note = () => {
   >([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [noteId, setNoteId] = useState("");
+  const [title, setTitle] = useState("");
+  const [body, setBodyContent] = useState("");
   const renderedLabel: string[] = [];
 
   const { setLabels } = userSlice.actions;
@@ -329,6 +340,15 @@ const Note = () => {
 
         setThreadPostAuthor(authorContent);
       }
+
+      const title = getTag(note?.tags ?? [], ["title", "name"]);
+      const body = getTag(note?.tags ?? [], [
+        "summary",
+        "description",
+        "alt",
+      ]).slice(0, 300);
+      setTitle(title);
+      setBodyContent(body);
 
       setEvent(note);
       setContent(note ? note.content : "");
@@ -757,8 +777,22 @@ const Note = () => {
                 </Dropdown.Menu>
               </Dropdown>
             </div>
+            {event.kind !== 1 && title && (
+              <div>
+                <b>{title.slice(0, 100)}</b>
+              </div>
+            )}
             <div className={cl.noteAbout}>
-              <MarkdownComponent content={content} mode="post" />
+              <MarkdownComponent
+                content={
+                  event.kind === 1
+                    ? content
+                    : body
+                    ? body.slice(0, 300)
+                    : content
+                }
+                mode="post"
+              />
             </div>
             <div className={cl.btnLink}>
               {contents && contents.length ? (
@@ -797,6 +831,9 @@ const Note = () => {
             </div>
             <Gallery contents={contents} isBannerVisible={isBannerVisible} />
             <div className={cl.noteCreated}>
+              {event.kind &&
+                event.kind !== 1 &&
+                `Kind ${getKindName(event.kind)}, `}
               <span>{formatAMPM(createdTime * 1000)}</span>
             </div>
             <div className={cl.postStats}>
@@ -924,21 +961,21 @@ const Note = () => {
                     <BoxArrowUpRight /> Open with
                   </Dropdown.Item>
                   <Dropdown.Item
-                    onClick={() =>
-                      copyLink(`https://new.nostr.band/${noteHex}`)
-                    }
+                    onClick={() => copyLink(`https://nostrapp.link/${noteHex}`)}
                   >
                     <Share /> Share
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => setIsEmbedModal(true)}>
-                    <FileEarmarkPlus /> Embed
-                  </Dropdown.Item>
+                  {event.kind === 1 && (
+                    <Dropdown.Item onClick={() => setIsEmbedModal(true)}>
+                      <FileEarmarkPlus /> Embed
+                    </Dropdown.Item>
+                  )}
                   <hr />
                   <Dropdown.Item onClick={() => copyUrl(noteHex ?? "")}>
-                    Copy note
+                    Copy note id
                   </Dropdown.Item>
                   <Dropdown.Item onClick={() => copyUrl(noteId)}>
-                    Copy note id
+                    Copy hex id
                   </Dropdown.Item>
                   <Dropdown.Item onClick={() => copyUrl(nevent)}>
                     Copy nevent

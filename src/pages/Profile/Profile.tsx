@@ -991,7 +991,7 @@ const Profile = () => {
                     <BoxArrowUpRight /> Open with
                   </Dropdown.Item>
                   <Dropdown.Item
-                    onClick={() => copyLink(`https://new.nostr.band/${npub}`)}
+                    onClick={() => copyLink(`https://nostrapp.link/${npub}`)}
                   >
                     <Share /> Share
                   </Dropdown.Item>

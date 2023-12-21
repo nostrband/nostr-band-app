@@ -1,6 +1,6 @@
 function openAppManager(id: string, select?: boolean) {
   window.open(
-    "https://nostrapp.link/#" + id + (select ? "?select=true" : ""),
+    "https://nostrapp.link/" + id + (select ? "?select=true" : ""),
     "_blank"
   );
 }
