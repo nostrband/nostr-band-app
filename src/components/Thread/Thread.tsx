@@ -12,7 +12,7 @@ const Thread = ({ anchor }: { anchor?: string }) => {
   }, [anchor]);
 
   return (
-    <zap-threads anchor={anchor ?? ""} relays={"wss://relay.nostr.band"} />
+    <zap-threads anchor={anchor ?? ""} relays={"wss://relay.nostr.band"} urls={"tag:nostr.band/?q=%23,note:nostr.band/,nevent:nostr.band/,npub:nostr.band/,nprofile:nostr.band/,naddr:nostr.band/"}/>
   );
 };
 
