@@ -619,7 +619,7 @@ const AllResults = () => {
                       : authorContent.name
                   }
                   picture={authorContent.picture}
-                  about={body ?? post.content}
+                  about={body || post.content}
                   title={title}
                   pubkey={post.pubkey}
                   eventId={post.id}
