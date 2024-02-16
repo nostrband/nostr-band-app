@@ -8,6 +8,11 @@ import { Provider } from "react-redux";
 import { setupStore } from "./store/store";
 import "react-datepicker/dist/react-datepicker.css";
 import "react-tagsinput/react-tagsinput.css";
+import { init as initNostrLogin } from "nostr-login"
+
+initNostrLogin({
+  bunkers: "nsec.app"
+})
 
 const store = setupStore();
 

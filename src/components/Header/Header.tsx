@@ -10,6 +10,7 @@ import { FC } from "react";
 import { useAppSelector } from "../../hooks/redux";
 import { nip19 } from "@nostrband/nostr-tools";
 import { formatDate } from "../../utils/formatDate";
+import { logout as logoutNostrInit } from "nostr-login"
 
 type headerType = {
   onLogin: (a: boolean) => void;
@@ -36,6 +37,7 @@ const Header: FC<headerType> = ({ onLogin }) => {
   const logoutBtn = () => {
     localStorage.removeItem("login");
     dispatch(setIsAuth(false));
+    logoutNostrInit();
   };
 
   const setDarkMode = () => {
