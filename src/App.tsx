@@ -165,7 +165,7 @@ const App = () => {
         <ToastContainer />
         <Row className="justify-content-lg-center">
           <Col lg={9}>
-            <Header onLogin={setIsModal} />
+            <Header onLogin={loginBtn} />
             <Routes>
               {allRoutes.map((route) => {
                 return route ? (
