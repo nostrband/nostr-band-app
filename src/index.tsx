@@ -11,7 +11,7 @@ import "react-tagsinput/react-tagsinput.css";
 import { init as initNostrLogin } from "nostr-login"
 
 initNostrLogin({
-  bunkers: "nsec.app"
+  perms: "sign_event:1985,sign_event:3,sign_event:30000",
 })
 
 const store = setupStore();
