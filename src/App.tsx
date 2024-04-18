@@ -198,9 +198,9 @@ const App = () => {
             <div className="row justify-content-md-center">
               <div className="col col-lg-6 d-flex justify-content-between">
                 <h5 className="offcanvas-title" id="offcanvasBottomLabel">
-                  <img src="https://spring.site/favicon.ico" width="30" />
+                  <img src="https://nsec.app/favicon.ico" width="30" />
                   <span style={{ verticalAlign: "middle" }}>
-                    &nbsp;Explore 100+ Nostr apps!
+                    &nbsp;Keep your Nsec safe!
                   </span>
                 </h5>
                 <button
@@ -221,25 +221,24 @@ const App = () => {
               <div className="col col-lg-6 d-flex justify-content-between">
                 <div className="row w-100">
                   <div className="col-12 col-lg-8 d-flex align-items-center pb-2">
-                    Try new apps and keep your keys safe with Spring — the Nostr
-                    browser.
+                    Try new Nostr apps without pasting your keys with Nsec.app
                   </div>
                   <div className="col-12 col-lg-4 d-flex flex-row justify-content-start justify-content-lg-end">
-                    <a
+                    {/* <a
                       id="spring-learn"
                       className="btn btn-outline-secondary me-1"
-                      href="https://spring.site"
+                      href="https://nsec.app"
                       target="_blank"
                     >
                       Learn more
-                    </a>
+                    </a> */}
                     <a
                       id="spring-download"
                       className="btn btn-outline-primary"
-                      href="https://play.google.com/store/apps/details?id=com.nostr.universe"
+                      href="https://nsec.app"
                       target="_blank"
                     >
-                      Get on Play Store
+                      Try Nsec.app &rarr;
                     </a>
                   </div>
                 </div>

@@ -6,11 +6,10 @@ import Form from "react-bootstrap/Form";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { userSlice } from "../../store/reducers/UserSlice";
-import { FC } from "react";
+import { FC, useCallback, useEffect } from "react";
 import { useAppSelector } from "../../hooks/redux";
 import { nip19 } from "@nostrband/nostr-tools";
 import { formatDate } from "../../utils/formatDate";
-import { logout as logoutNostrInit } from "nostr-login"
 
 type headerType = {
   onLogin: (a: boolean) => void;
@@ -34,11 +33,25 @@ const Header: FC<headerType> = ({ onLogin }) => {
 
   const userNpub = getNpub();
 
-  const logoutBtn = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("login");
     dispatch(setIsAuth(false));
-    logoutNostrInit();
-  };
+  }, [dispatch, setIsAuth]);
+
+  const handleLogout = () => {
+    logout();
+    document.dispatchEvent(new Event("nlLogout"))
+  }
+
+  useEffect(() => {
+    document.addEventListener('nlAuth', (e: any) => {
+      if (e.detail.type === 'login' || e.detail.type === 'signup') {
+        onLogin(true);
+      } else {
+        logout()
+      }
+    })    
+  }, [logout, onLogin])
 
   const setDarkMode = () => {
     document.querySelector("body")?.setAttribute("data-theme", "dark");
@@ -198,7 +211,7 @@ const Header: FC<headerType> = ({ onLogin }) => {
                 label="Dark mode"
                 onChange={toggleTheme}
               />
-              <NavDropdown.Item onClick={logoutBtn}>Log Out</NavDropdown.Item>
+              <NavDropdown.Item onClick={handleLogout}>Log Out</NavDropdown.Item>
             </NavDropdown>
           </Nav>
         )}

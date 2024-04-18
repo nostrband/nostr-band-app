@@ -8,11 +8,6 @@ import { Provider } from "react-redux";
 import { setupStore } from "./store/store";
 import "react-datepicker/dist/react-datepicker.css";
 import "react-tagsinput/react-tagsinput.css";
-import { init as initNostrLogin } from "nostr-login"
-
-initNostrLogin({
-  perms: "sign_event:1985,sign_event:3,sign_event:30000",
-})
 
 const store = setupStore();
 
