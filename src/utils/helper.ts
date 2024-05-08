@@ -1,3 +1,25 @@
+export const DEFAULT_KINDS = [
+  1, // note
+  1311, // live chat
+  1063, // file header
+  1985, // label,
+  1984, // report
+  2003, // torrent
+  9735, // zap
+  9802, // highlight
+  30000, // follow set
+  30001, // bookmark set
+  30009, // badge definition
+  30017, // stall
+  30018, // product
+  30023, // long post
+  30117, // nostrapp.link github repos
+  30311, // live event
+  30402, // classified
+  31990, // app
+  34550, // community
+];
+
 function openAppManager(id: string, select?: boolean) {
   window.open(
     "https://nostrapp.link/" + id + (select ? "?select=true" : ""),
@@ -61,17 +83,17 @@ export function openNostrProfile(
   return false;
 }
 
-export const getKindNumber = (str: string) => {
-  switch (str) {
-    case "Profiles":
-      return 0;
-    case "Posts":
-      return 1;
-    case "Zaps":
-      return 9735;
-  }
-  return null;
-};
+// export const getKindNumber = (str: string) => {
+//   switch (str) {
+//     case "Profiles":
+//       return 0;
+//     case "Posts":
+//       return 1;
+//     case "Zaps":
+//       return 9735;
+//   }
+//   return null;
+// };
 
 export const getKindName = (number: number) => {
   switch (number) {
@@ -117,6 +139,8 @@ export const getKindName = (number: number) => {
       return "Reporting";
     case 1985:
       return "Label";
+    case 2003:
+      return "Torrent";
     case 4550:
       return "Community Post Approval";
     case 5000:
