@@ -72,6 +72,10 @@ const Header: FC<headerType> = ({ onLogin }) => {
     }
   };
 
+  const onLoginClick = () => {
+    onLogin(true);
+  }
+
   return (
     <Navbar
       expand="lg"
@@ -169,7 +173,7 @@ const Header: FC<headerType> = ({ onLogin }) => {
           )} */
           }
           {!state.isAuth && (
-            <Nav.Link onClick={() => onLogin(true)}>Login</Nav.Link>
+            <Nav.Link onClick={onLoginClick}>Login</Nav.Link>
           )}
         </Nav>
         {state.isAuth && state.user && (
