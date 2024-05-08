@@ -13,7 +13,8 @@ import { nip19 } from "@nostrband/nostr-tools";
 import { getZapAmount } from "../../../utils/zapFunctions";
 import ZapTransfer from "../../../components/ZapTransfer/ZapTransfer";
 import { getTag } from "../../../utils/getTags";
-import { getKindName } from "../../../utils/helper";
+import { DEFAULT_KINDS, getKindName } from "../../../utils/helper";
+
 
 const AllResults = () => {
   const ndk = useAppSelector((store) => store.connectionReducer.ndk);
@@ -31,6 +32,7 @@ const AllResults = () => {
   const [isBottom, setIsBottom] = useState(false);
   const [eventsCount, setEventsCount] = useState(0);
   const [limitEvents, setLimitEvents] = useState(10);
+  const [more, setMore] = useState(0);
   const [receivedZaps, setReceivedZaps] = useState<NDKEvent[]>([]);
   const [amountReceivedZaps, setAmountReceivedZaps] = useState<number[]>([]);
   const [sentAuthors, setSentAuthors] = useState<NDKEvent[]>([]);
@@ -69,21 +71,19 @@ const AllResults = () => {
   useEffect(() => {
     if (ndk instanceof NDK) {
       getProfiles();
-      if (limitEvents !== 10) {
-        setLimitEvents(10);
-      } else {
-        fetchEvents();
-      }
+      setLimitEvents(10);
+      setMore(0);
+      fetchEvents();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("q")]);
 
   useEffect(() => {
-    if (ndk instanceof NDK) {
+    if (more > 0 && ndk instanceof NDK) {
       fetchEvents();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [limitEvents]);
+  }, [more]);
 
   useEffect(() => {
     if (isBottom) {
@@ -95,6 +95,7 @@ const AllResults = () => {
   }, [isBottom]);
 
   const getMoreEvents = () => {
+    setMore(more + 1);
     setLimitEvents((prevState) => prevState + 10);
   };
 
@@ -247,8 +248,8 @@ const AllResults = () => {
   const fetchEvents = async () => {
     if (ndk instanceof NDK) {
       setIsLoadingPosts(true);
-      const filter = { kinds: kindsList ?? [1], limit: limitEvents };
-      console.log(filter);
+      const filter = { kinds: kindsList ?? DEFAULT_KINDS, limit: limitEvents };
+      console.log("filter", { filter });
 
       if (cleanSearch?.trim()) {
         Object.defineProperty(filter, "search", {

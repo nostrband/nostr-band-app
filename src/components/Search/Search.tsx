@@ -15,7 +15,7 @@ import { useAppSelector } from "../../hooks/redux";
 import DatePicker from "react-datepicker";
 import { formatDate } from "../../utils/formatDate";
 import TagInput from "../TagInput/TagInput";
-import { getKindNumber } from "../../utils/helper";
+import { DEFAULT_KINDS, getKindName } from "../../utils/helper";
 
 type searchTypes = {
   isLoading: boolean;
@@ -93,20 +93,24 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
     },
   ];
 
-  const kindsSuggestions = [
-    {
-      value: 1,
-      label: "Profiles",
-    },
-    {
-      value: 2,
-      label: "Posts",
-    },
-    {
-      value: 3,
-      label: "Zaps",
-    },
-  ];
+  const kindsSuggestions = DEFAULT_KINDS.map(k => ({
+    label: `${getKindName(k)} (${k})`,
+    value: k
+  }));
+  // [
+  //   {
+  //     value: 1,
+  //     label: "Profiles",
+  //   },
+  //   {
+  //     value: 2,
+  //     label: "Posts",
+  //   },
+  //   {
+  //     value: 3,
+  //     label: "Zaps",
+  //   },
+  // ];
 
   const languages = ["en", "es", "de", "fr", "ru"];
 
@@ -135,7 +139,7 @@ const Search: FC<searchTypes> = ({ isLoading, placeholder }) => {
   useEffect(() => {
     const tagsWithHash = newTags.map((tag) => "#" + tag.label).join(" ");
     const kindsNumbers = kinds
-      .map((kind) => "kind:" + getKindNumber(kind.label))
+      .map((kind) => "kind:" + kind.value)
       .join(" ");
 
     setResultQuery(
