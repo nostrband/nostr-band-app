@@ -41,7 +41,13 @@ const Home = () => {
         .flat();
       const notNpubLinks = postsLinks.filter((r) => !r.startsWith("npub"));
       const npubs = postsLinks.filter((r) => r.startsWith("npub"));
-      const pubkeys = npubs.map((npub) => nip19.decode(npub).data);
+      const pubkeys = npubs.map((npub) => {
+        try {
+          return nip19.decode(npub).data
+        } catch {
+          return "";
+        }
+      }).filter(p => !!p);
 
       const postsTaggedUsers = Array.from(
         //@ts-ignore

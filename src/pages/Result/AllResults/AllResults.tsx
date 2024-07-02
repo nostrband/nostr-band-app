@@ -15,7 +15,6 @@ import ZapTransfer from "../../../components/ZapTransfer/ZapTransfer";
 import { getTag } from "../../../utils/getTags";
 import { DEFAULT_KINDS, getKindName } from "../../../utils/helper";
 
-
 const AllResults = () => {
   const ndk = useAppSelector((store) => store.connectionReducer.ndk);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -603,11 +602,56 @@ const AllResults = () => {
                 ? JSON.parse(postAuthor.content)
                 : {};
               const title = getTag(post.tags, ["title", "name"]);
-              const body = getTag(post.tags, [
-                "summary",
-                "description",
-                "alt",
-              ]).slice(0, 300);
+              const mime = post.kind === 1063 ? getTag(post.tags, ["m"]) : "";
+              const ext = (() => {
+                switch (mime) {
+                  case "audio/aac":
+                    return "acc";
+                  case "video/x-msvideo":
+                    return "avi";
+                  case "image/bmp":
+                    return "bmp";
+                  case "image/ico":
+                    return "ico";
+                  case "image/gif":
+                    return "gif";
+                  case "image/jpeg":
+                    return "jpg";
+                  case "audio/mpeg":
+                    return "mp3";
+                  case "video/mpeg":
+                    return "mpeg";
+                  case "video/mp4":
+                    return "mp4";
+                  case "audio/ogg":
+                    return "ogg";
+                  case "image/png":
+                    return "png";
+                  case "image/svg+xml":
+                    return "svg";
+                  case "audio/wav":
+                    return "wav";
+                  case "audio/weba":
+                    return "weba";
+                  case "video/webm":
+                    return "webm";
+                  case "image/webp":
+                    return "webp";
+                  default:
+                    return "";
+                }
+              })();
+              const url = ((u) => {
+                const file = u.split('?')[0].split('/').pop();
+                if (!file || file.includes('.') || !ext) return u;
+                return u + '.' + ext;
+              })(getTag(post.tags, ["url"]));
+              const body =
+                (post.kind === 1063 ? url : undefined) ||
+                getTag(post.tags, ["summary", "description", "alt"]).slice(
+                  0,
+                  300
+                );
 
               return (
                 <PostCard
