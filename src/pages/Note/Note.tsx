@@ -222,7 +222,8 @@ const Note = () => {
     setLimitReplies((prevState) => prevState + 10);
   };
 
-  const { router } = useParams();
+  let { router } = useParams();
+  if (router?.startsWith("nostr:")) router = router.substring(6);
   const noteHex = router;
   const noteIdCheck = noteHex ? noteHexToNoteId(noteHex) : "";
 

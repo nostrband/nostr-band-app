@@ -213,6 +213,10 @@ export const getKindName = (number: number) => {
       return "Classified Listing";
     case 30403:
       return "Draft Classified Listing";
+    case 30512:
+      return "Nostr site";
+    case 30514:
+      return "Nostr site theme";
     case 31922:
       return "Date-Based Calendar Event";
     case 31923:

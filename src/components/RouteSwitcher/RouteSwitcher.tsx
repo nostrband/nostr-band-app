@@ -3,8 +3,10 @@ import Note from "../../pages/Note/Note";
 import Profile from "../../pages/Profile/Profile";
 
 const RouteSwitcher = () => {
-  const { router } = useParams();
+  let { router } = useParams();
   if (router) {
+    if (router.startsWith("nostr:")) router = router.substring(6);
+    console.log("router", router);
     if (
       router.slice(0, 4) === "note" ||
       router.slice(0, 5) === "naddr" ||
