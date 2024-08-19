@@ -59,7 +59,8 @@ const Profile = () => {
   const [firstEvent, setFirstEvent] = useState<NDKEvent | null>(null);
   const [events, setEvents] = useState<NDKEvent[]>([]);
   const [profile, setProfile] = useState<profileType>();
-  const { router } = useParams();
+  let { router } = useParams();
+  if (router?.startsWith("nostr:")) router = router.substring(6);
   const npub = router;
   const [stats, setStats] = useState<statsType>({});
   const [tabKey, setTabKey] = useState("posts");

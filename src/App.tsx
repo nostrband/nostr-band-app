@@ -198,9 +198,9 @@ const App = () => {
             <div className="row justify-content-md-center">
               <div className="col col-lg-6 d-flex justify-content-between">
                 <h5 className="offcanvas-title" id="offcanvasBottomLabel">
-                  <img src="https://nsec.app/favicon.ico" width="30" />
+                  <img src="https://npub.pro/favicon.ico" width="30" />
                   <span style={{ verticalAlign: "middle" }}>
-                    &nbsp;Keep your Nsec safe!
+                    &nbsp;Nostr-based websites for creators!
                   </span>
                 </h5>
                 <button
@@ -221,7 +221,7 @@ const App = () => {
               <div className="col col-lg-6 d-flex justify-content-between">
                 <div className="row w-100">
                   <div className="col-12 col-lg-8 d-flex align-items-center pb-2">
-                    Try new Nostr apps without pasting your keys with Nsec.app
+                    Best way to share your content outside of Nostr!
                   </div>
                   <div className="col-12 col-lg-4 d-flex flex-row justify-content-start justify-content-lg-end">
                     {/* <a
@@ -235,10 +235,10 @@ const App = () => {
                     <a
                       id="spring-download"
                       className="btn btn-outline-primary"
-                      href="https://nsec.app"
+                      href="https://npub.pro"
                       target="_blank"
                     >
-                      Try Nsec.app &rarr;
+                      Try Npub.pro &rarr;
                     </a>
                   </div>
                 </div>

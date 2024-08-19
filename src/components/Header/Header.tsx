@@ -123,17 +123,20 @@ const Header: FC<headerType> = ({ onLogin }) => {
             <NavDropdown.Item href="https://embed.nostr.band">
               Embed widget
             </NavDropdown.Item>
-            <NavDropdown.Item href="https://nip05.nostr.band">
-              NIP-05 names
-            </NavDropdown.Item>
             <NavDropdown.Item href="https://spam.nostr.band">
               Spam filter
             </NavDropdown.Item>
             <NavDropdown.Item href="https://trust.nostr.band">
               Trust rank
             </NavDropdown.Item>
-            <NavDropdown.Item href="https://feeds.nostr.band">
-              Feeds
+            <NavDropdown.Item href="https://zapper.fun/">
+              Zapper.fun
+            </NavDropdown.Item>
+            <NavDropdown.Item href="https://nsec.app/">
+              Nsec.app
+            </NavDropdown.Item>
+            <NavDropdown.Item href="https://npub.pro/">
+              Npub.pro
             </NavDropdown.Item>
           </NavDropdown>
           {
