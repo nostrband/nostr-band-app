@@ -552,7 +552,7 @@ const Profile = () => {
             kind: 3,
             tags: store?.contacts?.tags
               ? [...store.contacts.tags, ["p", pubkey]]
-              : ["p", pubkey],
+              : [["p", pubkey]],
             created_at: dateToUnix(),
           };
 
